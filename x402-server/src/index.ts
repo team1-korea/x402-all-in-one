@@ -1,7 +1,13 @@
 import "dotenv/config";
 import express from "express";
+import { readFileSync } from "fs";
+import { dirname, join } from "path";
+import { fileURLToPath } from "url";
 import servicesRouter from "./routes/services.js";
 import questRouter from "./routes/quest.js";
+import usersRouter from "./routes/users.js";
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const app = express();
 app.use(express.json());
@@ -23,6 +29,15 @@ app.get("/health", (_req, res) => {
   });
 });
 
+app.get("/llms.txt", (_req, res) => {
+  const base = process.env.API_BASE_URL || "http://localhost:4010";
+  const template = readFileSync(join(__dirname, "..", "llms.txt"), "utf8");
+  const content = template.replaceAll("{{BASE_URL}}", base);
+  res.setHeader("Content-Type", "text/plain; charset=utf-8");
+  res.send(content);
+});
+
+app.use("/v1/register", usersRouter);
 app.use("/v1/services", servicesRouter);
 app.use("/v1/quest", questRouter);
 

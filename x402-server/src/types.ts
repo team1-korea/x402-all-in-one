@@ -12,13 +12,18 @@ export interface Quest {
 export interface PaymentRequirements {
   scheme: "exact";
   network: string;
-  asset: "native";
+  asset: string; // ERC-20 token contract address
   amount: string; // wei string
   payTo: string;
   maxTimeoutSeconds: number;
   resource: string;
   description: string;
   mimeType: string;
+  extra?: {
+    assetTransferMethod: "eip3009" | "permit2";
+    name: string;
+    version: string;
+  };
 }
 
 export interface X402Response {

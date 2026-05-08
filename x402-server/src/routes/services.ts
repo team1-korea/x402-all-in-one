@@ -21,7 +21,7 @@ router.get("/", (_req, res) => {
         pricing: {
           amount: q.price === 0n ? "0" : q.price.toString(),
           currency: "native",
-          note: q.price === 0n ? "무료" : `${Number(q.price) / 1e18} APIX`,
+          note: q.price === 0n ? "무료" : `${Number(q.price) / 1e18} TONE`,
         },
       },
     ],
@@ -53,7 +53,7 @@ router.get("/search", (req, res) => {
         pricing: {
           amount: quest.price === 0n ? "0" : quest.price.toString(),
           currency: "native",
-          note: quest.price === 0n ? "무료" : `${Number(quest.price) / 1e18} APIX`,
+          note: quest.price === 0n ? "무료" : `${Number(quest.price) / 1e18} TONE`,
         },
       },
     ],

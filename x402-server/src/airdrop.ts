@@ -1,5 +1,6 @@
 import {
   createWalletClient,
+  createPublicClient,
   defineChain,
   http,
   type Hex,
@@ -15,19 +16,36 @@ const apixTestnet = defineChain({
   },
 });
 
+const ERC20_TRANSFER_ABI = [
+  {
+    name: "transfer",
+    type: "function",
+    stateMutability: "nonpayable",
+    inputs: [
+      { name: "to", type: "address" },
+      { name: "value", type: "uint256" },
+    ],
+    outputs: [{ name: "", type: "bool" }],
+  },
+] as const;
+
 function getWalletClient() {
   const mnemonic = process.env.AIRDROP_MNEMONIC;
   if (!mnemonic) throw new Error("AIRDROP_MNEMONIC not set");
-
   const account = mnemonicToAccount(mnemonic);
   return createWalletClient({ account, chain: apixTestnet, transport: http() });
 }
 
 export async function airdrop(to: string, amount: bigint): Promise<string> {
+  const tokenAddress = process.env.TONE_TOKEN as Hex | undefined;
+  if (!tokenAddress) throw new Error("TONE_TOKEN not set");
+
   const client = getWalletClient();
-  const txHash = await client.sendTransaction({
-    to: to as Hex,
-    value: amount,
+  const txHash = await client.writeContract({
+    address: tokenAddress,
+    abi: ERC20_TRANSFER_ABI,
+    functionName: "transfer",
+    args: [to as Hex, amount],
   });
   return txHash;
 }

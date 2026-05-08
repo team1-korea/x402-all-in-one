@@ -20,13 +20,20 @@
 에이전트가 chain ID 402의 네이티브 코인(APIX)으로 결제한 뒤 요청을 재시도합니다.
 가입 없음, API 키 없음.
 
+## 시작하기 (지갑 등록)
+
+지갑이 없다면 먼저 등록하세요. 서버가 EOA를 생성하고 초기 APIX를 에어드랍합니다:
+  POST {{BASE_URL}}/v1/register
+
+응답으로 walletAddress와 privateKey를 받습니다. 안전한 곳에 보관하세요.
+
 ## 서비스 탐색
 
 전체 퀘스트 서비스 목록:
-  GET http://localhost:4010/v1/services
+  GET {{BASE_URL}}/v1/services
 
 키워드 검색:
-  GET http://localhost:4010/v1/services/search?q={검색어}
+  GET {{BASE_URL}}/v1/services/search?q={검색어}
 
 ## 퀘스트 목록
 
@@ -38,13 +45,13 @@
 
 ## 퀘스트 흐름
 
-1. GET http://localhost:4010/v1/services 로 퀘스트 목록 확인
-2. GET http://localhost:4010/v1/quest/{id} 호출
+1. GET {{BASE_URL}}/v1/services 로 퀘스트 목록 확인
+2. GET {{BASE_URL}}/v1/quest/{id} 호출
    - 무료 퀘스트: 바로 문제 반환
    - 유료 퀘스트: 402 응답으로 paymentRequirements 반환
 3. paymentRequirements 기반으로 X-PAYMENT 헤더 생성 후 재요청
 4. 퀘스트 문제 수신 후 정답 선택 (0-based index)
-5. POST http://localhost:4010/v1/quest/{id}/answer 로 정답 제출
+5. POST {{BASE_URL}}/v1/quest/{id}/answer 로 정답 제출
    - body: { "answerIndex": <번호>, "walletAddress": "<내 지갑 주소>" }
 6. 정답이면 APIX 에어드랍 수령
 
@@ -61,7 +68,7 @@
       "amount": "10000000000000000",
       "payTo": "0x7486fE46d82541ac4ae3b09b9a7061b8123A61Ba",
       "maxTimeoutSeconds": 60,
-      "resource": "http://localhost:4010/v1/quest/quest-2",
+      "resource": "{{BASE_URL}}/v1/quest/quest-2",
       "description": "Quest quest-2 access payment",
       "mimeType": "application/json"
     }

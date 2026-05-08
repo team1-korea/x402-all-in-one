@@ -1,0 +1,25 @@
+{
+  "permissions": {
+    "allow": [
+      "Skill(design-consultation)",
+      "WebFetch(domain:www.npmjs.com)",
+      "Bash(npm info *)",
+      "Bash(node -e \"const viem = require\\('./node_modules/viem/accounts/index.js'\\); console.log\\(Object.keys\\(viem\\).filter\\(k => k.includes\\('generate'\\) || k.includes\\('private'\\)\\)\\)\")",
+      "Bash(node --input-type=module)",
+      "Bash(npx tsx *)",
+      "Bash(curl -s http://localhost:4010/health)",
+      "Read(//Users/viviviviviid/.claude/skills/**)",
+      "Read(//Users/viviviviviid/.agents/skills/x402/**)",
+      "Bash(forge --version)",
+      "Bash(solc --version)",
+      "Bash(npx hardhat *)",
+      "Bash(curl -s -X POST https://subnets.avax.network/apix/testnet/rpc -H 'Content-Type: application/json' -d '{\"jsonrpc\":\"2.0\",\"method\":\"eth_getBalance\",\"params\":[\"0xC135AdeE75950Df82232D6aC267a82c0F62dCb9F\",\"latest\"],\"id\":1}')",
+      "Bash(python3 -m json.tool)",
+      "Bash(python3 -c ' *)",
+      "Bash(npm publish *)",
+      "Bash(npm whoami *)",
+      "Bash(npm config *)",
+      "Bash(git *)"
+    ]
+  }
+}

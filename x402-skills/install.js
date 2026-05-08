@@ -35,17 +35,19 @@ async function install() {
   }
 
   const skills = [
-    { src: path.join(SKILLS_DIR, 'discover', 'SKILL.md'), dest: 'x402-discover.md' },
-    { src: path.join(SKILLS_DIR, 'pay', 'SKILL.md'),      dest: 'x402-pay.md' },
-    { src: path.join(SKILLS_DIR, 'quest', 'SKILL.md'),    dest: 'x402-quest.md' },
+    { src: path.join(SKILLS_DIR, 'discover', 'SKILL.md'), dir: 'x402-discover' },
+    { src: path.join(SKILLS_DIR, 'pay', 'SKILL.md'),      dir: 'x402-pay' },
+    { src: path.join(SKILLS_DIR, 'quest', 'SKILL.md'),    dir: 'x402-quest' },
   ];
 
-  for (const { src, dest } of skills) {
+  for (const { src, dir } of skills) {
     let content = fs.readFileSync(src, 'utf8');
     // API URL 플레이스홀더 교체
     content = content.replace(/http:\/\/localhost:4010/g, resolvedUrl);
-    fs.writeFileSync(path.join(TARGET_DIR, dest), content);
-    log(`설치: .claude/skills/${dest}`, 'success');
+    const skillDir = path.join(TARGET_DIR, dir);
+    fs.mkdirSync(skillDir, { recursive: true });
+    fs.writeFileSync(path.join(skillDir, 'SKILL.md'), content);
+    log(`설치: .claude/skills/${dir}/SKILL.md`, 'success');
   }
 
   console.log(`

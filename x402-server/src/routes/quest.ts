@@ -20,13 +20,18 @@ function buildPaymentRequirements(questId: string, price: bigint): PaymentRequir
   return {
     scheme: "exact",
     network: `eip155:${process.env.CHAIN_ID || "402"}`,
-    asset: "native",
+    asset: process.env.TONE_TOKEN!,
     amount: price.toString(),
     payTo: process.env.PAY_TO!,
     maxTimeoutSeconds: 60,
     resource: `${API_BASE}/v1/quest/${questId}`,
     description: `Quest ${questId} access payment`,
     mimeType: "application/json",
+    extra: {
+      assetTransferMethod: "eip3009",
+      name: "TONE",
+      version: "1",
+    },
   };
 }
 
@@ -45,7 +50,7 @@ router.get("/:id", async (req: Request, res: Response) => {
       name: quest.name,
       question: quest.question,
       choices: quest.choices,
-      reward: `${Number(quest.reward) / 1e18} APIX`,
+      reward: `${Number(quest.reward) / 1e18} TONE`,
     });
     return;
   }
@@ -110,7 +115,7 @@ router.get("/:id", async (req: Request, res: Response) => {
       name: quest.name,
       question: quest.question,
       choices: quest.choices,
-      reward: `${Number(quest.reward) / 1e18} APIX`,
+      reward: `${Number(quest.reward) / 1e18} TONE`,
       settleTx: settleResult.transaction,
     });
   } catch (e) {
@@ -146,7 +151,7 @@ router.post("/:id/answer", async (req: Request, res: Response) => {
     const txHash = await airdrop(walletAddress, quest.reward);
     res.json({
       correct: true,
-      message: `정답입니다! ${Number(quest.reward) / 1e18} APIX를 에어드랍했습니다.`,
+      message: `정답입니다! ${Number(quest.reward) / 1e18} TONE를 에어드랍했습니다.`,
       airdropTx: txHash,
       nextQuestHint:
         quest.id === "quest-3"
