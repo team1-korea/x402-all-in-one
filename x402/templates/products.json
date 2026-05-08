@@ -1,0 +1,125 @@
+{
+  "eventId": "x402-escape-2026",
+  "products": [
+    {
+      "productId": "gift_001",
+      "name": "스타벅스 5만원권",
+      "description": "따뜻한 커피와 함께 여유를",
+      "imageUrl": "/images/gift_001.png",
+      "stock": 5,
+      "status": "available",
+      "pathIds": [
+        "path_001"
+      ],
+      "rewardTokenAmount": 10
+    },
+    {
+      "productId": "gift_002",
+      "name": "BHC 뿌링클 세트",
+      "description": "불금엔 치킨이 진리",
+      "imageUrl": "/images/gift_002.png",
+      "stock": 3,
+      "status": "available",
+      "pathIds": [
+        "path_002"
+      ],
+      "rewardTokenAmount": 15
+    },
+    {
+      "productId": "gift_003",
+      "name": "애플 에어팟 프로 2",
+      "description": "액티브 노이즈 캔슬링의 정수",
+      "imageUrl": "/images/gift_003.png",
+      "stock": 1,
+      "status": "available",
+      "pathIds": [
+        "path_003"
+      ],
+      "rewardTokenAmount": 50
+    },
+    {
+      "productId": "gift_004",
+      "name": "배달의민족 3만원권",
+      "description": "오늘 점심은 배민으로",
+      "imageUrl": "/images/gift_004.png",
+      "stock": 10,
+      "status": "available",
+      "pathIds": [
+        "path_004"
+      ],
+      "rewardTokenAmount": 5
+    },
+    {
+      "productId": "gift_005",
+      "name": "올리브영 2만원권",
+      "description": "뷰티 & 라이프스타일 스토어",
+      "imageUrl": "/images/gift_005.png",
+      "stock": 7,
+      "status": "available",
+      "pathIds": [
+        "path_005"
+      ],
+      "rewardTokenAmount": 8
+    },
+    {
+      "productId": "gift_006",
+      "name": "닌텐도 스위치 OLED",
+      "description": "모두 함께 즐거운 게임 타임",
+      "imageUrl": "/images/gift_006.png",
+      "stock": 1,
+      "status": "available",
+      "pathIds": [
+        "path_006"
+      ],
+      "rewardTokenAmount": 60
+    },
+    {
+      "productId": "gift_007",
+      "name": "신세계 1만원 상품권",
+      "description": "럭셔리한 쇼핑을 위해",
+      "imageUrl": "/images/gift_007.png",
+      "stock": 2,
+      "status": "available",
+      "pathIds": [
+        "path_007"
+      ],
+      "rewardTokenAmount": 20
+    },
+    {
+      "productId": "gift_008",
+      "name": "다이슨 에어랩",
+      "description": "완벽한 헤어 스타일링의 완성",
+      "imageUrl": "/images/gift_008.png",
+      "stock": 1,
+      "status": "available",
+      "pathIds": [
+        "path_008"
+      ],
+      "rewardTokenAmount": 100
+    },
+    {
+      "productId": "gift_009",
+      "name": "교보문고 1만원권",
+      "description": "지식의 바다로 떠나는 여행",
+      "imageUrl": "/images/gift_009.png",
+      "stock": 20,
+      "status": "available",
+      "pathIds": [
+        "path_009"
+      ],
+      "rewardTokenAmount": 2
+    },
+    {
+      "productId": "gift_010",
+      "name": "아키텍처 설계 도서",
+      "description": "시니어 개발자를 향한 필독서",
+      "imageUrl": "/images/gift_010.png",
+      "stock": 5,
+      "status": "available",
+      "pathIds": [
+        "path_010"
+      ],
+      "rewardTokenAmount": 12
+    }
+  ]
+}

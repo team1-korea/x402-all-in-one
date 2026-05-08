@@ -1,0 +1,17 @@
+{
+  "name": "team1-x402",
+  "version": "1.0.1",
+  "description": "Avalanche L1 x402 퀘스트 스킬 설치 CLI",
+  "main": "install.js",
+  "bin": {
+    "team1-x402": "install.js"
+  },
+  "files": [
+    "install.js",
+    "discover/",
+    "pay/",
+    "quest/"
+  ],
+  "keywords": ["x402", "avalanche", "claude-code", "skills"],
+  "license": "MIT"
+}

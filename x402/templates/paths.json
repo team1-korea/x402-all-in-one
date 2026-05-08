@@ -1,0 +1,14 @@
+{
+  "paths": [
+    { "pathId": "path_001", "productId": "gift_001", "title": "스타벅스의 길", "quizCount": 10, "currentQuizIndex": 1, "status": "active", "participantIds": [] },
+    { "pathId": "path_002", "productId": "gift_002", "title": "뿌링클의 길", "quizCount": 10, "currentQuizIndex": 1, "status": "active", "participantIds": [] },
+    { "pathId": "path_003", "productId": "gift_003", "title": "에어팟의 길", "quizCount": 10, "currentQuizIndex": 1, "status": "active", "participantIds": [] },
+    { "pathId": "path_004", "productId": "gift_004", "title": "배민의 길", "quizCount": 10, "currentQuizIndex": 1, "status": "active", "participantIds": [] },
+    { "pathId": "path_005", "productId": "gift_005", "title": "올리브영의 길", "quizCount": 10, "currentQuizIndex": 1, "status": "active", "participantIds": [] },
+    { "pathId": "path_006", "productId": "gift_006", "title": "닌텐도의 길", "quizCount": 10, "currentQuizIndex": 1, "status": "active", "participantIds": [] },
+    { "pathId": "path_007", "productId": "gift_007", "title": "신세계의 길", "quizCount": 10, "currentQuizIndex": 1, "status": "active", "participantIds": [] },
+    { "pathId": "path_008", "productId": "gift_008", "title": "다이슨의 길", "quizCount": 10, "currentQuizIndex": 1, "status": "active", "participantIds": [] },
+    { "pathId": "path_009", "productId": "gift_009", "title": "교보문고의 길", "quizCount": 10, "currentQuizIndex": 1, "status": "active", "participantIds": [] },
+    { "pathId": "path_010", "productId": "gift_010", "title": "아키텍처의 길", "quizCount": 10, "currentQuizIndex": 1, "status": "active", "participantIds": [] }
+  ]
+}

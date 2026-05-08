@@ -1,0 +1,25 @@
+config:
+  target: "http://localhost:4000"
+  phases:
+    - duration: 60
+      arrivalRate: 5
+      name: Warm up
+    - duration: 120
+      arrivalRate: 10
+      rampTo: 100
+      name: Load test
+  processor: "./load-100.js"
+
+scenarios:
+  - name: "Quiz solving flow"
+    flow:
+      - get:
+          url: "/api/quiz/1"
+          capture:
+            - header: "X402-Payto"
+              as: "payto"
+      - post:
+          url: "/api/submit/1"
+          json:
+            answer: "{{ answer }}"
+          beforeRequest: "generateRandomAnswer"

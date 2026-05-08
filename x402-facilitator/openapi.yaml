@@ -1,0 +1,453 @@
+openapi: 3.1.0
+info:
+  title: x402 Avalanche L1 Facilitator API
+  version: 0.1.0
+  description: |
+    Self-hosted x402 facilitator for an EVM-based Avalanche L1.
+    It verifies x402 payment payloads and settles payments on-chain.
+servers:
+  - url: https://unloc.kr/facilitator
+    description: Production facilitator behind Nginx
+  - url: http://localhost:4022
+    description: Local facilitator
+tags:
+  - name: Health
+  - name: Discovery
+  - name: Payments
+paths:
+  /health:
+    get:
+      tags: [Health]
+      summary: Get service health and active chain configuration
+      operationId: getHealth
+      responses:
+        "200":
+          description: Service status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthResponse"
+              examples:
+                ok:
+                  value:
+                    status: ok
+                    network: eip155:12345
+                    chainId: 12345
+                    rpcUrl: https://your-avalanche-l1-rpc.example
+                    facilitatorAddress: "0x1111111111111111111111111111111111111111"
+  /supported:
+    get:
+      tags: [Discovery]
+      summary: Get supported x402 schemes and networks
+      operationId: getSupported
+      responses:
+        "200":
+          description: Supported payment kinds, extensions, and facilitator signers
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SupportedResponse"
+              examples:
+                evm:
+                  value:
+                    kinds:
+                      - x402Version: 2
+                        scheme: exact
+                        network: eip155:12345
+                    extensions: []
+                    signers:
+                      eip155:
+                        - "0x1111111111111111111111111111111111111111"
+  /verify:
+    post:
+      tags: [Payments]
+      summary: Verify an x402 payment payload
+      operationId: verifyPayment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FacilitatorRequest"
+            examples:
+              eip3009:
+                $ref: "#/components/examples/Eip3009FacilitatorRequest"
+      responses:
+        "200":
+          description: Verification result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VerifyResponse"
+              examples:
+                valid:
+                  value:
+                    isValid: true
+                    payer: "0x2222222222222222222222222222222222222222"
+                invalid:
+                  value:
+                    isValid: false
+                    invalidReason: invalid_signature
+                    payer: "0x2222222222222222222222222222222222222222"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/InternalError"
+  /settle:
+    post:
+      tags: [Payments]
+      summary: Settle an x402 payment on-chain
+      operationId: settlePayment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FacilitatorRequest"
+            examples:
+              eip3009:
+                $ref: "#/components/examples/Eip3009FacilitatorRequest"
+      responses:
+        "200":
+          description: Settlement result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SettleResponse"
+              examples:
+                success:
+                  value:
+                    success: true
+                    transaction: "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                    network: eip155:12345
+                    payer: "0x2222222222222222222222222222222222222222"
+                failure:
+                  value:
+                    success: false
+                    transaction: ""
+                    network: eip155:12345
+                    payer: "0x2222222222222222222222222222222222222222"
+                    errorReason: insufficient_balance
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/InternalError"
+components:
+  responses:
+    BadRequest:
+      description: Missing or malformed request fields
+      content:
+        application/json:
+          schema:
+            oneOf:
+              - $ref: "#/components/schemas/VerifyResponse"
+              - $ref: "#/components/schemas/SettleResponse"
+          examples:
+            invalidVerify:
+              value:
+                isValid: false
+                invalidReason: invalid_x402_version
+                invalidMessage: "Facilitator request must include x402Version: 2"
+            invalidSettle:
+              value:
+                success: false
+                transaction: ""
+                network: eip155:12345
+                errorReason: invalid_x402_version
+                errorMessage: "Facilitator request must include x402Version: 2"
+    InternalError:
+      description: Unexpected facilitator error
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          examples:
+            error:
+              value:
+                error: Unknown error
+  schemas:
+    Address:
+      type: string
+      pattern: "^0x[a-fA-F0-9]{40}$"
+      examples:
+        - "0x1111111111111111111111111111111111111111"
+    Hex:
+      type: string
+      pattern: "^0x[a-fA-F0-9]+$"
+    Network:
+      type: string
+      description: CAIP-2 network identifier for the Avalanche L1.
+      pattern: "^eip155:[0-9]+$"
+      examples:
+        - eip155:12345
+    HealthResponse:
+      type: object
+      required:
+        - status
+        - network
+        - chainId
+        - rpcUrl
+        - facilitatorAddress
+      properties:
+        status:
+          type: string
+          enum: [ok]
+        network:
+          $ref: "#/components/schemas/Network"
+        chainId:
+          type: integer
+          minimum: 1
+        rpcUrl:
+          type: string
+          format: uri
+        facilitatorAddress:
+          $ref: "#/components/schemas/Address"
+    SupportedResponse:
+      type: object
+      required:
+        - kinds
+      properties:
+        kinds:
+          type: array
+          items:
+            type: object
+            required:
+              - x402Version
+              - scheme
+              - network
+            properties:
+              x402Version:
+                type: integer
+                enum: [2]
+              scheme:
+                type: string
+                enum: [exact]
+              network:
+                $ref: "#/components/schemas/Network"
+              extra:
+                type: object
+                additionalProperties: true
+        extensions:
+          type: array
+          items:
+            type: string
+        signers:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              $ref: "#/components/schemas/Address"
+    FacilitatorRequest:
+      type: object
+      required:
+        - x402Version
+        - paymentPayload
+        - paymentRequirements
+      properties:
+        x402Version:
+          type: integer
+          enum: [2]
+          description: x402 protocol version used by this facilitator request.
+        paymentPayload:
+          $ref: "#/components/schemas/PaymentPayload"
+        paymentRequirements:
+          $ref: "#/components/schemas/PaymentRequirements"
+    PaymentPayload:
+      type: object
+      required:
+        - x402Version
+        - accepted
+        - payload
+      properties:
+        x402Version:
+          type: integer
+          enum: [2]
+        resource:
+          $ref: "#/components/schemas/PaymentResource"
+        accepted:
+          $ref: "#/components/schemas/PaymentRequirements"
+        payload:
+          oneOf:
+            - $ref: "#/components/schemas/Eip3009Payload"
+            - $ref: "#/components/schemas/Permit2Payload"
+          description: Mechanism-specific payment payload.
+    PaymentResource:
+      type: object
+      properties:
+        url:
+          type: string
+          format: uri
+        description:
+          type: string
+        mimeType:
+          type: string
+      additionalProperties: true
+    PaymentRequirements:
+      type: object
+      required:
+        - scheme
+        - network
+        - asset
+        - amount
+        - payTo
+        - maxTimeoutSeconds
+      properties:
+        scheme:
+          type: string
+          enum: [exact]
+        network:
+          $ref: "#/components/schemas/Network"
+        asset:
+          $ref: "#/components/schemas/Address"
+        amount:
+          type: string
+          description: Token amount in the token's smallest unit.
+          pattern: "^[0-9]+$"
+          examples:
+            - "1000000"
+        payTo:
+          $ref: "#/components/schemas/Address"
+        maxTimeoutSeconds:
+          type: integer
+          minimum: 1
+        extra:
+          type: object
+          description: EVM token/domain metadata. EIP-3009 requires name and version.
+          properties:
+            assetTransferMethod:
+              type: string
+              enum: [eip3009, permit2]
+            name:
+              type: string
+              examples:
+                - USDC
+            version:
+              type: string
+              examples:
+                - "2"
+          additionalProperties: true
+    Eip3009Payload:
+      type: object
+      required:
+        - signature
+        - authorization
+      properties:
+        signature:
+          $ref: "#/components/schemas/Hex"
+        authorization:
+          type: object
+          required:
+            - from
+            - to
+            - value
+            - validAfter
+            - validBefore
+            - nonce
+          properties:
+            from:
+              $ref: "#/components/schemas/Address"
+            to:
+              $ref: "#/components/schemas/Address"
+            value:
+              type: string
+              pattern: "^[0-9]+$"
+            validAfter:
+              type: string
+              pattern: "^[0-9]+$"
+            validBefore:
+              type: string
+              pattern: "^[0-9]+$"
+            nonce:
+              $ref: "#/components/schemas/Hex"
+    Permit2Payload:
+      type: object
+      required:
+        - signature
+        - permit2Authorization
+      properties:
+        signature:
+          $ref: "#/components/schemas/Hex"
+        permit2Authorization:
+          type: object
+          additionalProperties: true
+    VerifyResponse:
+      type: object
+      required:
+        - isValid
+      properties:
+        isValid:
+          type: boolean
+        payer:
+          $ref: "#/components/schemas/Address"
+        invalidReason:
+          type: string
+        invalidMessage:
+          type: string
+    SettleResponse:
+      type: object
+      required:
+        - success
+        - network
+        - transaction
+      properties:
+        success:
+          type: boolean
+        transaction:
+          type: string
+        network:
+          $ref: "#/components/schemas/Network"
+        payer:
+          $ref: "#/components/schemas/Address"
+        errorReason:
+          type: string
+        errorMessage:
+          type: string
+    ErrorResponse:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          type: string
+  examples:
+    Eip3009FacilitatorRequest:
+      summary: EIP-3009 exact payment on a custom Avalanche L1
+      value:
+        x402Version: 2
+        paymentPayload:
+          x402Version: 2
+          resource:
+            url: https://api.example.com/protected
+            description: Protected resource
+            mimeType: application/json
+          accepted:
+            scheme: exact
+            network: eip155:12345
+            asset: "0x3333333333333333333333333333333333333333"
+            amount: "1000000"
+            payTo: "0x4444444444444444444444444444444444444444"
+            maxTimeoutSeconds: 300
+            extra:
+              assetTransferMethod: eip3009
+              name: USDC
+              version: "2"
+          payload:
+            signature: "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+            authorization:
+              from: "0x2222222222222222222222222222222222222222"
+              to: "0x4444444444444444444444444444444444444444"
+              value: "1000000"
+              validAfter: "0"
+              validBefore: "1770000000"
+              nonce: "0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        paymentRequirements:
+          scheme: exact
+          network: eip155:12345
+          asset: "0x3333333333333333333333333333333333333333"
+          amount: "1000000"
+          payTo: "0x4444444444444444444444444444444444444444"
+          maxTimeoutSeconds: 300
+          extra:
+            assetTransferMethod: eip3009
+            name: USDC
+            version: "2"
