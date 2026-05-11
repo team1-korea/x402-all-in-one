@@ -9,6 +9,11 @@ export interface UserRecord {
   privateKey: string;
   registeredAt: string;
   initialAirdropTx?: string;
+  
+  // 퀘스트 상태 추가
+  currentProductId?: string; // 현재 선택한 상품 ID
+  currentStep?: number;      // 현재 진행 중인 단계 (1~10)
+  isCompleted?: boolean;     // 완주 여부
 }
 
 function load(): Record<string, UserRecord> {
@@ -33,4 +38,15 @@ export function getUser(walletAddress: string): UserRecord | undefined {
 
 export function listUsers(): UserRecord[] {
   return Object.values(load());
+}
+
+export function updateQuestStatus(walletAddress: string, productId: string, step: number, isCompleted: boolean): void {
+  const db = load();
+  const user = db[walletAddress.toLowerCase()];
+  if (user) {
+    user.currentProductId = productId;
+    user.currentStep = step;
+    user.isCompleted = isCompleted;
+    save(db);
+  }
 }

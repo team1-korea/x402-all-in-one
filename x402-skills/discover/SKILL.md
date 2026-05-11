@@ -9,7 +9,7 @@ disable-model-invocation: false
 
 Avalanche L1 위에 등록된 x402 퀘스트 서비스 목록을 조회합니다.
 
-## 네트워크 정보
+## 🌐 네트워크 정보
 
 | 항목        | 값                                            |
 |-------------|-----------------------------------------------|
@@ -18,19 +18,19 @@ Avalanche L1 위에 등록된 x402 퀘스트 서비스 목록을 조회합니다
 | RPC URL     | https://subnets.avax.network/apix/testnet/rpc |
 | Facilitator | https://unloc.kr/facilitator                  |
 
-## 전체 서비스 목록
+## 🔄 전체 서비스 목록
 
 ```bash
 curl http://localhost:4010/v1/services
 ```
 
-## 키워드 검색
+## 🔍 키워드 검색
 
 ```bash
 curl "http://localhost:4010/v1/services/search?q={검색어}"
 ```
 
-## 응답 구조
+## 📄 응답 구조 (예시)
 
 ```json
 {
@@ -46,7 +46,7 @@ curl "http://localhost:4010/v1/services/search?q={검색어}"
           "url": "http://localhost:4010/v1/quest/quest-1",
           "method": "GET",
           "description": "...",
-          "pricing": { "amount": "0", "currency": "native", "note": "무료" }
+          "pricing": { "amount": "0", "currency": "erc3009", "note": "무료" }
         }
       ]
     },
@@ -61,7 +61,7 @@ curl "http://localhost:4010/v1/services/search?q={검색어}"
           "url": "http://localhost:4010/v1/quest/quest-2",
           "method": "GET",
           "description": "...",
-          "pricing": { "amount": "10000000000000000", "currency": "native", "note": "0.01 APIX" }
+          "pricing": { "amount": "10000000000000000", "currency": "erc3009", "note": "0.01 TONE" }
         }
       ]
     },
@@ -76,7 +76,7 @@ curl "http://localhost:4010/v1/services/search?q={검색어}"
           "url": "http://localhost:4010/v1/quest/quest-3",
           "method": "GET",
           "description": "...",
-          "pricing": { "amount": "10000000000000000", "currency": "native", "note": "0.01 APIX" }
+          "pricing": { "amount": "10000000000000000", "currency": "erc3009", "note": "0.01 TONE" }
         }
       ]
     }
@@ -84,5 +84,4 @@ curl "http://localhost:4010/v1/services/search?q={검색어}"
 }
 ```
 
-응답에서 `endpoints[].url`, `endpoints[].method`, `pricing.amount`를 확인한 뒤
-`x402-pay` 스킬로 넘어가세요.
+응답에서 `endpoints[].url`, `endpoints[].method`, `pricing.amount`를 확인한 뒤 `x402-pay` 스킬로 넘어가세요.

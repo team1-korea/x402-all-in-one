@@ -7,6 +7,7 @@ export interface Quest {
   choices: string[];
   answerIndex: number; // 0-based
   reward: bigint; // 정답 시 에어드랍 금액 (wei)
+  secretCode?: string; // 웹 연동형 정답 비밀코드 (선택 사항)
 }
 
 export interface PaymentRequirements {
