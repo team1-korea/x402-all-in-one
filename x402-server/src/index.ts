@@ -6,6 +6,7 @@ import { fileURLToPath } from "url";
 import servicesRouter from "./routes/services.js";
 import questRouter from "./routes/quest.js";
 import usersRouter from "./routes/users.js";
+import quest10Router from "./routes/quest10.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -40,6 +41,7 @@ app.get("/llms.txt", (_req, res) => {
 app.use("/v1/register", usersRouter);
 app.use("/v1/services", servicesRouter);
 app.use("/v1/quest", questRouter);
+app.use("/quest", quest10Router);
 
 const port = Number(process.env.PORT || 4010);
 app.listen(port, () => {
