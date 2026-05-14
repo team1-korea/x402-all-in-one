@@ -3,212 +3,315 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>금쪽같은 내 클로드의 첫 결제 — x402 워크샵</title>
+<title>금쪽같은 내 클로드의 첫 결제 — x402</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:#0f1117;color:#f1f5f9;font-family:'Courier New',monospace;display:flex;min-height:100vh}
-nav{width:220px;min-height:100vh;background:#080c12;border-right:1px solid #1e293b;padding:24px 0;position:fixed;top:0;left:0;overflow-y:auto}
-nav .logo{color:#3b82f6;font-size:13px;padding:0 20px 20px;border-bottom:1px solid #1e293b;margin-bottom:16px;line-height:1.5}
-nav a{display:block;padding:8px 20px;color:#64748b;font-size:12px;text-decoration:none;border-left:2px solid transparent;transition:all .15s}
-nav a:hover{color:#94a3b8;background:#0f1117}
-nav a.active{color:#3b82f6;border-left-color:#3b82f6;background:#0f1929}
-nav .section-num{color:#1e293b;margin-right:6px}
-main{margin-left:220px;padding:48px 56px;max-width:860px;width:100%}
-section{margin-bottom:80px;scroll-margin-top:32px}
-h2{font-size:22px;color:#f1f5f9;margin-bottom:6px}
-.section-tag{font-size:10px;color:#3b82f6;text-transform:uppercase;letter-spacing:2px;margin-bottom:12px}
-p{color:#94a3b8;font-size:14px;line-height:1.8;margin-bottom:12px}
-h3{color:#e2e8f0;font-size:15px;margin:20px 0 8px}
-pre{background:#1e293b;border-radius:6px;padding:16px;font-size:12px;color:#4ade80;overflow-x:auto;margin:12px 0}
-code{background:#1e293b;padding:2px 6px;border-radius:3px;color:#60a5fa;font-size:12px}
-.highlight{background:#1d3a5f;border-left:3px solid #3b82f6;padding:12px 16px;border-radius:0 6px 6px 0;margin:12px 0;font-size:13px;color:#bfdbfe}
-table{width:100%;border-collapse:collapse;font-size:12px;margin:16px 0}
-th{background:#1e293b;color:#94a3b8;padding:8px 12px;text-align:left}
-td{border-top:1px solid #1e293b;padding:8px 12px;color:#cbd5e1}
-.todo-box{background:#2d1b4e;border:1px dashed #7c3aed;border-radius:6px;padding:12px 16px;margin:8px 0;color:#c4b5fd;font-size:13px}
-.tag{display:inline-block;padding:2px 8px;border-radius:12px;font-size:10px;margin-left:6px;vertical-align:middle}
-.tag.lab{background:#14532d;color:#4ade80}
-.tag.go{background:#064e3b;color:#6ee7b7}
-.flow-row{display:flex;align-items:flex-start;gap:16px;margin:10px 0}
-.flow-num{background:#1d4ed8;color:#bfdbfe;min-width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;margin-top:2px}
-.flow-text{color:#cbd5e1;font-size:13px;line-height:1.7}
-.iphone{background:#1e293b;border-radius:8px;padding:16px;margin:8px 0}
-.iphone-row{display:grid;grid-template-columns:1fr 24px 1fr;gap:8px;align-items:center;margin:6px 0;font-size:12px}
-.iphone-left{color:#94a3b8}
-.iphone-arrow{color:#3b82f6;text-align:center}
-.iphone-right{color:#60a5fa}
-hr{border:none;border-top:1px solid #1e293b;margin:32px 0}
+html,body{width:100%;height:100%;overflow:hidden;background:#0a0d14;color:#f1f5f9;font-family:'Courier New',monospace}
+
+/* 슬라이드 컨테이너 */
+.deck{width:100vw;height:100vh;position:relative}
+.slide{
+  position:absolute;inset:0;
+  display:none;flex-direction:column;justify-content:center;align-items:center;
+  padding:60px 80px;text-align:center;
+}
+.slide.active{display:flex}
+
+/* 공통 타이포 */
+.tag{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#3b82f6;margin-bottom:16px}
+.title{font-size:52px;font-weight:700;line-height:1.15;color:#f1f5f9;margin-bottom:20px}
+.title .accent{color:#3b82f6}
+.title .small{font-size:28px;color:#64748b;display:block;margin-top:8px}
+.subtitle{font-size:18px;color:#64748b;line-height:1.7}
+.lead{font-size:22px;color:#94a3b8;line-height:1.7;margin-top:12px;max-width:720px}
+
+/* 키워드 리스트 */
+.kw-list{list-style:none;display:flex;flex-direction:column;gap:14px;margin-top:24px;width:100%;max-width:680px}
+.kw-list li{background:#111827;border:1px solid #1e293b;border-left:3px solid #3b82f6;border-radius:0 8px 8px 0;padding:14px 20px;font-size:18px;color:#e2e8f0;text-align:left;line-height:1.5}
+.kw-list li span{color:#64748b;font-size:14px;display:block;margin-top:2px}
+.kw-list li strong{color:#60a5fa}
+
+/* 코드 */
+pre{background:#111827;border:1px solid #1e293b;border-radius:8px;padding:20px 28px;font-size:15px;color:#4ade80;text-align:left;line-height:1.7;margin-top:20px;max-width:700px;width:100%}
+code{background:#1e293b;padding:3px 8px;border-radius:4px;color:#60a5fa;font-size:14px}
+
+/* 표 */
+table{border-collapse:collapse;width:100%;max-width:800px;margin-top:20px;font-size:14px}
+th{background:#111827;color:#64748b;padding:10px 16px;text-align:left;font-weight:normal;letter-spacing:1px;font-size:11px;text-transform:uppercase}
+td{border-top:1px solid #1e293b;padding:10px 16px;color:#cbd5e1}
+td:first-child{color:#94a3b8}
+td strong{color:#f1f5f9}
+
+/* TODO 구멍 */
+.hole{background:#1a0e2e;border:1px dashed #6d28d9;border-radius:6px;padding:10px 18px;color:#c4b5fd;font-size:14px;text-align:left;margin:6px 0;width:100%;max-width:660px}
+
+/* 아이폰 대응표 */
+.compare{display:grid;grid-template-columns:1fr 32px 1fr;gap:0;max-width:760px;width:100%;margin-top:20px}
+.compare .c-row{display:contents}
+.compare .c-left{background:#111827;border:1px solid #1e293b;padding:10px 16px;color:#94a3b8;font-size:14px;border-radius:6px 0 0 6px;margin:3px 0;display:flex;align-items:center}
+.compare .c-arr{display:flex;align-items:center;justify-content:center;color:#3b82f6;font-size:16px}
+.compare .c-right{background:#0f1929;border:1px solid #1d4ed8;padding:10px 16px;color:#93c5fd;font-size:14px;border-radius:0 6px 6px 0;margin:3px 0;display:flex;align-items:center}
+.compare .c-right.hl{color:#fbbf24;border-color:#92400e;background:#1c1200}
+
+/* 플로우 스텝 */
+.flow{display:flex;flex-direction:column;gap:10px;max-width:700px;width:100%;margin-top:16px}
+.flow-item{display:flex;gap:16px;align-items:flex-start;text-align:left}
+.flow-num{background:#1d4ed8;color:#bfdbfe;min-width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;margin-top:2px}
+.flow-text{font-size:15px;color:#cbd5e1;line-height:1.6}
+.flow-text strong{color:#fbbf24}
+
+/* 하이라이트 박스 */
+.hl-box{background:#0f1929;border:1px solid #1d4ed8;border-radius:8px;padding:16px 24px;font-size:16px;color:#bfdbfe;margin-top:20px;max-width:680px;line-height:1.6}
+.hl-box.green{background:#071a0e;border-color:#166534;color:#86efac}
+.hl-box.yellow{background:#1c1200;border-color:#92400e;color:#fcd34d}
+
+/* 빅 넘버 */
+.big{font-size:96px;font-weight:700;color:#3b82f6;line-height:1;margin-bottom:8px}
+.big-label{font-size:16px;color:#64748b;letter-spacing:2px}
+
+/* 슬라이드 번호 */
+.slide-num{position:fixed;top:20px;right:28px;font-size:11px;color:#1e293b;letter-spacing:1px;z-index:100}
+
+/* 점 인디케이터 */
+.dots{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);display:flex;gap:8px;z-index:100}
+.dot{width:6px;height:6px;border-radius:50%;background:#1e293b;cursor:pointer;transition:all .2s}
+.dot.active{background:#3b82f6;transform:scale(1.3)}
+
+/* 화살표 힌트 */
+.nav-hint{position:fixed;bottom:24px;right:28px;font-size:11px;color:#1e293b;z-index:100}
+
+/* 두 칼럼 */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:24px;max-width:820px;width:100%;margin-top:20px;text-align:left}
+.col-box{background:#111827;border:1px solid #1e293b;border-radius:8px;padding:20px 24px}
+.col-box h4{color:#3b82f6;font-size:11px;letter-spacing:2px;text-transform:uppercase;margin-bottom:12px}
+.col-box p{color:#94a3b8;font-size:14px;line-height:1.7}
+.col-box pre{background:#0a0d14;padding:12px 16px;font-size:12px;margin-top:10px}
 </style>
 </head>
 <body>
 
-<nav>
-  <div class="logo">x402 Meetup<br>2026.05.28</div>
-  <a href="#s01" class="active"><span class="section-num">01</span>오늘 할 것들</a>
-  <a href="#s02"><span class="section-num">02</span>Claude Skills</a>
-  <a href="#s03"><span class="section-num">03</span>스킬 설치</a>
-  <a href="#s04"><span class="section-num">04</span>스킬 살펴보기</a>
-  <a href="#s05"><span class="section-num">05</span>x402 원리</a>
-  <a href="#s06"><span class="section-num">06</span>구멍 채우기 <span class="tag lab">실습</span></a>
-  <a href="#s07"><span class="section-num">07</span>퀘스트 마라톤 <span class="tag go">GO</span></a>
-  <a href="#s08"><span class="section-num">08</span>보너스</a>
-</nav>
+<div class="slide-num" id="slideNum">1 / 13</div>
+<div class="dots" id="dots"></div>
+<div class="nav-hint">← → 또는 클릭</div>
 
-<main>
+<div class="deck" id="deck">
 
-<section id="s01">
-  <div class="section-tag">01 · Intro</div>
-  <h2>오늘 할 것들</h2>
-  <p>Claude가 직접 돈을 내고 서비스를 사오는 구조를 만들어봅니다.<br>x402 결제 프로토콜을 Claude Skills로 구현하고, 10개 퀘스트를 클리어하세요.</p>
-  <div class="highlight">목표: 오늘 자리를 뜨면 "AI 에이전트가 내 플랫폼에 찾아와서 뭔가를 구매해갈 수 있다"는 감각을 가져가세요.</div>
-  <h3>타임라인</h3>
-  <table>
-    <tr><th>시간</th><th>내용</th></tr>
-    <tr><td>7:50 – 8:10</td><td>Claude Skills 소개 + 스킬 설치 + 구멍 채우기</td></tr>
-    <tr><td>8:10 – 8:40</td><td>퀘스트 마라톤 (실시간 순위)</td></tr>
-    <tr><td>8:40 – 9:00</td><td>네트워킹</td></tr>
-  </table>
-  <h3>오늘 가져갈 것</h3>
-  <p>Claude Skills 구조 이해 · x402 결제 흐름 경험 · 내 서비스에 AI 결제 붙이기</p>
-</section>
+<!-- 01 타이틀 -->
+<div class="slide active">
+  <div class="tag">Avalanche x402 Meetup · 2026.05.28</div>
+  <div class="title">
+    금쪽같은 내 클로드의<br>
+    <span class="accent">첫 결제</span>
+    <span class="small">feat. x402</span>
+  </div>
+  <div class="subtitle">Claude가 직접 돈을 내고 서비스를 사오는 구조를 만들어봅니다</div>
+</div>
 
-<section id="s02">
-  <div class="section-tag">02 · Claude Skills</div>
-  <h2>Claude Skills란?</h2>
-  <p>Claude Code에서 <code>/</code> 를 입력하면 나오는 슬래시 명령어입니다. <code>.md</code> 파일 하나로 Claude에게 새로운 능력을 부여합니다.</p>
-  <h3>스킬 목록 확인</h3>
-  <pre>Claude Code에서: /    ← 슬래시만 입력하면 목록이 보입니다</pre>
-  <h3>스킬 파일 구조</h3>
-  <pre>---
+<!-- 02 오늘 할 것들 -->
+<div class="slide">
+  <div class="tag">01 · Agenda</div>
+  <div class="title" style="font-size:36px">오늘 할 것들</div>
+  <ul class="kw-list">
+    <li>Claude Skills로 <strong>x402 결제 능력</strong> 부여<span>SKILL.md 파일 구멍 채우기</span></li>
+    <li><strong>퀘스트 마라톤</strong> — 10개 완주<span>실시간 순위, Top 3 선물</span></li>
+    <li>AI 에이전트가 <strong>내 플랫폼에 찾아와 구매</strong>하는 감각<span>오늘 자리를 뜨면 이 감각을 가져가세요</span></li>
+  </ul>
+</div>
+
+<!-- 03 Claude Skills -->
+<div class="slide">
+  <div class="tag">02 · Claude Skills</div>
+  <div class="title" style="font-size:38px">Claude Skills란?</div>
+  <div class="lead"><code>/</code> 를 입력하면 나오는 슬래시 명령어</div>
+  <div class="hl-box" style="margin-top:28px;font-size:18px">
+    <strong style="color:#f1f5f9">.md 파일 하나</strong> = Claude에게 새 능력 부여<br>
+    <span style="color:#64748b;font-size:14px;margin-top:6px;display:block">코드가 아닙니다 — Claude에게 보내는 <strong style="color:#60a5fa">자연어 지시문</strong>입니다</span>
+  </div>
+  <pre style="margin-top:24px">---
 name: x402-pay
 description: x402 결제를 수행합니다.
 ---
 
 # 결제 방법
+1단계: 유료 엔드포인트에 GET 요청...
+2단계: 402 응답을 받는다...   <span style="color:#475569">← Claude가 이걸 읽고 실행</span></pre>
+</div>
 
-1단계: 유료 엔드포인트에 GET 요청을 보낸다.
-2단계: 402 응답을 받는다.
-...</pre>
-  <p>Claude는 이 <code>.md</code> 파일을 읽고 거기 적힌 지시대로 코드를 작성해 실행합니다.</p>
-  <div class="highlight">스킬은 코드가 아닙니다. Claude에게 보내는 자연어 지시문입니다.</div>
-</section>
-
-<section id="s03">
-  <div class="section-tag">03 · Install</div>
-  <h2>스킬 설치</h2>
-  <h3>터미널에서 실행</h3>
-  <pre>npx x402-meetup --url=https://api.x402-meetup.example.com</pre>
-  <h3>설치 확인 (Claude Code에서)</h3>
-  <pre>/    ← x402-pay, x402-discover, x402-quest 가 목록에 보이면 OK</pre>
-  <div class="highlight">VSCode 없으신 분: vscode.dev 또는 메모장으로도 됩니다.</div>
-  <h3>스킬 파일 위치</h3>
-  <pre>~/.claude/plugins/  또는  ~/.claude/skills/</pre>
-</section>
-
-<section id="s04">
-  <div class="section-tag">04 · Explore</div>
-  <h2>스킬 살펴보기</h2>
-  <p>설치된 <code>x402-pay/SKILL.md</code> 파일을 에디터로 열어보세요.</p>
-  <p>흐름 설명 부분에 이런 빈칸들이 보일 거에요:</p>
-  <div class="todo-box">[TODO: 몇 번 응답을 돌려보내나요?]</div>
-  <div class="todo-box">[TODO: 받는 지갑 주소는 응답의 어느 필드에서 가져오나요?]</div>
-  <div class="todo-box">[TODO: 어떤 인코딩 방식으로 변환해야 하나요?]</div>
-  <p>이 빈칸들이 채워져야 Claude가 실제로 결제를 할 수 있습니다.<br>다음 섹션에서 x402 원리를 배우고 나서 채워봅시다.</p>
-</section>
-
-<section id="s05">
-  <div class="section-tag">05 · Theory</div>
-  <h2>x402 원리</h2>
-  <h3>아이폰 사러 애플스토어 가기</h3>
-  <div class="flow-row"><div class="flow-num">1</div><div class="flow-text">아 아이폰 사고 싶다! → 필요한 게 생겼다</div></div>
-  <div class="flow-row"><div class="flow-num">2</div><div class="flow-text">애플스토어 사이트에 접속 → 어디서 살 수 있는지 확인</div></div>
-  <div class="flow-row"><div class="flow-num">3</div><div class="flow-text">가까운 오프라인 매장 찾기 → 목록에서 원하는 것 찾기</div></div>
-  <div class="flow-row"><div class="flow-num">4</div><div class="flow-text">매장에 가서 "아이폰 13 주세요" → 원하는 것을 요청</div></div>
-  <div class="flow-row"><div class="flow-num">5</div><div class="flow-text">"결제해주세요" → <strong style="color:#fbbf24">402 응답: 얼마를, 어디로, 언제까지</strong></div></div>
-  <div class="flow-row"><div class="flow-num">6</div><div class="flow-text">카드 꽂기 → 서명 생성 + X-PAYMENT 헤더에 담아 재요청</div></div>
-  <div class="flow-row"><div class="flow-num">7</div><div class="flow-text">카드사 승인 → facilitator가 서명/잔액 검증 + 블록체인 정산</div></div>
-  <div class="flow-row"><div class="flow-num">8</div><div class="flow-text">아이폰 수령 → 요청한 서비스/퀘스트 응답 수신</div></div>
-
-  <hr>
-
-  <h3>x402 대응표</h3>
-  <div class="iphone">
-    <div class="iphone-row"><div class="iphone-left">아이폰 사고 싶다</div><div class="iphone-arrow">↔</div><div class="iphone-right">필요한 서비스 발견</div></div>
-    <div class="iphone-row"><div class="iphone-left">애플스토어 접속</div><div class="iphone-arrow">↔</div><div class="iphone-right">GET /llms.txt → /v1/services</div></div>
-    <div class="iphone-row"><div class="iphone-left">"아이폰 13 주세요"</div><div class="iphone-arrow">↔</div><div class="iphone-right">GET /v1/quest/{productId}/{step}</div></div>
-    <div class="iphone-row"><div class="iphone-left">결제 필요 안내</div><div class="iphone-arrow">↔</div><div class="iphone-right"><strong>HTTP 402</strong> + accepts[0] (체인/금액/수신자)</div></div>
-    <div class="iphone-row"><div class="iphone-left">카드 꽂기</div><div class="iphone-arrow">↔</div><div class="iphone-right">EIP-3009 서명 → X-PAYMENT 헤더 재요청</div></div>
-    <div class="iphone-row"><div class="iphone-left">카드사 승인</div><div class="iphone-arrow">↔</div><div class="iphone-right">facilitator: 검증 + 온체인 정산</div></div>
-    <div class="iphone-row"><div class="iphone-left">아이폰 수령</div><div class="iphone-arrow">↔</div><div class="iphone-right">퀘스트 문제 응답</div></div>
+<!-- 04 스킬 설치 -->
+<div class="slide">
+  <div class="tag">03 · Install</div>
+  <div class="title" style="font-size:38px">스킬 설치</div>
+  <pre style="font-size:17px;margin-top:8px">npx x402-meetup --url=https://api.x402-meetup.example.com</pre>
+  <div class="hl-box" style="margin-top:20px">
+    설치 확인: Claude Code에서 <code>/</code> 입력 →<br>
+    <strong style="color:#f1f5f9">x402-pay, x402-discover, x402-quest</strong> 가 목록에 보이면 OK
   </div>
+  <div style="color:#475569;font-size:13px;margin-top:20px">VSCode 없으신 분 → vscode.dev 또는 메모장도 됩니다</div>
+</div>
 
-  <div class="highlight">핵심: x402는 HTTP 표준 위에서 동작하는 결제 프로토콜입니다. 어떤 언어, 어떤 프레임워크로도 구현할 수 있습니다.</div>
-</section>
+<!-- 05 스킬 살펴보기 - 구멍 공개 -->
+<div class="slide">
+  <div class="tag">04 · Explore</div>
+  <div class="title" style="font-size:36px"><code>x402-pay/SKILL.md</code> 열어보기</div>
+  <div class="lead" style="font-size:16px;margin-bottom:16px">흐름 설명 부분에 이런 빈칸들이 있습니다</div>
+  <div class="hole">[TODO: 몇 번 응답을 돌려보내나요?]</div>
+  <div class="hole">[TODO: 어떤 정보들이 들어있나요? (어느 체인, 얼마, 어느 지갑으로)]</div>
+  <div class="hole">[TODO: 받는 지갑 주소는 응답의 어느 필드에서 가져오나요?]</div>
+  <div class="hole">[TODO: 어떤 인코딩 방식으로 변환해야 하나요?]</div>
+  <div class="hl-box yellow" style="margin-top:16px">이 구멍들이 채워져야 Claude가 실제로 결제할 수 있습니다</div>
+</div>
 
-<section id="s06">
-  <div class="section-tag">06 · Lab <span class="tag lab">실습</span></div>
-  <h2>구멍 채우기</h2>
-  <p><code>x402-pay/SKILL.md</code>를 에디터로 열고, 아래 힌트를 참고해서 <code>[TODO: ...]</code> 부분을 채워주세요.</p>
+<!-- 06 x402 원리 - 아이폰 스토리 -->
+<div class="slide">
+  <div class="tag">05 · Theory — 아이폰 비유</div>
+  <div class="title" style="font-size:34px">아이폰 사러 애플스토어 가기</div>
+  <div class="flow">
+    <div class="flow-item"><div class="flow-num">1</div><div class="flow-text">아 아이폰 사고 싶다 → 필요한 게 생겼다</div></div>
+    <div class="flow-item"><div class="flow-num">2</div><div class="flow-text">애플스토어에서 목록 확인 → 원하는 것 찾기</div></div>
+    <div class="flow-item"><div class="flow-num">3</div><div class="flow-text">"아이폰 13 주세요" → <strong>원하는 것을 요청</strong></div></div>
+    <div class="flow-item"><div class="flow-num">4</div><div class="flow-text"><strong>"결제해주세요"</strong> → 얼마를, 어디로, 언제까지</div></div>
+    <div class="flow-item"><div class="flow-num">5</div><div class="flow-text">카드 꽂기 → <strong>서명 생성</strong> + 다시 요청</div></div>
+    <div class="flow-item"><div class="flow-num">6</div><div class="flow-text">카드사 승인 → 검증 + 블록체인 정산</div></div>
+    <div class="flow-item"><div class="flow-num">7</div><div class="flow-text"><strong>아이폰 수령</strong> → 서비스 응답</div></div>
+  </div>
+</div>
+
+<!-- 07 x402 대응표 -->
+<div class="slide">
+  <div class="tag">05 · Theory — x402 대응표</div>
+  <div class="title" style="font-size:34px">x402 = 아이폰 구매 흐름</div>
+  <div class="compare" style="margin-top:20px">
+    <div style="background:#111827;border:1px solid #1e293b;padding:8px 16px;color:#64748b;font-size:11px;letter-spacing:1px;text-align:center">아이폰 비유</div>
+    <div></div>
+    <div style="background:#0f1929;border:1px solid #1d4ed8;padding:8px 16px;color:#3b82f6;font-size:11px;letter-spacing:1px;text-align:center">x402</div>
+    <div class="c-left">"아이폰 13 주세요"</div><div class="c-arr">↔</div><div class="c-right">GET /v1/quest/{productId}/{step}</div>
+    <div class="c-left">"결제해주세요"</div><div class="c-arr">↔</div><div class="c-right hl"><strong>HTTP 402</strong> + accepts[0]</div>
+    <div class="c-left">가격표 + 계좌번호</div><div class="c-arr">↔</div><div class="c-right">체인 / 금액 / 수신 지갑</div>
+    <div class="c-left">카드 꽂기</div><div class="c-arr">↔</div><div class="c-right">EIP-3009 서명 → X-PAYMENT 헤더</div>
+    <div class="c-left">카드사 승인</div><div class="c-arr">↔</div><div class="c-right">facilitator: 검증 + 온체인 정산</div>
+    <div class="c-left">아이폰 수령</div><div class="c-arr">↔</div><div class="c-right">퀘스트 문제 응답</div>
+  </div>
+</div>
+
+<!-- 08 구멍 채우기 힌트표 -->
+<div class="slide">
+  <div class="tag">06 · Lab</div>
+  <div class="title" style="font-size:36px">구멍 채우기</div>
+  <div class="lead" style="font-size:15px;margin-bottom:8px">x402-pay/SKILL.md 열고 [TODO] 부분을 자연어로 채우세요</div>
   <table>
-    <tr><th>#</th><th>구멍 질문</th><th>힌트</th></tr>
-    <tr><td>①</td><td>몇 번 응답?</td><td>HTTP 상태 코드 — 이 프로토콜의 이름이기도 함</td></tr>
-    <tr><td>②</td><td>응답에 뭐가 있나?</td><td>아이폰 비유의 "가격표 + 어느 지갑으로"</td></tr>
+    <tr><th>#</th><th>구멍</th><th>힌트</th></tr>
+    <tr><td>①</td><td>몇 번 응답?</td><td>이 프로토콜 이름이기도 한 HTTP 상태 코드</td></tr>
+    <tr><td>②</td><td>응답에 뭐가 있나?</td><td>체인, 금액, 수신 지갑 — "가격표 + 계좌번호"</td></tr>
     <tr><td>③</td><td>to 필드?</td><td><code>accepts[0]</code>의 수신자 주소 필드명</td></tr>
     <tr><td>④</td><td>value 필드?</td><td><code>accepts[0]</code>의 금액 필드명</td></tr>
     <tr><td>⑤</td><td>validBefore?</td><td>지금 + maxTimeoutSeconds초</td></tr>
-    <tr><td>⑥</td><td>어떻게 인코딩?</td><td>JSON → 바이너리 → 텍스트로 변환하는 방법</td></tr>
+    <tr><td>⑥</td><td>인코딩 방식?</td><td>JSON → 바이너리 → 텍스트</td></tr>
     <tr><td>⑦</td><td>누가 검증?</td><td>네트워크 정보 테이블에 있음</td></tr>
   </table>
-  <div class="highlight">정확한 답이 아니어도 됩니다. 비슷한 의미면 Claude가 알아서 해석합니다.</div>
-  <h3>채운 다음: Claude에서 테스트</h3>
-  <pre>/x402-pay   ← 슬래시 명령어 실행</pre>
-</section>
+  <div class="hl-box green" style="margin-top:16px;font-size:14px">정확하지 않아도 됩니다 — 비슷한 의미면 Claude가 알아서 해석합니다</div>
+</div>
 
-<section id="s07">
-  <div class="section-tag">07 · Marathon <span class="tag go">GO</span></div>
-  <h2>퀘스트 마라톤</h2>
-  <p>10개 퀘스트를 가장 빨리 완료한 Top 3에게 특별한 선물을 드립니다!</p>
-  <h3>시작하기</h3>
-  <pre>Claude Code에서:
+<!-- 09 테스트 -->
+<div class="slide">
+  <div class="tag">06 · Lab — 테스트</div>
+  <div class="title" style="font-size:40px">채웠으면 바로 테스트</div>
+  <pre style="font-size:20px;text-align:center;padding:28px 40px">/x402-pay</pre>
+  <div class="hl-box" style="margin-top:20px;font-size:17px">
+    Claude가 실제로 서버에 요청하고<br>
+    <strong style="color:#f1f5f9">결제 → 퀘스트 수신</strong> 까지 하면 성공
+  </div>
+</div>
 
-/x402-quest</pre>
-  <h3>퀘스트 구성</h3>
-  <table>
+<!-- 10 퀘스트 마라톤 GO -->
+<div class="slide">
+  <div class="tag">07 · Marathon</div>
+  <div class="big">GO</div>
+  <div class="big-label">QUEST MARATHON</div>
+  <pre style="font-size:22px;text-align:center;padding:24px 48px;margin-top:28px">/x402-quest</pre>
+  <div class="hl-box yellow" style="margin-top:20px;font-size:15px">초기 지급 <strong style="color:#f1f5f9">10 TONE</strong> · 9개 유료 퀘스트 각 1 TONE · 완주 후 1 TONE 잔여</div>
+</div>
+
+<!-- 11 퀘스트 구성 -->
+<div class="slide">
+  <div class="tag">07 · Marathon — 퀘스트 구성</div>
+  <div class="title" style="font-size:36px">10개 퀘스트</div>
+  <table style="margin-top:16px">
     <tr><th>퀘스트</th><th>가격</th><th>유형</th></tr>
-    <tr><td>1</td><td>무료</td><td>시작</td></tr>
-    <tr><td>2~9</td><td>1 TONE 각</td><td>OX / 객관식</td></tr>
-    <tr><td>10</td><td>1 TONE</td><td>웹 연동 (브라우저 방문)</td></tr>
+    <tr><td>1</td><td><strong>무료</strong></td><td>시작 — 참여 의사 확인</td></tr>
+    <tr><td>2~9</td><td><strong>1 TONE 각</strong></td><td>OX / 객관식 (Avalanche, Claude, AI)</td></tr>
+    <tr><td>10</td><td><strong>1 TONE</strong></td><td>웹 연동 — UUID URL 방문 후 코드 수령</td></tr>
   </table>
-  <div class="highlight">초기 지급: 10 TONE. 9개 유료 퀘스트 = 9 TONE 소비. 1 TONE 남음.</div>
-  <h3>실시간 순위</h3>
-  <pre>http://[서버주소]/leaderboard   ← 발표 화면에서 보여드립니다</pre>
-</section>
+  <div class="hl-box" style="margin-top:20px;font-size:14px">
+    Top 3 완주자에게 <strong style="color:#f1f5f9">특별 선물</strong> 있습니다
+  </div>
+</div>
 
-<section id="s08">
-  <div class="section-tag">08 · Bonus</div>
-  <h2>보너스 — 내 서비스를 x402로 등록하기</h2>
-  <p>오늘 경험한 x402 프로토콜을 여러분의 서비스에도 붙일 수 있습니다.<br>AI 에이전트가 여러분의 플랫폼에 찾아와 구매해가는 구조를 만들 수 있습니다.</p>
-  <h3>agentic.market 등록</h3>
-  <pre>https://agentic.market/register</pre>
-  <p>등록하면 AI 에이전트들이 탐색하는 마켓에 여러분의 서비스가 올라갑니다.</p>
-  <div class="highlight">오늘 사용한 x402-server 코드가 그대로 x402 서버 구현 템플릿이 됩니다.</div>
-</section>
+<!-- 12 실시간 순위 -->
+<div class="slide">
+  <div class="tag">07 · Marathon — 실시간 순위</div>
+  <div class="title" style="font-size:38px">순위판</div>
+  <pre style="font-size:16px;text-align:center;padding:24px 40px">http://[서버주소]/leaderboard</pre>
+  <div style="color:#475569;font-size:14px;margin-top:20px">발표 화면에서 실시간으로 보여드립니다</div>
+</div>
 
-</main>
+<!-- 13 보너스 -->
+<div class="slide">
+  <div class="tag">08 · Bonus</div>
+  <div class="title" style="font-size:36px">내 서비스를<br><span class="accent">x402</span>로 등록하기</div>
+  <div class="two-col">
+    <div class="col-box">
+      <h4>오늘 쓴 코드 = 템플릿</h4>
+      <p>x402-server가 그대로<br>구현 레퍼런스가 됩니다</p>
+      <pre>github.com/avalanche-team1/
+x402-all-in-one</pre>
+    </div>
+    <div class="col-box">
+      <h4>agentic.market 등록</h4>
+      <p>AI 에이전트들이 탐색하는<br>마켓에 서비스 올리기</p>
+      <pre>agentic.market/register</pre>
+    </div>
+  </div>
+  <div class="hl-box green" style="margin-top:20px;font-size:15px">
+    AI 에이전트가 여러분의 플랫폼에 찾아와 구매해가는 구조
+  </div>
+</div>
+
+</div><!-- /deck -->
 
 <script>
-const sections = document.querySelectorAll('section');
-const navLinks = document.querySelectorAll('nav a');
-const observer = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      navLinks.forEach(a => a.classList.remove('active'));
-      const active = document.querySelector('nav a[href="#' + entry.target.id + '"]');
-      if (active) active.classList.add('active');
-    }
-  });
-}, { threshold: 0.3 });
-sections.forEach(s => observer.observe(s));
+const slides = document.querySelectorAll('.slide');
+const dotsEl = document.getElementById('dots');
+const slideNum = document.getElementById('slideNum');
+let cur = 0;
+
+// 점 생성
+slides.forEach((_, i) => {
+  const d = document.createElement('div');
+  d.className = 'dot' + (i === 0 ? ' active' : '');
+  d.onclick = () => go(i);
+  dotsEl.appendChild(d);
+});
+
+function go(n) {
+  slides[cur].classList.remove('active');
+  dotsEl.children[cur].classList.remove('active');
+  cur = Math.max(0, Math.min(n, slides.length - 1));
+  slides[cur].classList.add('active');
+  dotsEl.children[cur].classList.add('active');
+  slideNum.textContent = (cur + 1) + ' / ' + slides.length;
+}
+
+// 키보드
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); go(cur + 1); }
+  if (e.key === 'ArrowLeft') { e.preventDefault(); go(cur - 1); }
+});
+
+// 클릭 (좌 = 이전, 우 = 다음)
+document.getElementById('deck').addEventListener('click', e => {
+  if (e.target.closest('.dot')) return;
+  go(e.clientX < window.innerWidth / 2 ? cur - 1 : cur + 1);
+});
 </script>
 </body>
 </html>
