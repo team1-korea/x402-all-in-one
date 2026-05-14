@@ -5,8 +5,7 @@ import { createUser, getUser } from "../db.js";
 
 const router = Router();
 
-// 초기 에어드랍: quest-2(0.01) + quest-3(0.01) + 여유 = 0.03 TONE
-const INITIAL_AIRDROP = BigInt("30000000000000000");
+const INITIAL_AIRDROP = 10000000000000000000n;
 
 // POST /v1/register
 router.post("/", async (_req: Request, res: Response) => {
@@ -37,7 +36,7 @@ router.post("/", async (_req: Request, res: Response) => {
     walletAddress,
     privateKey,
     network: `eip155:${process.env.CHAIN_ID || "402"}`,
-    initialAirdrop: `${Number(INITIAL_AIRDROP) / 1e18} TONE`,
+    initialAirdrop: "10 TONE",
     airdropTx,
     hint: "이 privateKey로 X-PAYMENT 서명을 생성하세요. 안전한 곳에 보관하세요.",
   });
