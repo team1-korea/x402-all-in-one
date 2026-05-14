@@ -57,7 +57,7 @@ skills/
 ```
 0. 등록    → POST /v1/register → privateKey + walletAddress + 10 TONE
 1. 목록    → GET /v1/services?productId=...&wallet=...
-2. 퀘스트  → GET /v1/quest/{productId}/{step}  (유료는 x402-pay 사용)
+2. 퀘스트  → GET /v1/quest/{productId}/{step}  (1~10 전부 1 TONE, x402-pay 사용)
 3. 정답    → POST /v1/quest/{productId}/{step}/answer
 4. Quest10 → 결제 후 수령한 URL 브라우저에서 방문 → 코드 받아 제출
 ```

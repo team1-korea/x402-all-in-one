@@ -6,9 +6,9 @@ export const PRODUCT_QUESTS: Record<string, Quest[]> = {
   "product-a": [
     {
       id: "quest-1",
-      name: "퀘스트 1 — 무료 퀘스트",
+      name: "퀘스트 1 — 시작",
       description: "이벤트에 참여하시겠습니까?",
-      price: 0n,
+      price: TONE1,
       question: "이벤트에 참여하시겠습니까? (예/아니오)",
       choices: ["예", "아니오"],
       answerIndex: 0,

@@ -24,10 +24,9 @@ x402-all-in-one/
 | 항목 | 값 |
 |------|-----|
 | 초기 에어드랍 | **10 TONE** (등록 시 자동 지급) |
-| 퀘스트 1 | 무료 |
-| 퀘스트 2~10 | **1 TONE 균일** (9개 × 1 TONE = 9 TONE) |
+| 퀘스트 1~10 | **1 TONE 균일** (10개 × 1 TONE = 10 TONE) |
 | 정답 보상 에어드랍 | 없음 |
-| 완주 후 잔여 | 1 TONE |
+| 완주 후 잔여 | 0 TONE |
 
 ---
 
@@ -52,15 +51,16 @@ x402-server — 서버 설명 확인
     ▼
 퀘스트 목록 + 상태 확인 (cleared/purchased/available/locked)
     │
-    │  GET /v1/quest/product-a/1  (무료)
+    │  GET /v1/quest/product-a/1  (EIP-3009 서명 결제, 1 TONE)
     ▼
+X-PAYMENT 헤더 생성 → x402-server → x402-facilitator (verify → settle)
+    │
 퀘스트 문제 수령 → 정답 제출 (answerIndex)
     │
     │  GET /v1/quest/product-a/2  (EIP-3009 서명 결제, 1 TONE)
     ▼
 X-PAYMENT 헤더 생성 → x402-server → x402-facilitator (verify → settle)
     │
-    ▼
 퀘스트 문제 수령 → 정답 제출
     │
     ▼  (quest-3 ~ quest-9 동일 반복)
