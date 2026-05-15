@@ -1,4 +1,4 @@
-interface Props { isActive: boolean; animKey: number }
+interface Props { animKey: number }
 
 const steps = [
   { n: '1', text: '아 아이폰 사고 싶다 → 필요한 게 생겼다' },

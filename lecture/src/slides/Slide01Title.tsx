@@ -1,4 +1,4 @@
-interface Props { isActive: boolean; animKey: number }
+interface Props { animKey: number }
 
 const Slide01Title = ({ animKey }: Props) => (
   <div className="slide bg-beige content-z-index">

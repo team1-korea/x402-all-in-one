@@ -1,4 +1,4 @@
-interface Props { isActive: boolean; animKey: number }
+interface Props { animKey: number }
 
 const holes = [
   '[TODO: 몇 번 응답을 돌려보내나요?]',

@@ -1,6 +1,6 @@
 import { Fragment } from 'react'
 
-interface Props { isActive: boolean; animKey: number }
+interface Props { animKey: number }
 
 const rows: [string, string, boolean][] = [
   ['"아이폰 13 주세요"', 'GET /v1/quest/{productId}/{step}', false],

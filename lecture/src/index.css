@@ -61,11 +61,10 @@ body {
   border-radius: 50%;
   pointer-events: none;
   z-index: 9999;
-  transform: translate(-50%, -50%);
   background: radial-gradient(circle, rgba(196, 113, 74, 0.4) 0%, rgba(196, 113, 74, 0) 70%);
   transition: width 0.3s ease, height 0.3s ease, background 0.3s ease;
   mix-blend-mode: multiply;
-  will-change: left, top, width, height, background;
+  will-change: transform;
 }
 
 .custom-cursor.active {

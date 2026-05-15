@@ -1,4 +1,4 @@
-interface Props { isActive: boolean; animKey: number }
+interface Props { animKey: number }
 
 const items = [
   { label: 'Claude Skills로 x402 결제 능력 부여', accent: 'x402 결제 능력', sub: 'SKILL.md 파일 구멍 채우기', delay: '0.4s' },

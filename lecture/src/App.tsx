@@ -22,20 +22,29 @@ function App() {
   const [isClicking, setIsClicking] = useState(false)
   const [animKeys, setAnimKeys] = useState(() => Array(TOTAL_SLIDES).fill(0))
 
-  const goTo = (n: number) => {
-    const next = Math.max(0, Math.min(n, TOTAL_SLIDES - 1))
+  const goTo = (next: number) => {
     setCurrentSlide(next)
     setAnimKeys(prev => prev.map((k, i) => (i === next ? k + 1 : k)))
   }
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); goTo(currentSlide + 1) }
-      if (e.key === 'ArrowLeft') { e.preventDefault(); goTo(currentSlide - 1) }
+      if (e.key === 'ArrowRight' || e.key === ' ') {
+        e.preventDefault()
+        setCurrentSlide(prev => {
+          const next = Math.min(prev + 1, TOTAL_SLIDES - 1)
+          setAnimKeys(keys => keys.map((k, i) => (i === next ? k + 1 : k)))
+          return next
+        })
+      }
+      if (e.key === 'ArrowLeft') {
+        e.preventDefault()
+        setCurrentSlide(prev => Math.max(prev - 1, 0))
+      }
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [currentSlide])
+  }, [])
 
   useEffect(() => {
     const onMove = (e: MouseEvent) => setCursorPos({ x: e.clientX, y: e.clientY })
@@ -56,7 +65,7 @@ function App() {
       {/* Custom cursor */}
       <div
         className={`custom-cursor ${isClicking ? 'active' : ''}`}
-        style={{ left: cursorPos.x, top: cursorPos.y }}
+        style={{ transform: `translate(${cursorPos.x - 16}px, ${cursorPos.y - 16}px)` }}
       />
 
       {/* Slides container */}
@@ -67,19 +76,19 @@ function App() {
           transform: `translateX(-${currentSlide * 100}vw)`,
         }}
       >
-        <Slide01Title isActive={currentSlide === 0} animKey={animKeys[0]} />
-        <Slide02Agenda isActive={currentSlide === 1} animKey={animKeys[1]} />
-        <Slide03Skills isActive={currentSlide === 2} animKey={animKeys[2]} />
-        <Slide04Install isActive={currentSlide === 3} animKey={animKeys[3]} />
-        <Slide05Explore isActive={currentSlide === 4} animKey={animKeys[4]} />
-        <Slide06IphoneStory isActive={currentSlide === 5} animKey={animKeys[5]} />
-        <Slide07Comparison isActive={currentSlide === 6} animKey={animKeys[6]} />
-        <Slide08Hints isActive={currentSlide === 7} animKey={animKeys[7]} />
-        <Slide09Test isActive={currentSlide === 8} animKey={animKeys[8]} />
-        <Slide10Go isActive={currentSlide === 9} animKey={animKeys[9]} />
-        <Slide11Quests isActive={currentSlide === 10} animKey={animKeys[10]} />
-        <Slide12Leaderboard isActive={currentSlide === 11} animKey={animKeys[11]} />
-        <Slide13Bonus isActive={currentSlide === 12} animKey={animKeys[12]} />
+        <Slide01Title animKey={animKeys[0]} />
+        <Slide02Agenda animKey={animKeys[1]} />
+        <Slide03Skills animKey={animKeys[2]} />
+        <Slide04Install animKey={animKeys[3]} />
+        <Slide05Explore animKey={animKeys[4]} />
+        <Slide06IphoneStory animKey={animKeys[5]} />
+        <Slide07Comparison animKey={animKeys[6]} />
+        <Slide08Hints animKey={animKeys[7]} />
+        <Slide09Test animKey={animKeys[8]} />
+        <Slide10Go animKey={animKeys[9]} />
+        <Slide11Quests animKey={animKeys[10]} />
+        <Slide12Leaderboard animKey={animKeys[11]} />
+        <Slide13Bonus animKey={animKeys[12]} />
       </div>
 
       {/* Dot indicators */}

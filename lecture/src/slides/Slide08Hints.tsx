@@ -1,6 +1,6 @@
 import { type ReactNode } from 'react'
 
-interface Props { isActive: boolean; animKey: number }
+interface Props { animKey: number }
 
 const hints: [string, string, ReactNode][] = [
   ['①', '몇 번 응답?', '이 프로토콜 이름이기도 한 HTTP 상태 코드'],
