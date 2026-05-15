@@ -260,7 +260,7 @@ router.post("/:productId/:step/answer", async (req: Request, res: Response) => {
 
   if (quest.questType === "snowman-sabotage") {
     const { participation } = req.body as { participation?: boolean };
-    if (!participation) {
+    if (participation !== true) {
       res.status(400).json({ error: "participation 필드가 필요합니다" });
       return;
     }
