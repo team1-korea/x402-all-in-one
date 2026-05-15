@@ -69,11 +69,10 @@ Superpowers는 Claude Code를 확장하는 플러그인 시스템입니다. 그 
     },
     {
       id: "quest-4",
-      name: "퀘스트 4 — 숨은 AVAX 찾기",
-      description: "화면에서 숨겨진 AVAX 토큰을 클릭하세요",
+      name: "퀘스트 4 — 합의를 방해하라",
+      description: "아발란체 Slush 합의를 방해해보세요",
       price: TONE1,
-      questType: "find-click",
-      webCode: "CLICK404",
+      questType: "snowman-sabotage",
     },
     {
       id: "quest-5",

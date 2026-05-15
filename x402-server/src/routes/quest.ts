@@ -258,6 +258,18 @@ router.post("/:productId/:step/answer", async (req: Request, res: Response) => {
     return;
   }
 
+  if (quest.questType === "snowman-sabotage") {
+    const { participation } = req.body as { participation?: boolean };
+    if (!participation) {
+      res.status(400).json({ error: "participation 필드가 필요합니다" });
+      return;
+    }
+    await recordAnswer(walletAddress, productId, currentStepNum, quest.questType, { participation }, true);
+    await updateQuestStatus(walletAddress, productId, currentStepNum, isLastStep);
+    res.json({ correct: true, message: "3라운드 완료! 합의는 항상 이깁니다 ❄️" });
+    return;
+  }
+
   if (quest.questType === "feedback") {
     if (!feedback?.good || !feedback?.bad || !feedback?.next) {
       res.status(400).json({ error: "모든 피드백 항목을 입력해주세요" });
