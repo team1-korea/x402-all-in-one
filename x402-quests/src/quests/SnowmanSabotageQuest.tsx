@@ -38,6 +38,7 @@ export default function SnowmanSabotageQuest({ quest }: Props) {
   const [redCount, setRedCount] = useState(0);
   const [result, setResult] = useState<AnswerResult | null>(null);
   const [loading, setLoading] = useState(false);
+  const [displayPeakRed, setDisplayPeakRed] = useState(0);
 
   // SVG layer refs (svgRef 불필요 — 레이어 직접 접근)
   const linesLayerRef = useRef<SVGGElement | null>(null);
@@ -51,6 +52,8 @@ export default function SnowmanSabotageQuest({ quest }: Props) {
   const timerIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const phaseRef = useRef<Phase>('landing');
   const roundRef = useRef(1);
+  const roundEndedRef = useRef(false);
+  const roundTransitionTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Keep refs in sync with state
   useEffect(() => { phaseRef.current = phase; }, [phase]);
@@ -201,16 +204,23 @@ export default function SnowmanSabotageQuest({ quest }: Props) {
       clearInterval(timerIntervalRef.current);
       timerIntervalRef.current = null;
     }
+    if (roundTransitionTimerRef.current !== null) {
+      clearTimeout(roundTransitionTimerRef.current);
+      roundTransitionTimerRef.current = null;
+    }
   }, []);
 
   // ── 라운드 종료 처리 ──────────────────────────────────
   const endRound = useCallback(() => {
+    if (roundEndedRef.current) return;
+    roundEndedRef.current = true;
     clearIntervals();
     const peak = peakRedCurrentRef.current;
+    setDisplayPeakRed(peak);
     setPeakReds(prev => [...prev, peak]);
     setPhase('round-end');
 
-    setTimeout(() => {
+    roundTransitionTimerRef.current = setTimeout(() => {
       const currentRound = roundRef.current;
       if (currentRound < TOTAL_ROUNDS) {
         setRound(r => r + 1);
@@ -225,6 +235,8 @@ export default function SnowmanSabotageQuest({ quest }: Props) {
   useEffect(() => {
     if (phase !== 'game') return;
 
+    roundEndedRef.current = false;
+    setDisplayPeakRed(0);
     initNodes();
     setTimeLeft(ROUND_TIMEOUT_SEC);
 
@@ -261,11 +273,14 @@ export default function SnowmanSabotageQuest({ quest }: Props) {
   const handleSubmit = async () => {
     if (loading || result?.correct) return;
     setLoading(true);
-    const res = await submitAnswer(quest.productId, quest.step, quest.walletAddress, {
-      participation: true,
-    });
-    setResult(res);
-    setLoading(false);
+    try {
+      const res = await submitAnswer(quest.productId, quest.step, quest.walletAddress, {
+        participation: true,
+      });
+      setResult(res);
+    } finally {
+      setLoading(false);
+    }
   };
 
   // ── 렌더링 ───────────────────────────────────────────
@@ -303,7 +318,7 @@ export default function SnowmanSabotageQuest({ quest }: Props) {
               totalNodes={ROWS * COLS}
               linesLayerRef={linesLayerRef}
               snowmenLayerRef={snowmenLayerRef}
-              peakRed={peakRedCurrentRef.current}
+              peakRed={displayPeakRed}
               onHoverStart={() => { speedRef.current = TICK_HOVER_MS; }}
               onHoverEnd={() => { speedRef.current = TICK_NORMAL_MS; }}
             />
