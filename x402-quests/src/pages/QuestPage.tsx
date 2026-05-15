@@ -1,3 +1,64 @@
+import { useEffect, useState, lazy, Suspense } from 'react';
+import { useParams } from 'react-router-dom';
+import { fetchQuest } from '../api';
+import type { QuestData } from '../types';
+import TheoryQuiz from '../quests/TheoryQuiz';
+import FindClickQuest from '../quests/FindClickQuest';
+import StaffCodeQuest from '../quests/StaffCodeQuest';
+import FeedbackQuest from '../quests/FeedbackQuest';
+import InterestsQuest from '../quests/InterestsQuest';
+
+const ThreeJsQuest = lazy(() => import('../quests/ThreeJsQuest'));
+
 export default function QuestPage() {
-  return <div className="flex items-center justify-center min-h-screen"><p className="text-slate-500 animate-pulse">Loading...</p></div>;
+  const { uuid } = useParams<{ uuid: string }>();
+  const [quest, setQuest] = useState<QuestData | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!uuid) return;
+    fetchQuest(uuid)
+      .then(setQuest)
+      .catch((e: Error) => setError(e.message));
+  }, [uuid]);
+
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen text-center px-4">
+        <p className="text-5xl mb-4">404</p>
+        <p className="text-slate-400">{error}</p>
+        <p className="text-slate-600 text-sm mt-2">x402로 퀘스트를 구매하면 고유 URL을 받을 수 있습니다</p>
+      </div>
+    );
+  }
+
+  if (!quest) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <p className="text-slate-500 animate-pulse">퀘스트 로딩 중...</p>
+      </div>
+    );
+  }
+
+  const props = { quest };
+
+  return (
+    <div className="min-h-screen flex flex-col items-center justify-center">
+      {(quest.questType === 'theory-ox' || quest.questType === 'theory-mc') && (
+        <TheoryQuiz {...props} />
+      )}
+      {quest.questType === 'find-click' && <FindClickQuest {...props} />}
+      {quest.questType === 'staff-code' && <StaffCodeQuest {...props} />}
+      {quest.questType === 'feedback' && <FeedbackQuest {...props} />}
+      {quest.questType === 'interests' && <InterestsQuest {...props} />}
+      {quest.questType === 'threejs' && (
+        <Suspense fallback={<p className="text-slate-500 animate-pulse">3D 로딩 중...</p>}>
+          <ThreeJsQuest {...props} />
+        </Suspense>
+      )}
+      {quest.questType === 'drag-drop' && (
+        <div className="text-slate-500 text-center p-8">이 퀘스트는 준비 중입니다.</div>
+      )}
+    </div>
+  );
 }
