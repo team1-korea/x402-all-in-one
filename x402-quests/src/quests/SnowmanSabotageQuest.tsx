@@ -53,7 +53,6 @@ export default function SnowmanSabotageQuest({ quest }: Props) {
   const phaseRef = useRef<Phase>('landing');
   const roundRef = useRef(1);
   const roundEndedRef = useRef(false);
-  const roundTransitionTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Keep refs in sync with state
   useEffect(() => { phaseRef.current = phase; }, [phase]);
@@ -204,10 +203,6 @@ export default function SnowmanSabotageQuest({ quest }: Props) {
       clearInterval(timerIntervalRef.current);
       timerIntervalRef.current = null;
     }
-    if (roundTransitionTimerRef.current !== null) {
-      clearTimeout(roundTransitionTimerRef.current);
-      roundTransitionTimerRef.current = null;
-    }
   }, []);
 
   // ── 라운드 종료 처리 ──────────────────────────────────
@@ -216,19 +211,9 @@ export default function SnowmanSabotageQuest({ quest }: Props) {
     roundEndedRef.current = true;
     clearIntervals();
     const peak = peakRedCurrentRef.current;
-    setDisplayPeakRed(peak);
     setPeakReds(prev => [...prev, peak]);
+    setDisplayPeakRed(peak);
     setPhase('round-end');
-
-    roundTransitionTimerRef.current = setTimeout(() => {
-      const currentRound = roundRef.current;
-      if (currentRound < TOTAL_ROUNDS) {
-        setRound(r => r + 1);
-        setPhase('round-start');
-      } else {
-        setPhase('result');
-      }
-    }, 2000);
   }, [clearIntervals]);
 
   // ── game phase 진입 시 시뮬레이션 시작 ────────────────
@@ -268,6 +253,20 @@ export default function SnowmanSabotageQuest({ quest }: Props) {
     const id = setTimeout(() => setPhase('game'), 1500);
     return () => clearTimeout(id);
   }, [phase, round]);
+
+  // ── round-end: 2초 후 다음 라운드 or 결과 ─────────────
+  useEffect(() => {
+    if (phase !== 'round-end') return;
+    const id = setTimeout(() => {
+      if (roundRef.current < TOTAL_ROUNDS) {
+        setRound(r => r + 1);
+        setPhase('round-start');
+      } else {
+        setPhase('result');
+      }
+    }, 2000);
+    return () => clearTimeout(id);
+  }, [phase]);
 
   // ── 제출 ─────────────────────────────────────────────
   const handleSubmit = async () => {
