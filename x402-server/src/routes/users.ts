@@ -13,7 +13,7 @@ router.post("/", async (_req: Request, res: Response) => {
   const account = privateKeyToAccount(privateKey);
   const walletAddress = account.address;
 
-  if (getUser(walletAddress)) {
+  if (await getUser(walletAddress)) {
     res.status(409).json({ error: "이미 등록된 주소입니다" });
     return;
   }
@@ -25,7 +25,7 @@ router.post("/", async (_req: Request, res: Response) => {
     console.error("초기 에어드랍 실패:", String(e));
   }
 
-  createUser({
+  await createUser({
     walletAddress,
     privateKey,
     registeredAt: new Date().toISOString(),

@@ -5,9 +5,9 @@ import { getQuest } from "../quests.js";
 const router = Router();
 
 // GET /quest-api/:uuid — frontend calls this to get quest data
-router.get("/:uuid", (req: Request, res: Response) => {
+router.get("/:uuid", async (req: Request, res: Response) => {
   const { uuid } = req.params;
-  const token = getQuestToken(uuid);
+  const token = await getQuestToken(uuid);
 
   if (!token) {
     res.status(404).json({ error: "유효하지 않은 퀘스트 UUID입니다" });
@@ -30,8 +30,12 @@ router.get("/:uuid", (req: Request, res: Response) => {
     name: quest.name,
     description: quest.description,
     ...(quest.theory && { theory: quest.theory }),
-    ...(quest.question && { question: quest.question }),
-    ...(quest.choices && { choices: quest.choices }),
+    ...(quest.questions && {
+      questions: quest.questions.map((q) => ({
+        question: q.question,
+        choices: q.choices,
+      })),
+    }),
   });
 });
 

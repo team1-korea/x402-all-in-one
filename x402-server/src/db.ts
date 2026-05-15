@@ -1,9 +1,4 @@
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
-import { join } from "path";
-
-const DATA_DIR = join(process.cwd(), "data");
-const DB_FILE = join(DATA_DIR, "users.json");
-const TOKENS_FILE = join(DATA_DIR, "questtokens.json");
+import { supabase } from "./supabase.js";
 
 export interface UserRecord {
   walletAddress: string;
@@ -24,92 +19,168 @@ export interface QuestToken {
   createdAt: string;
 }
 
-function loadUsers(): Record<string, UserRecord> {
-  if (!existsSync(DB_FILE)) return {};
-  return JSON.parse(readFileSync(DB_FILE, "utf8"));
+// ── Users ────────────────────────────────────────────────
+
+function toRecord(row: Record<string, unknown>): UserRecord {
+  return {
+    walletAddress: row.wallet_address as string,
+    privateKey: row.private_key as string,
+    registeredAt: row.registered_at as string,
+    initialAirdropTx: row.initial_airdrop_tx as string | undefined,
+    currentProductId: row.current_product_id as string | undefined,
+    currentStep: row.current_step as number | undefined,
+    isCompleted: row.is_completed as boolean | undefined,
+    purchasedSteps: row.purchased_steps as number[] | undefined,
+  };
 }
 
-function saveUsers(data: Record<string, UserRecord>) {
-  if (!existsSync(DATA_DIR)) mkdirSync(DATA_DIR, { recursive: true });
-  writeFileSync(DB_FILE, JSON.stringify(data, null, 2));
+export async function createUser(record: UserRecord): Promise<void> {
+  await supabase.from("users").upsert({
+    wallet_address: record.walletAddress.toLowerCase(),
+    private_key: record.privateKey,
+    registered_at: record.registeredAt,
+    initial_airdrop_tx: record.initialAirdropTx,
+  });
 }
 
-function loadTokens(): Record<string, QuestToken> {
-  if (!existsSync(TOKENS_FILE)) return {};
-  return JSON.parse(readFileSync(TOKENS_FILE, "utf8"));
+export async function getUser(walletAddress: string): Promise<UserRecord | undefined> {
+  const { data } = await supabase
+    .from("users")
+    .select("*")
+    .eq("wallet_address", walletAddress.toLowerCase())
+    .single();
+  return data ? toRecord(data as Record<string, unknown>) : undefined;
 }
 
-function saveTokens(data: Record<string, QuestToken>) {
-  if (!existsSync(DATA_DIR)) mkdirSync(DATA_DIR, { recursive: true });
-  writeFileSync(TOKENS_FILE, JSON.stringify(data, null, 2));
+export async function listUsers(): Promise<UserRecord[]> {
+  const { data } = await supabase.from("users").select("*");
+  return (data ?? []).map((r) => toRecord(r as Record<string, unknown>));
 }
 
-export function createUser(record: UserRecord): void {
-  const db = loadUsers();
-  db[record.walletAddress.toLowerCase()] = record;
-  saveUsers(db);
-}
-
-export function getUser(walletAddress: string): UserRecord | undefined {
-  return loadUsers()[walletAddress.toLowerCase()];
-}
-
-export function listUsers(): UserRecord[] {
-  return Object.values(loadUsers());
-}
-
-export function updateQuestStatus(
+export async function updateQuestStatus(
   walletAddress: string,
   productId: string,
   step: number,
   isCompleted: boolean,
-): void {
-  const db = loadUsers();
-  const user = db[walletAddress.toLowerCase()];
-  if (user) {
-    user.currentProductId = productId;
-    user.currentStep = step;
-    user.isCompleted = isCompleted;
-    saveUsers(db);
-  }
+): Promise<void> {
+  await supabase.from("users").update({
+    current_product_id: productId,
+    current_step: step,
+    is_completed: isCompleted,
+  }).eq("wallet_address", walletAddress.toLowerCase());
 }
 
-export function addPurchasedStep(
+export async function addPurchasedStep(
   walletAddress: string,
   productId: string,
   step: number,
-): void {
-  const db = loadUsers();
-  const user = db[walletAddress.toLowerCase()];
-  if (user) {
-    if (!user.purchasedSteps) user.purchasedSteps = [];
-    if (!user.purchasedSteps.includes(step)) {
-      user.purchasedSteps.push(step);
-    }
-    if (!user.currentProductId) user.currentProductId = productId;
-    saveUsers(db);
-  }
+): Promise<void> {
+  const user = await getUser(walletAddress);
+  if (!user) return;
+  const steps = user.purchasedSteps ?? [];
+  if (steps.includes(step)) return;
+  await supabase.from("users").update({
+    purchased_steps: [...steps, step],
+    current_product_id: user.currentProductId ?? productId,
+  }).eq("wallet_address", walletAddress.toLowerCase());
 }
 
-export function storeQuestToken(token: QuestToken): void {
-  const tokens = loadTokens();
-  tokens[token.uuid] = token;
-  saveTokens(tokens);
+// ── Quest Tokens ─────────────────────────────────────────
+
+export async function storeQuestToken(token: QuestToken): Promise<void> {
+  await supabase.from("quest_tokens").insert({
+    uuid: token.uuid,
+    product_id: token.productId,
+    step: token.step,
+    wallet_address: token.walletAddress.toLowerCase(),
+    created_at: token.createdAt,
+  });
 }
 
-export function getQuestToken(uuid: string): QuestToken | undefined {
-  return loadTokens()[uuid];
+export async function getQuestToken(uuid: string): Promise<QuestToken | undefined> {
+  const { data } = await supabase
+    .from("quest_tokens")
+    .select("*")
+    .eq("uuid", uuid)
+    .single();
+  if (!data) return undefined;
+  const row = data as Record<string, unknown>;
+  return {
+    uuid: row.uuid as string,
+    productId: row.product_id as string,
+    step: row.step as number,
+    walletAddress: row.wallet_address as string,
+    createdAt: row.created_at as string,
+  };
 }
 
-export function getQuestTokenByStep(
+export async function getQuestTokenByStep(
   walletAddress: string,
   productId: string,
   step: number,
-): QuestToken | undefined {
-  return Object.values(loadTokens()).find(
-    (t) =>
-      t.walletAddress.toLowerCase() === walletAddress.toLowerCase() &&
-      t.productId === productId &&
-      t.step === step,
-  );
+): Promise<QuestToken | undefined> {
+  const { data } = await supabase
+    .from("quest_tokens")
+    .select("*")
+    .eq("wallet_address", walletAddress.toLowerCase())
+    .eq("product_id", productId)
+    .eq("step", step)
+    .single();
+  if (!data) return undefined;
+  const row = data as Record<string, unknown>;
+  return {
+    uuid: row.uuid as string,
+    productId: row.product_id as string,
+    step: row.step as number,
+    walletAddress: row.wallet_address as string,
+    createdAt: row.created_at as string,
+  };
+}
+
+// ── Quest Answers ─────────────────────────────────────────
+
+export async function recordAnswer(
+  walletAddress: string,
+  productId: string,
+  step: number,
+  questType: string,
+  answers: unknown,
+  isCorrect: boolean,
+): Promise<void> {
+  await supabase.from("quest_answers").insert({
+    wallet_address: walletAddress.toLowerCase(),
+    product_id: productId,
+    step,
+    quest_type: questType,
+    answers,
+    is_correct: isCorrect,
+  });
+}
+
+// ── Feedback ──────────────────────────────────────────────
+
+export async function recordFeedback(
+  walletAddress: string,
+  good: string,
+  bad: string,
+  next: string,
+): Promise<void> {
+  await supabase.from("feedback").insert({
+    wallet_address: walletAddress.toLowerCase(),
+    good,
+    bad,
+    next,
+  });
+}
+
+// ── Interests ─────────────────────────────────────────────
+
+export async function recordInterests(
+  walletAddress: string,
+  tags: string[],
+): Promise<void> {
+  await supabase.from("interests").insert({
+    wallet_address: walletAddress.toLowerCase(),
+    tags,
+  });
 }

@@ -8,6 +8,11 @@ export type QuestType =
   | 'threejs'
   | 'interests';
 
+export interface QuestQuestion {
+  question: string;
+  choices: string[];
+}
+
 export interface QuestData {
   questType: QuestType;
   step: number;
@@ -17,8 +22,7 @@ export interface QuestData {
   description: string;
   // theory quests
   theory?: string;
-  question?: string;
-  choices?: string[];
+  questions?: QuestQuestion[];
 }
 
 export interface AnswerResult {

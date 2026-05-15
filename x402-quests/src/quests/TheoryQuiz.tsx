@@ -1,32 +1,54 @@
-import { useState, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import type { QuestData, AnswerResult } from '../types';
 import { submitAnswer } from '../api';
-import Timer from '../components/Timer';
 import ResultDisplay from '../components/ResultDisplay';
 
 interface Props {
   quest: QuestData;
 }
 
+const THEORY_WAIT_SEC = 30;
+
 export default function TheoryQuiz({ quest }: Props) {
   const [quizUnlocked, setQuizUnlocked] = useState(false);
-  const [selected, setSelected] = useState<number | null>(null);
+  const [selected, setSelected] = useState<(number | null)[]>([]);
   const [result, setResult] = useState<AnswerResult | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const handleTimerComplete = useCallback(() => setQuizUnlocked(true), []);
+  const questions = quest.questions ?? [];
+  const isOX = quest.questType === 'theory-ox';
+
+  useEffect(() => {
+    const id = setTimeout(() => setQuizUnlocked(true), THEORY_WAIT_SEC * 1000);
+    return () => clearTimeout(id);
+  }, []);
+
+  useEffect(() => {
+    if (questions.length > 0) {
+      setSelected(new Array(questions.length).fill(null));
+    }
+  }, [questions.length]);
+
+  const pick = useCallback((qIdx: number, choiceIdx: number) => {
+    if (result?.correct) return;
+    setSelected((prev) => {
+      const next = [...prev];
+      next[qIdx] = choiceIdx;
+      return next;
+    });
+  }, [result?.correct]);
+
+  const allPicked = selected.length === questions.length && selected.every((s) => s !== null);
 
   const handleSubmit = async () => {
-    if (selected === null || loading || result?.correct) return;
+    if (!allPicked || loading || result?.correct) return;
     setLoading(true);
     const res = await submitAnswer(quest.productId, quest.step, quest.walletAddress, {
-      answerIndex: selected,
+      answers: selected as number[],
     });
     setResult(res);
     setLoading(false);
   };
-
-  const isOX = quest.questType === 'theory-ox';
 
   return (
     <div className="max-w-lg w-full mx-auto px-4 py-12">
@@ -36,58 +58,72 @@ export default function TheoryQuiz({ quest }: Props) {
         </span>
         <h1 className="text-xl font-bold mt-2 mb-4">{quest.name}</h1>
 
-        <div className="bg-gray-800 rounded-lg p-4 text-sm text-slate-300 leading-relaxed">
+        <div className="bg-gray-800 rounded-lg p-4 text-sm text-slate-300 leading-relaxed whitespace-pre-line">
           {quest.theory}
         </div>
 
         {!quizUnlocked && (
-          <Timer seconds={10} onComplete={handleTimerComplete} />
+          <button
+            disabled
+            className="mt-6 w-full py-3 bg-gray-700 text-gray-400 cursor-not-allowed rounded-lg font-medium"
+          >
+            30초 이후에 열립니다
+          </button>
         )}
 
         {quizUnlocked && (
-          <div className="mt-6">
-            <p className="font-medium mb-4 text-slate-200">{quest.question}</p>
+          <div className="mt-6 space-y-6">
+            {questions.map((q, qIdx) => (
+              <div key={qIdx}>
+                <p className="font-medium mb-3 text-slate-200">
+                  {questions.length > 1 && (
+                    <span className="text-blue-400 mr-2">Q{qIdx + 1}.</span>
+                  )}
+                  {q.question}
+                </p>
 
-            {isOX ? (
-              <div className="flex gap-4">
-                {['O', 'X'].map((label, i) => (
-                  <button
-                    key={label}
-                    onClick={() => !result?.correct && setSelected(i)}
-                    className={`flex-1 py-6 text-3xl font-bold rounded-xl border-2 transition-colors ${
-                      selected === i
-                        ? 'border-blue-500 bg-blue-950 text-blue-300'
-                        : 'border-gray-700 hover:border-gray-500'
-                    }`}
-                  >
-                    {label}
-                  </button>
-                ))}
+                {isOX ? (
+                  <div className="flex gap-4">
+                    {q.choices.map((label, i) => (
+                      <button
+                        key={label}
+                        onClick={() => pick(qIdx, i)}
+                        className={`flex-1 py-6 text-3xl font-bold rounded-xl border-2 transition-colors ${
+                          selected[qIdx] === i
+                            ? 'border-blue-500 bg-blue-950 text-blue-300'
+                            : 'border-gray-700 hover:border-gray-500'
+                        }`}
+                      >
+                        {label}
+                      </button>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    {q.choices.map((choice, i) => (
+                      <button
+                        key={i}
+                        onClick={() => pick(qIdx, i)}
+                        className={`w-full text-left px-4 py-3 rounded-lg border transition-colors ${
+                          selected[qIdx] === i
+                            ? 'border-blue-500 bg-blue-950 text-blue-300'
+                            : 'border-gray-700 hover:border-gray-600'
+                        }`}
+                      >
+                        <span className="text-slate-500 mr-2">{String.fromCharCode(65 + i)}.</span>
+                        {choice}
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
-            ) : (
-              <div className="space-y-2">
-                {quest.choices?.map((choice, i) => (
-                  <button
-                    key={i}
-                    onClick={() => !result?.correct && setSelected(i)}
-                    className={`w-full text-left px-4 py-3 rounded-lg border transition-colors ${
-                      selected === i
-                        ? 'border-blue-500 bg-blue-950 text-blue-300'
-                        : 'border-gray-700 hover:border-gray-600'
-                    }`}
-                  >
-                    <span className="text-slate-500 mr-2">{String.fromCharCode(65 + i)}.</span>
-                    {choice}
-                  </button>
-                ))}
-              </div>
-            )}
+            ))}
 
             {!result && (
               <button
                 onClick={handleSubmit}
-                disabled={selected === null || loading}
-                className="mt-6 w-full py-3 bg-blue-600 hover:bg-blue-500 disabled:bg-gray-700 disabled:cursor-not-allowed rounded-lg font-medium transition-colors"
+                disabled={!allPicked || loading}
+                className="w-full py-3 bg-blue-600 hover:bg-blue-500 disabled:bg-gray-700 disabled:cursor-not-allowed rounded-lg font-medium transition-colors"
               >
                 {loading ? '확인 중...' : '제출'}
               </button>

@@ -8,17 +8,21 @@ export type QuestType =
   | 'threejs'
   | 'interests';
 
+export interface QuestQuestion {
+  question: string;
+  choices: string[];
+  answerIndex: number;
+}
+
 export interface Quest {
   id: string;
   name: string;
   description: string;
   price: bigint;
   questType: QuestType;
-  // theory quests only
+  // theory quests: OX has 2 questions, MC has 1
   theory?: string;
-  question?: string;
-  choices?: string[];
-  answerIndex?: number;
+  questions?: QuestQuestion[];
   // staff-code quest
   staffCode?: string;
   // find-click / threejs quest

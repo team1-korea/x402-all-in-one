@@ -18,7 +18,7 @@ function getQuestStatus(stepNum: number, user?: UserRecord): QuestStatus {
 }
 
 // GET /v1/services?productId=product-a&wallet=0x...
-router.get("/", (req: Request, res: Response) => {
+router.get("/", async (req: Request, res: Response) => {
   const QUEST_BASE = process.env.QUEST_BASE_URL || "http://localhost:3000";
   const productId = String(req.query.productId || "product-a");
   const wallet = req.query.wallet as string | undefined;
@@ -29,30 +29,32 @@ router.get("/", (req: Request, res: Response) => {
     return;
   }
 
-  const user = wallet ? getUser(wallet) : undefined;
+  const user = wallet ? await getUser(wallet) : undefined;
 
-  const services = quests.map((q, idx) => {
-    const stepNum = idx + 1;
-    const status = getQuestStatus(stepNum, user);
-    const base = {
-      id: q.id,
-      name: q.name,
-      description: q.description,
-      questType: q.questType,
-      status,
-      price: q.price === 0n ? "무료" : "1 TONE",
-      endpoint: `http://localhost:4010/v1/quest/${productId}/${stepNum}`,
-    };
+  const services = await Promise.all(
+    quests.map(async (q, idx) => {
+      const stepNum = idx + 1;
+      const status = getQuestStatus(stepNum, user);
+      const base = {
+        id: q.id,
+        name: q.name,
+        description: q.description,
+        questType: q.questType,
+        status,
+        price: q.price === 0n ? "무료" : "1 TONE",
+        endpoint: `http://localhost:4010/v1/quest/${productId}/${stepNum}`,
+      };
 
-    if ((status === "cleared" || status === "purchased") && user) {
-      const token = getQuestTokenByStep(user.walletAddress, productId, stepNum);
-      if (token) {
-        return { ...base, questUrl: `${QUEST_BASE}/quest/${token.uuid}` };
+      if ((status === "cleared" || status === "purchased") && user) {
+        const token = await getQuestTokenByStep(user.walletAddress, productId, stepNum);
+        if (token) {
+          return { ...base, questUrl: `${QUEST_BASE}/quest/${token.uuid}` };
+        }
       }
-    }
 
-    return base;
-  });
+      return base;
+    }),
+  );
 
   res.json({ productId, services });
 });

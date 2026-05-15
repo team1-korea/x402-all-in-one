@@ -16,7 +16,7 @@ export async function submitAnswer(
   step: number,
   walletAddress: string,
   body: {
-    answerIndex?: number;
+    answers?: number[];
     secretCode?: string;
     feedback?: { good: string; bad: string; next: string };
     interests?: string[];
