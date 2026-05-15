@@ -2,7 +2,6 @@ export type QuestType =
   | 'drag-drop'
   | 'theory-ox'
   | 'theory-mc'
-  | 'find-click'
   | 'snowman-sabotage'
   | 'staff-code'
   | 'feedback'

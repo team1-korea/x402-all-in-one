@@ -2,7 +2,6 @@ export type QuestType =
   | 'drag-drop'
   | 'theory-ox'
   | 'theory-mc'
-  | 'find-click'
   | 'snowman-sabotage'
   | 'staff-code'
   | 'feedback'
@@ -26,7 +25,7 @@ export interface Quest {
   questions?: QuestQuestion[];
   // staff-code quest
   staffCode?: string;
-  // find-click / threejs quest
+  // threejs quest
   webCode?: string;
 }
 

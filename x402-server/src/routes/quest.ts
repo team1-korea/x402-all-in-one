@@ -242,7 +242,7 @@ router.post("/:productId/:step/answer", async (req: Request, res: Response) => {
     return;
   }
 
-  if (quest.questType === "find-click" || quest.questType === "threejs") {
+  if (quest.questType === "threejs") {
     if (!secretCode) {
       res.status(400).json({ error: "secretCode가 필요합니다" });
       return;
