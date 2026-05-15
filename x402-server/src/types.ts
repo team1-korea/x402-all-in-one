@@ -1,19 +1,35 @@
+export type QuestType =
+  | 'drag-drop'
+  | 'theory-ox'
+  | 'theory-mc'
+  | 'find-click'
+  | 'staff-code'
+  | 'feedback'
+  | 'threejs'
+  | 'interests';
+
 export interface Quest {
   id: string;
   name: string;
   description: string;
   price: bigint;
-  question: string;
-  choices: string[];
-  answerIndex: number;
-  isWebQuest?: boolean;
+  questType: QuestType;
+  // theory quests only
+  theory?: string;
+  question?: string;
+  choices?: string[];
+  answerIndex?: number;
+  // staff-code quest
+  staffCode?: string;
+  // find-click / threejs quest
+  webCode?: string;
 }
 
 export interface PaymentRequirements {
   scheme: "exact";
   network: string;
-  asset: string; // ERC-20 token contract address
-  amount: string; // wei string
+  asset: string;
+  amount: string;
   payTo: string;
   maxTimeoutSeconds: number;
   resource: string;
