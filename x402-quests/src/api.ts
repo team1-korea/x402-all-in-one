@@ -20,6 +20,7 @@ export async function submitAnswer(
     secretCode?: string;
     feedback?: { good: string; bad: string; next: string };
     interests?: string[];
+    participation?: boolean;
   },
 ): Promise<AnswerResult> {
   const res = await fetch(`${API_BASE}/v1/quest/${productId}/${step}/answer`, {

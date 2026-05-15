@@ -3,6 +3,7 @@ export type QuestType =
   | 'theory-ox'
   | 'theory-mc'
   | 'find-click'
+  | 'snowman-sabotage'
   | 'staff-code'
   | 'feedback'
   | 'threejs'
