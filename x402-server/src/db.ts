@@ -3,7 +3,7 @@ import { join } from "path";
 
 const DATA_DIR = join(process.cwd(), "data");
 const DB_FILE = join(DATA_DIR, "users.json");
-const TOKENS_FILE = join(DATA_DIR, "quest10tokens.json");
+const TOKENS_FILE = join(DATA_DIR, "questtokens.json");
 
 export interface UserRecord {
   walletAddress: string;
@@ -16,11 +16,11 @@ export interface UserRecord {
   purchasedSteps?: number[];
 }
 
-export interface Quest10Token {
+export interface QuestToken {
   uuid: string;
   productId: string;
+  step: number;
   walletAddress: string;
-  answerCode: string;
   createdAt: string;
 }
 
@@ -34,12 +34,12 @@ function saveUsers(data: Record<string, UserRecord>) {
   writeFileSync(DB_FILE, JSON.stringify(data, null, 2));
 }
 
-function loadTokens(): Record<string, Quest10Token> {
+function loadTokens(): Record<string, QuestToken> {
   if (!existsSync(TOKENS_FILE)) return {};
   return JSON.parse(readFileSync(TOKENS_FILE, "utf8"));
 }
 
-function saveTokens(data: Record<string, Quest10Token>) {
+function saveTokens(data: Record<string, QuestToken>) {
   if (!existsSync(DATA_DIR)) mkdirSync(DATA_DIR, { recursive: true });
   writeFileSync(TOKENS_FILE, JSON.stringify(data, null, 2));
 }
@@ -91,23 +91,25 @@ export function addPurchasedStep(
   }
 }
 
-export function storeQuest10Token(token: Quest10Token): void {
+export function storeQuestToken(token: QuestToken): void {
   const tokens = loadTokens();
   tokens[token.uuid] = token;
   saveTokens(tokens);
 }
 
-export function getQuest10Token(uuid: string): Quest10Token | undefined {
+export function getQuestToken(uuid: string): QuestToken | undefined {
   return loadTokens()[uuid];
 }
 
-export function getQuest10TokenByWallet(
+export function getQuestTokenByStep(
   walletAddress: string,
   productId: string,
-): Quest10Token | undefined {
+  step: number,
+): QuestToken | undefined {
   return Object.values(loadTokens()).find(
     (t) =>
       t.walletAddress.toLowerCase() === walletAddress.toLowerCase() &&
-      t.productId === productId,
+      t.productId === productId &&
+      t.step === step,
   );
 }
