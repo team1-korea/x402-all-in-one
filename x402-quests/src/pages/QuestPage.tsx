@@ -3,10 +3,10 @@ import { useParams } from 'react-router-dom';
 import { fetchQuest } from '../api';
 import type { QuestData } from '../types';
 import TheoryQuiz from '../quests/TheoryQuiz';
-import FindClickQuest from '../quests/FindClickQuest';
 import StaffCodeQuest from '../quests/StaffCodeQuest';
 import FeedbackQuest from '../quests/FeedbackQuest';
 import InterestsQuest from '../quests/InterestsQuest';
+import SnowmanSabotageQuest from '../quests/SnowmanSabotageQuest';
 
 const ThreeJsQuest = lazy(() => import('../quests/ThreeJsQuest'));
 
@@ -47,7 +47,7 @@ export default function QuestPage() {
       {(quest.questType === 'theory-ox' || quest.questType === 'theory-mc') && (
         <TheoryQuiz {...props} />
       )}
-      {quest.questType === 'find-click' && <FindClickQuest {...props} />}
+      {quest.questType === 'snowman-sabotage' && <SnowmanSabotageQuest {...props} />}
       {quest.questType === 'staff-code' && <StaffCodeQuest {...props} />}
       {quest.questType === 'feedback' && <FeedbackQuest {...props} />}
       {quest.questType === 'interests' && <InterestsQuest {...props} />}
