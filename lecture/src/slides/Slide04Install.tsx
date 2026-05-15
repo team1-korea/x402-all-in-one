@@ -4,8 +4,8 @@ const Slide04Install = ({ animKey }: Props) => (
   <div className="slide bg-beige content-z-index">
     <div className="ambient-shape bg-terracotta" style={{ width: '38vw', height: '38vw', bottom: '-8%', left: '-5%', opacity: 0.04, animationDelay: '-2s' }} />
     <div key={animKey} className="flex flex-col items-center w-full max-w-2xl content-z-index">
-      <p className="fade-in-stagger font-mono text-xs tracking-widest uppercase text-sage mb-4" style={{ animationDelay: '0s' }}>03 · Install</p>
-      <h2 className="fade-in-stagger font-serif text-5xl text-dark mb-8" style={{ animationDelay: '0.2s' }}>스킬 설치</h2>
+      <p className="fade-in-stagger font-mono text-xs tracking-widest uppercase text-sage mb-4" style={{ animationDelay: '0s' }}>03 · 장착</p>
+      <h2 className="fade-in-stagger font-serif text-5xl text-dark mb-8" style={{ animationDelay: '0.2s' }}>클로드 무장시키기</h2>
       <pre className="fade-in-stagger w-full bg-[#1e2d24] rounded-xl px-7 py-5 font-mono text-lg text-[#d4ede0] text-center mb-6" style={{ animationDelay: '0.5s' }}>
         npx x402-meetup --url=https://api.x402-meetup.example.com
       </pre>

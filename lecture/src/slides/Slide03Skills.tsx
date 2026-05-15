@@ -5,7 +5,7 @@ const Slide03Skills = ({ animKey }: Props) => (
     <div className="ambient-shape bg-forest" style={{ width: '45vw', height: '45vw', top: '-5%', right: '-8%', opacity: 0.04, animationDelay: '-6s' }} />
     <div key={animKey} className="flex flex-col items-center w-full max-w-2xl content-z-index">
       <p className="fade-in-stagger font-mono text-xs tracking-widest uppercase text-sage mb-4" style={{ animationDelay: '0s' }}>02 · Claude Skills</p>
-      <h2 className="fade-in-stagger font-serif text-5xl text-dark mb-6" style={{ animationDelay: '0.2s' }}>Claude Skills란?</h2>
+      <h2 className="fade-in-stagger font-serif text-5xl text-dark mb-6" style={{ animationDelay: '0.2s' }}>클로드에게 능력 심는 법</h2>
       <p className="fade-in-stagger font-sans text-xl text-dark/80 mb-6" style={{ animationDelay: '0.5s' }}>
         <code className="bg-forest/10 px-2 py-0.5 rounded text-forest font-mono text-lg">/</code>
         {' '}를 입력하면 나오는 슬래시 명령어
