@@ -4,8 +4,8 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['Outfit', 'sans-serif'],
-        serif: ['Playfair Display', 'serif'],
+        sans: ['Outfit', 'Noto Sans KR', 'sans-serif'],
+        serif: ['Playfair Display', 'Noto Serif KR', 'serif'],
         mono: ['JetBrains Mono', 'monospace'],
       },
       colors: {

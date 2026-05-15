@@ -9,8 +9,8 @@
   --color-sage: #7A9E87;
   --color-cream: #FFFDF9;
   --color-dark: #1A1A1A;
-  --font-serif: 'Playfair Display', serif;
-  --font-sans: 'Outfit', sans-serif;
+  --font-serif: 'Playfair Display', 'Noto Serif KR', serif;
+  --font-sans: 'Outfit', 'Noto Sans KR', sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
 }
 
@@ -43,7 +43,7 @@ body {
   justify-content: center;
   align-items: center;
   flex-shrink: 0;
-  padding: 5% 8%;
+  padding: 5vh 8vw;
 }
 
 .content-z-index {
