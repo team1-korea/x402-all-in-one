@@ -1,6 +1,6 @@
 import { Router, type Request, type Response } from "express";
 import { getAllQuests } from "../quests.js";
-import { getUser, getQuest10TokenByWallet } from "../db.js";
+import { getUser, getQuestTokenByStep } from "../db.js";
 import type { UserRecord } from "../db.js";
 
 const router = Router();
@@ -19,7 +19,7 @@ function getQuestStatus(stepNum: number, user?: UserRecord): QuestStatus {
 
 // GET /v1/services?productId=product-a&wallet=0x...
 router.get("/", (req: Request, res: Response) => {
-  const API_BASE = process.env.API_BASE_URL || "http://localhost:4010";
+  const QUEST_BASE = process.env.QUEST_BASE_URL || "http://localhost:3000";
   const productId = String(req.query.productId || "product-a");
   const wallet = req.query.wallet as string | undefined;
 
@@ -38,21 +38,17 @@ router.get("/", (req: Request, res: Response) => {
       id: q.id,
       name: q.name,
       description: q.description,
+      questType: q.questType,
       status,
       price: q.price === 0n ? "무료" : "1 TONE",
-      endpoint: `${API_BASE}/v1/quest/${productId}/${stepNum}`,
+      endpoint: `http://localhost:4010/v1/quest/${productId}/${stepNum}`,
     };
 
-    if (status === "cleared" || status === "purchased") {
-      const extra: Record<string, unknown> = {
-        question: q.question,
-        choices: q.choices,
-      };
-      if (q.isWebQuest && user) {
-        const token = getQuest10TokenByWallet(user.walletAddress, productId);
-        if (token) extra.questUrl = `${API_BASE}/quest/${token.uuid}`;
+    if ((status === "cleared" || status === "purchased") && user) {
+      const token = getQuestTokenByStep(user.walletAddress, productId, stepNum);
+      if (token) {
+        return { ...base, questUrl: `${QUEST_BASE}/quest/${token.uuid}` };
       }
-      return { ...base, ...extra };
     }
 
     return base;
@@ -78,6 +74,7 @@ router.get("/search", (req: Request, res: Response) => {
       id: quest.id,
       name: quest.name,
       description: quest.description,
+      questType: quest.questType,
     })),
   });
 });
