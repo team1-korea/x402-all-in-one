@@ -1,4 +1,4 @@
-import { randomBytes, randomUUID } from "node:crypto";
+import { randomUUID } from "node:crypto";
 import { Router, type Request, type Response } from "express";
 import { getQuest } from "../quests.js";
 import { verifyPayment, settlePayment } from "../facilitator.js";
@@ -6,8 +6,7 @@ import {
   getUser,
   updateQuestStatus,
   addPurchasedStep,
-  storeQuest10Token,
-  getQuest10TokenByWallet,
+  storeQuestToken,
 } from "../db.js";
 import type { PaymentRequirements, X402Response } from "../types.js";
 
@@ -57,12 +56,7 @@ router.get("/:productId/:step", async (req: Request, res: Response) => {
 
   // 무료 퀘스트
   if (quest.price === 0n) {
-    res.json({
-      id: quest.id,
-      name: quest.name,
-      question: quest.question,
-      choices: quest.choices,
-    });
+    res.json({ id: quest.id, name: quest.name, questType: quest.questType });
     return;
   }
 
@@ -117,9 +111,7 @@ router.get("/:productId/:step", async (req: Request, res: Response) => {
     }
 
     if (user.currentProductId && user.currentProductId !== productId) {
-      res.status(403).json({
-        error: "다른 상품 경로를 진행 중입니다.",
-      });
+      res.status(403).json({ error: "다른 상품 경로를 진행 중입니다." });
       return;
     }
 
@@ -149,40 +141,31 @@ router.get("/:productId/:step", async (req: Request, res: Response) => {
     return;
   }
 
-  // 결제 성공 — purchasedSteps 기록
+  const currentStepNum = parseInt(step, 10);
+
   if (payer) {
-    addPurchasedStep(payer, productId, parseInt(step, 10));
+    addPurchasedStep(payer, productId, currentStepNum);
   }
 
   res.setHeader("X-PAYMENT-RESPONSE", settleResult.transaction);
 
-  // Quest 10: UUID 발급 후 questUrl 반환
-  if (quest.isWebQuest) {
-    const API_BASE = process.env.API_BASE_URL || "http://localhost:4010";
-    const uuid = randomUUID();
-    const answerCode = randomBytes(3).toString("hex").toUpperCase();
-    storeQuest10Token({
-      uuid,
-      productId,
-      walletAddress: payer ?? "",
-      answerCode,
-      createdAt: new Date().toISOString(),
-    });
-    res.json({
-      id: quest.id,
-      name: quest.name,
-      questUrl: `${API_BASE}/quest/${uuid}`,
-      hint: "브라우저를 열어 이 URL을 방문하세요. 페이지에서 클리어 후 코드를 저에게 알려주세요!",
-      settleTx: settleResult.transaction,
-    });
-    return;
-  }
+  // All paid quests: issue UUID and return questUrl
+  const QUEST_BASE = process.env.QUEST_BASE_URL || "http://localhost:3000";
+  const uuid = randomUUID();
+  storeQuestToken({
+    uuid,
+    productId,
+    step: currentStepNum,
+    walletAddress: payer ?? "",
+    createdAt: new Date().toISOString(),
+  });
 
   res.json({
     id: quest.id,
     name: quest.name,
-    question: quest.question,
-    choices: quest.choices,
+    questType: quest.questType,
+    questUrl: `${QUEST_BASE}/quest/${uuid}`,
+    hint: "브라우저를 열어 이 URL을 방문하고 퀘스트를 완료하세요!",
     settleTx: settleResult.transaction,
   });
 });
@@ -197,10 +180,18 @@ router.post("/:productId/:step/answer", async (req: Request, res: Response) => {
     return;
   }
 
-  const { answerIndex, walletAddress, secretCode } = req.body as {
+  const {
+    answerIndex,
+    walletAddress,
+    secretCode,
+    feedback,
+    interests,
+  } = req.body as {
     answerIndex?: number;
     walletAddress?: string;
     secretCode?: string;
+    feedback?: { good: string; bad: string; next: string };
+    interests?: string[];
   };
 
   if (!walletAddress) {
@@ -208,46 +199,72 @@ router.post("/:productId/:step/answer", async (req: Request, res: Response) => {
     return;
   }
 
-  // Quest 10 웹 연동형
-  if (quest.isWebQuest) {
+  const currentStepNum = parseInt(step, 10);
+  const isLastStep = currentStepNum === 10;
+
+  if (quest.questType === "theory-ox" || quest.questType === "theory-mc") {
+    if (answerIndex === undefined) {
+      res.status(400).json({ error: "answerIndex가 필요합니다" });
+      return;
+    }
+    if (answerIndex !== quest.answerIndex) {
+      res.json({ correct: false, message: "틀렸습니다. 다시 시도해보세요!" });
+      return;
+    }
+    updateQuestStatus(walletAddress, productId, currentStepNum, isLastStep);
+    res.json({ correct: true, message: "정답입니다! 🎉" });
+    return;
+  }
+
+  if (quest.questType === "staff-code") {
     if (!secretCode) {
       res.status(400).json({ error: "secretCode가 필요합니다" });
       return;
     }
-    const token = getQuest10TokenByWallet(walletAddress, productId);
-    if (!token || secretCode !== token.answerCode) {
-      res.json({ correct: false, message: "코드가 틀렸습니다. 다시 확인해보세요!" });
+    if (secretCode !== quest.staffCode) {
+      res.json({ correct: false, message: "코드가 틀렸습니다. 스태프에게 다시 확인하세요!" });
       return;
     }
-    updateQuestStatus(walletAddress, productId, 10, true);
-    res.json({
-      correct: true,
-      message: "퀘스트 완주! 🎉 상품을 수령하세요.",
-    });
+    updateQuestStatus(walletAddress, productId, currentStepNum, isLastStep);
+    res.json({ correct: true, message: "스태프 인증 완료! 🎉" });
     return;
   }
 
-  // 일반 객관식/OX
-  if (answerIndex === undefined) {
-    res.status(400).json({ error: "answerIndex가 필요합니다" });
-    return;
-  }
-  if (answerIndex !== quest.answerIndex) {
-    res.json({ correct: false, message: "틀렸습니다. 다시 시도해보세요!" });
+  if (quest.questType === "find-click" || quest.questType === "threejs") {
+    if (!secretCode) {
+      res.status(400).json({ error: "secretCode가 필요합니다" });
+      return;
+    }
+    if (secretCode !== quest.webCode) {
+      res.json({ correct: false, message: "올바른 요소를 찾지 못했습니다!" });
+      return;
+    }
+    updateQuestStatus(walletAddress, productId, currentStepNum, isLastStep);
+    res.json({ correct: true, message: "찾았습니다! 🎉" });
     return;
   }
 
-  const currentStepNum = parseInt(step, 10);
-  const isLastStep = currentStepNum === 10;
-  updateQuestStatus(walletAddress, productId, currentStepNum, isLastStep);
+  if (quest.questType === "feedback") {
+    if (!feedback?.good || !feedback?.bad || !feedback?.next) {
+      res.status(400).json({ error: "모든 피드백 항목을 입력해주세요" });
+      return;
+    }
+    updateQuestStatus(walletAddress, productId, currentStepNum, isLastStep);
+    res.json({ correct: true, message: "피드백 감사합니다! 🎉" });
+    return;
+  }
 
-  res.json({
-    correct: true,
-    message: "정답입니다!",
-    nextQuestHint: isLastStep
-      ? "모든 퀘스트를 완료했습니다! 🎉"
-      : `다음: /v1/quest/${productId}/${currentStepNum + 1}`,
-  });
+  if (quest.questType === "interests") {
+    if (!interests || interests.length < 3) {
+      res.status(400).json({ error: "참가자 3명의 관심사를 입력해주세요" });
+      return;
+    }
+    updateQuestStatus(walletAddress, productId, currentStepNum, isLastStep);
+    res.json({ correct: true, message: "관심사 수집 완료! 🎉" });
+    return;
+  }
+
+  res.status(400).json({ error: "지원하지 않는 퀘스트 타입입니다" });
 });
 
 export default router;
