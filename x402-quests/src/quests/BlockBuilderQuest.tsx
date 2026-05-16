@@ -69,7 +69,6 @@ export default function BlockBuilderQuest({ quest }: Props) {
   const [trainOffset, setTrainOffset] = useState(0);
   const [blurAmount, setBlurAmount] = useState(0);
   const [showExitButton, setShowExitButton] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
   const [latestBlockHeight, setLatestBlockHeight] = useState<number | null>(null);
   const [hoveredBlock, setHoveredBlock] = useState<number | null>(null);
   const [showTooltip, setShowTooltip] = useState(false);
@@ -80,6 +79,7 @@ export default function BlockBuilderQuest({ quest }: Props) {
   const trainAnimRef = useRef<number | null>(null);
   const isDraggingRef = useRef(false);
   const dragStartRef = useRef<{ id: number; offsetX: number; offsetY: number } | null>(null);
+  const submittedRef = useRef(false);
 
   useEffect(() => {
     initializeMockBlocks();
@@ -125,7 +125,7 @@ export default function BlockBuilderQuest({ quest }: Props) {
     setTrainPhase('idle');
     setTrainOffset(0);
     setShowExitButton(false);
-    setSubmitted(false);
+    submittedRef.current = false;
     setLatestBlockHeight(null);
     initializeMockBlocks();
   };
@@ -140,7 +140,8 @@ export default function BlockBuilderQuest({ quest }: Props) {
   };
 
   const handleMouseMove = (e: React.MouseEvent) => {
-    const rect = gameAreaRef.current!.getBoundingClientRect();
+    const rect = gameAreaRef.current?.getBoundingClientRect();
+    if (!rect) return;
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
 
@@ -184,7 +185,8 @@ export default function BlockBuilderQuest({ quest }: Props) {
   const handleSocketMouseDown = (e: React.MouseEvent, id: number, type: 'input' | 'output') => {
     e.stopPropagation();
     if (type !== 'output') return;
-    const rect = gameAreaRef.current!.getBoundingClientRect();
+    const rect = gameAreaRef.current?.getBoundingClientRect();
+    if (!rect) return;
     const startX = e.clientX - rect.left;
     const startY = e.clientY - rect.top;
     setDragLine({ fromId: id, startX, startY, endX: startX, endY: startY });
@@ -192,7 +194,7 @@ export default function BlockBuilderQuest({ quest }: Props) {
 
   // ── Win condition ────────────────────────────────────────
   const checkWinCondition = (currentLinks: BlockLink[]) => {
-    if (currentLinks.length < blocks.length - 1) return;
+    if (currentLinks.length < 3) return;
     setGameState('won');
     setTimeout(() => {
       setShowArrows(false);
@@ -282,8 +284,8 @@ export default function BlockBuilderQuest({ quest }: Props) {
           setTrainPhase('done');
           setBlurAmount(0);
           setLatestBlockHeight(targetHeight);
-          if (!submitted) {
-            setSubmitted(true);
+          if (!submittedRef.current) {
+            submittedRef.current = true;
             submitAnswer(quest.productId, quest.step, quest.walletAddress, { participation: true })
               .catch(console.error);
           }
@@ -348,7 +350,7 @@ export default function BlockBuilderQuest({ quest }: Props) {
               if (yDiff > 30 && xDiff > 50) {
                 const midX = start.x + xDiff / 2;
                 return (
-                  <path key={i}
+                  <path key={`${link.from}-${link.to}`}
                     d={`M ${start.x} ${start.y} H ${midX} V ${end.y} H ${end.x}`}
                     stroke="#4ade80" strokeWidth="2" fill="none"
                     strokeLinecap="round" strokeLinejoin="round" markerEnd="url(#arrow)"
@@ -356,7 +358,7 @@ export default function BlockBuilderQuest({ quest }: Props) {
                 );
               }
               return (
-                <line key={i}
+                <line key={`${link.from}-${link.to}`}
                   x1={start.x} y1={start.y} x2={end.x} y2={end.y}
                   stroke="#4ade80" strokeWidth="2" strokeLinecap="round" markerEnd="url(#arrow)"
                 />
@@ -386,9 +388,9 @@ export default function BlockBuilderQuest({ quest }: Props) {
           </svg>
 
           {/* Initial 4 blocks */}
-          {blocks.map(block => {
+          {(() => {
             const showId = gameState === 'won';
-            return (
+            return blocks.map(block => (
               <div
                 key={block.id}
                 ref={(el: HTMLDivElement | null) => { blockRefs.current[block.id] = el; }}
@@ -435,8 +437,8 @@ export default function BlockBuilderQuest({ quest }: Props) {
                   onMouseEnter={() => { setHoveredBlock(null); setShowTooltip(false); }}
                 />
               </div>
-            );
-          })}
+            ));
+          })()}
 
           {/* Train: mock blocks heights 4..MOCK_TARGET_HEIGHT */}
           {trainPhase !== 'idle' && trainPhase !== 'arranging' && (() => {
