@@ -342,6 +342,21 @@ export default function SnowmanSabotageQuest({ quest }: Props) {
   );
 }
 
+function DemoSnowman({ label, divRef }: { label: string; divRef: { current: HTMLDivElement | null } }) {
+  return (
+    <div ref={divRef} className="flex flex-col items-center gap-1">
+      <svg viewBox="0 0 40 52" className="w-9 h-12" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="20" cy="49" rx="14" ry="4" fill="#000" opacity="0.1"/>
+        <circle className="smq-snow" cx="20" cy="36" r="13"/>
+        <circle className="smq-snow" cx="20" cy="17" r="10"/>
+        <circle cx="16" cy="14" r="1.6" fill="#2d3748"/>
+        <circle cx="24" cy="14" r="1.6" fill="#2d3748"/>
+      </svg>
+      <span className="text-[9px] text-gray-600">{label}</span>
+    </div>
+  );
+}
+
 function LandingScreen({ onStart }: { onStart: () => void }) {
   const areaRef   = useRef<HTMLDivElement | null>(null);
   const sm1Ref    = useRef<HTMLDivElement | null>(null);
@@ -359,6 +374,7 @@ function LandingScreen({ onStart }: { onStart: () => void }) {
         .smq-demo-cursor {
           position: absolute; width: 22px; height: 22px;
           pointer-events: none; z-index: 20; top: 0; left: 0;
+          /* 커서 화살표 끝 기준 */
           transform-origin: 3px 2px;
         }
         .smq-cursor-click { animation: smqCursorClick 0.22s ease-out forwards; }
@@ -406,50 +422,10 @@ function LandingScreen({ onStart }: { onStart: () => void }) {
         </p>
 
         <div className="grid grid-cols-2 gap-y-3 gap-x-8 w-fit mx-auto">
-          {/* 노드1 top-left */}
-          <div ref={sm1Ref} className="flex flex-col items-center gap-1">
-            <svg viewBox="0 0 40 52" className="w-9 h-12" xmlns="http://www.w3.org/2000/svg">
-              <ellipse cx="20" cy="49" rx="14" ry="4" fill="#000" opacity="0.1"/>
-              <circle className="smq-snow" cx="20" cy="36" r="13"/>
-              <circle className="smq-snow" cx="20" cy="17" r="10"/>
-              <circle cx="16" cy="14" r="1.6" fill="#2d3748"/>
-              <circle cx="24" cy="14" r="1.6" fill="#2d3748"/>
-            </svg>
-            <span className="text-[9px] text-gray-600">노드 1</span>
-          </div>
-          {/* 노드2 top-right */}
-          <div ref={sm2Ref} className="flex flex-col items-center gap-1">
-            <svg viewBox="0 0 40 52" className="w-9 h-12" xmlns="http://www.w3.org/2000/svg">
-              <ellipse cx="20" cy="49" rx="14" ry="4" fill="#000" opacity="0.1"/>
-              <circle className="smq-snow" cx="20" cy="36" r="13"/>
-              <circle className="smq-snow" cx="20" cy="17" r="10"/>
-              <circle cx="16" cy="14" r="1.6" fill="#2d3748"/>
-              <circle cx="24" cy="14" r="1.6" fill="#2d3748"/>
-            </svg>
-            <span className="text-[9px] text-gray-600">노드 2</span>
-          </div>
-          {/* 노드3 bottom-left — 항상 파란색 유지 */}
-          <div ref={sm3Ref} className="flex flex-col items-center gap-1">
-            <svg viewBox="0 0 40 52" className="w-9 h-12" xmlns="http://www.w3.org/2000/svg">
-              <ellipse cx="20" cy="49" rx="14" ry="4" fill="#000" opacity="0.1"/>
-              <circle className="smq-snow" cx="20" cy="36" r="13"/>
-              <circle className="smq-snow" cx="20" cy="17" r="10"/>
-              <circle cx="16" cy="14" r="1.6" fill="#2d3748"/>
-              <circle cx="24" cy="14" r="1.6" fill="#2d3748"/>
-            </svg>
-            <span className="text-[9px] text-gray-600">노드 3</span>
-          </div>
-          {/* 노드4 bottom-right */}
-          <div ref={sm4Ref} className="flex flex-col items-center gap-1">
-            <svg viewBox="0 0 40 52" className="w-9 h-12" xmlns="http://www.w3.org/2000/svg">
-              <ellipse cx="20" cy="49" rx="14" ry="4" fill="#000" opacity="0.1"/>
-              <circle className="smq-snow" cx="20" cy="36" r="13"/>
-              <circle className="smq-snow" cx="20" cy="17" r="10"/>
-              <circle cx="16" cy="14" r="1.6" fill="#2d3748"/>
-              <circle cx="24" cy="14" r="1.6" fill="#2d3748"/>
-            </svg>
-            <span className="text-[9px] text-gray-600">노드 4</span>
-          </div>
+          <DemoSnowman label="노드 1" divRef={sm1Ref} />
+          <DemoSnowman label="노드 2" divRef={sm2Ref} />
+          <DemoSnowman label="노드 3" divRef={sm3Ref} />
+          <DemoSnowman label="노드 4" divRef={sm4Ref} />
         </div>
 
         {/* JS가 left/top으로 위치 제어 */}
