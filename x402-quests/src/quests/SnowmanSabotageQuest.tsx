@@ -13,7 +13,7 @@ const COLS = 7;
 const K = 5;
 const ALPHA = 3;
 const TOTAL_ROUNDS = 3;
-const ROUND_TIMEOUT_SEC = 60;
+const ROUND_TIMEOUT_SEC = 30;
 const TICK_NORMAL_MS = 300;
 const TICK_HOVER_MS = 80;
 const NS = 'http://www.w3.org/2000/svg';
@@ -48,6 +48,8 @@ export default function SnowmanSabotageQuest({ quest }: Props) {
   const nodesRef = useRef<NodeData[]>([]);
   const peakRedCurrentRef = useRef(0);
   const speedRef = useRef(TICK_NORMAL_MS);
+  const baseSpeedRef = useRef(TICK_NORMAL_MS);
+  const isHoveringRef = useRef(false);
   const tickIntervalRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const timerIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const phaseRef = useRef<Phase>('landing');
@@ -148,32 +150,37 @@ export default function SnowmanSabotageQuest({ quest }: Props) {
     const linesLayer = linesLayerRef.current;
     if (!nodes.length || !linesLayer) return;
 
-    for (let t = 0; t < 2; t++) {
+    for (let t = 0; t < 7; t++) {
       const qIdx = Math.floor(Math.random() * nodes.length);
       const qNode = nodes[qIdx];
 
       const peers: number[] = [];
-      while (peers.length < K) {
+      let attempts = 0;
+      while (peers.length < K && attempts < nodes.length * 3) {
         const cand = Math.floor(Math.random() * nodes.length);
         if (cand !== qIdx && !peers.includes(cand)) peers.push(cand);
+        attempts++;
       }
+      if (peers.length < K) continue;
 
       let countRed = 0, countBlue = 0;
       peers.forEach(pIdx => {
         const peer = nodes[pIdx];
         if (peer.pref === 0) countRed++; else countBlue++;
 
-        const path = document.createElementNS(NS, 'path');
-        const midX = (qNode.x + peer.x) / 2;
-        const midY = (qNode.y + peer.y) / 2 - 30;
-        path.setAttribute('d', `M ${qNode.x} ${qNode.y} Q ${midX} ${midY} ${peer.x} ${peer.y}`);
-        path.setAttribute('fill', 'none');
-        path.setAttribute('stroke', peer.pref === 0 ? COLOR_RED : COLOR_BLUE);
-        path.setAttribute('stroke-width', '2');
-        path.setAttribute('pathLength', '1');
-        path.classList.add('smq-line');
-        linesLayer.appendChild(path);
-        setTimeout(() => path.parentNode?.removeChild(path), 400);
+        if (t < 2) {
+          const path = document.createElementNS(NS, 'path');
+          const midX = (qNode.x + peer.x) / 2;
+          const midY = (qNode.y + peer.y) / 2 - 30;
+          path.setAttribute('d', `M ${qNode.x} ${qNode.y} Q ${midX} ${midY} ${peer.x} ${peer.y}`);
+          path.setAttribute('fill', 'none');
+          path.setAttribute('stroke', peer.pref === 0 ? COLOR_RED : COLOR_BLUE);
+          path.setAttribute('stroke-width', '2');
+          path.setAttribute('pathLength', '1');
+          path.classList.add('smq-line');
+          linesLayer.appendChild(path);
+          setTimeout(() => path.parentNode?.removeChild(path), 400);
+        }
       });
 
       if (qNode.pref === 1 && countRed >= ALPHA) {
@@ -226,11 +233,20 @@ export default function SnowmanSabotageQuest({ quest }: Props) {
     initNodes();
     timeLeftRef.current = ROUND_TIMEOUT_SEC;
     setTimeLeft(ROUND_TIMEOUT_SEC);
+    baseSpeedRef.current = TICK_NORMAL_MS;
+    isHoveringRef.current = false;
+    speedRef.current = TICK_NORMAL_MS;
 
-    // 60초 안전망 타이머
+    // 30초 안전망 타이머 + 점진적 속도 증가
     timerIntervalRef.current = setInterval(() => {
       timeLeftRef.current -= 1;
       setTimeLeft(timeLeftRef.current);
+      // easeIn quadratic: 처음엔 거의 변화 없다가 후반에 조금씩 빨라짐 (300ms → 180ms)
+      const elapsed = ROUND_TIMEOUT_SEC - timeLeftRef.current;
+      const ratio = Math.min(1, elapsed / ROUND_TIMEOUT_SEC);
+      const eased = ratio * ratio;
+      baseSpeedRef.current = Math.round(TICK_NORMAL_MS - eased * (TICK_NORMAL_MS - 180));
+      if (!isHoveringRef.current) speedRef.current = baseSpeedRef.current;
       if (timeLeftRef.current <= 0) {
         endRound();
       }
@@ -318,8 +334,8 @@ export default function SnowmanSabotageQuest({ quest }: Props) {
               linesLayerRef={linesLayerRef}
               snowmenLayerRef={snowmenLayerRef}
               peakRed={displayPeakRed}
-              onHoverStart={() => { speedRef.current = TICK_HOVER_MS; }}
-              onHoverEnd={() => { speedRef.current = TICK_NORMAL_MS; }}
+              onHoverStart={() => { isHoveringRef.current = true; speedRef.current = TICK_HOVER_MS; }}
+              onHoverEnd={() => { isHoveringRef.current = false; speedRef.current = baseSpeedRef.current; }}
             />
           )}
 
