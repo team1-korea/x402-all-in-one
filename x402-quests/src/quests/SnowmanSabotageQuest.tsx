@@ -53,6 +53,7 @@ export default function SnowmanSabotageQuest({ quest }: Props) {
   const phaseRef = useRef<Phase>('landing');
   const roundRef = useRef(1);
   const roundEndedRef = useRef(false);
+  const timeLeftRef = useRef(ROUND_TIMEOUT_SEC);
 
   // Keep refs in sync with state
   useEffect(() => { phaseRef.current = phase; }, [phase]);
@@ -223,17 +224,16 @@ export default function SnowmanSabotageQuest({ quest }: Props) {
     roundEndedRef.current = false;
     setDisplayPeakRed(0);
     initNodes();
+    timeLeftRef.current = ROUND_TIMEOUT_SEC;
     setTimeLeft(ROUND_TIMEOUT_SEC);
 
     // 60초 안전망 타이머
     timerIntervalRef.current = setInterval(() => {
-      setTimeLeft(prev => {
-        if (prev <= 1) {
-          endRound();
-          return 0;
-        }
-        return prev - 1;
-      });
+      timeLeftRef.current -= 1;
+      setTimeLeft(timeLeftRef.current);
+      if (timeLeftRef.current <= 0) {
+        endRound();
+      }
     }, 1000);
 
     // Slush 루프
@@ -343,24 +343,123 @@ export default function SnowmanSabotageQuest({ quest }: Props) {
 }
 
 function LandingScreen({ onStart }: { onStart: () => void }) {
+  const areaRef   = useRef<HTMLDivElement | null>(null);
+  const sm1Ref    = useRef<HTMLDivElement | null>(null);
+  const sm2Ref    = useRef<HTMLDivElement | null>(null);
+  const sm3Ref    = useRef<HTMLDivElement | null>(null);
+  const sm4Ref    = useRef<HTMLDivElement | null>(null);
+  const cursorRef = useRef<HTMLDivElement | null>(null);
+  const rippleRef = useRef<HTMLDivElement | null>(null);
+
   return (
     <>
+      <style>{`
+        .smq-snow { fill: #4ECDC4; transition: fill 0.35s ease; }
+        .smq-node-red .smq-snow { fill: #FF6B6B; }
+        .smq-demo-cursor {
+          position: absolute; width: 22px; height: 22px;
+          pointer-events: none; z-index: 20; top: 0; left: 0;
+          transform-origin: 3px 2px;
+        }
+        .smq-cursor-click { animation: smqCursorClick 0.22s ease-out forwards; }
+        @keyframes smqCursorClick {
+          0%   { transform: scale(1)    rotate(0deg); }
+          30%  { transform: scale(0.72) rotate(-8deg); }
+          70%  { transform: scale(1.18) rotate(4deg); }
+          100% { transform: scale(1)    rotate(0deg); }
+        }
+        .smq-demo-ripple {
+          position: absolute; width: 32px; height: 32px;
+          border-radius: 50%; pointer-events: none; z-index: 19; opacity: 0;
+        }
+        .smq-ripple-pop { animation: smqRipplePop 0.45s ease-out forwards; }
+        @keyframes smqRipplePop {
+          0%   { opacity: 0.7; transform: scale(0.3); background: rgba(251,146,60,0.5); }
+          60%  { opacity: 0.3; transform: scale(1.2); background: rgba(251,146,60,0.2); }
+          100% { opacity: 0;   transform: scale(1.6); background: rgba(251,146,60,0); }
+        }
+      `}</style>
+
       <span className="text-xs text-orange-400 uppercase tracking-widest">Quest · 인터랙션</span>
       <h1 className="text-2xl font-bold mt-2 mb-4">아발란체 합의를 방해하라!</h1>
 
-      <div className="bg-gray-800 rounded-lg p-5 mb-6 text-slate-300 text-sm leading-7 space-y-3">
+      <div className="bg-gray-800 rounded-lg p-5 mb-5 text-slate-300 text-sm leading-7 space-y-3">
         <p>
-          아발란체의 <strong className="text-white">Slush 합의</strong>는 확률적 샘플링으로 동작합니다.
-          각 노드는 무작위로 <strong className="text-teal-400">K=5</strong>개 이웃을 샘플링하고,
-          그 중 <strong className="text-teal-400">α=3개 이상</strong>이 같은 색이면 자신도 그 색으로 바뀝니다.
+          블록체인이 작동하려면 수백 개의 컴퓨터(<strong className="text-white">노드</strong>)가{' '}
+          <span className="text-green-400">"이 거래가 맞다"</span>고 동의해야 합니다.
+          아발란체는 각 노드가 <strong className="text-white">무작위로 이웃 5개</strong>에게 물어보고,
+          다수가 동의하면 자신도 따르는 방식으로 빠르게 합의합니다.
         </p>
         <p>
-          <strong className="text-white">당신의 역할:</strong> 정상적으로 합의되고 있는{' '}
+          <strong className="text-white">당신의 역할:</strong>{' '}
           <span className="text-teal-400 font-semibold">파란 눈사람(정직한 노드)</span>을 클릭해{' '}
-          <span className="text-red-400 font-semibold">빨간 눈사람(악의적 트랜잭션)</span>으로 바꾸세요.
-          총 3번의 블록 생성을 방해해보세요.
+          <span className="text-red-400 font-semibold">빨간 눈사람(악의적 노드)</span>으로 바꾸세요.
+          합의가 완료되기 전에 다수를 장악하면 됩니다. 총 3번의 블록 생성을 방해해보세요.
         </p>
-        <p className="text-slate-500 text-xs">건투를 빕니다. 확률적으로 거의 불가능합니다.</p>
+        <p className="text-slate-500 text-xs">확률적으로 거의 불가능합니다. 건투를 빕니다.</p>
+      </div>
+
+      {/* 데모 영역 */}
+      <div ref={areaRef} className="relative bg-gray-800 rounded-lg p-4 mb-5 overflow-hidden">
+        <p className="text-[10px] text-gray-600 text-center tracking-widest mb-4">
+          ▸ 이렇게 클릭하면 됩니다
+        </p>
+
+        <div className="grid grid-cols-2 gap-y-3 gap-x-8 w-fit mx-auto">
+          {/* 노드1 top-left */}
+          <div ref={sm1Ref} className="flex flex-col items-center gap-1">
+            <svg viewBox="0 0 40 52" className="w-9 h-12" xmlns="http://www.w3.org/2000/svg">
+              <ellipse cx="20" cy="49" rx="14" ry="4" fill="#000" opacity="0.1"/>
+              <circle className="smq-snow" cx="20" cy="36" r="13"/>
+              <circle className="smq-snow" cx="20" cy="17" r="10"/>
+              <circle cx="16" cy="14" r="1.6" fill="#2d3748"/>
+              <circle cx="24" cy="14" r="1.6" fill="#2d3748"/>
+            </svg>
+            <span className="text-[9px] text-gray-600">노드 1</span>
+          </div>
+          {/* 노드2 top-right */}
+          <div ref={sm2Ref} className="flex flex-col items-center gap-1">
+            <svg viewBox="0 0 40 52" className="w-9 h-12" xmlns="http://www.w3.org/2000/svg">
+              <ellipse cx="20" cy="49" rx="14" ry="4" fill="#000" opacity="0.1"/>
+              <circle className="smq-snow" cx="20" cy="36" r="13"/>
+              <circle className="smq-snow" cx="20" cy="17" r="10"/>
+              <circle cx="16" cy="14" r="1.6" fill="#2d3748"/>
+              <circle cx="24" cy="14" r="1.6" fill="#2d3748"/>
+            </svg>
+            <span className="text-[9px] text-gray-600">노드 2</span>
+          </div>
+          {/* 노드3 bottom-left — 항상 파란색 유지 */}
+          <div ref={sm3Ref} className="flex flex-col items-center gap-1">
+            <svg viewBox="0 0 40 52" className="w-9 h-12" xmlns="http://www.w3.org/2000/svg">
+              <ellipse cx="20" cy="49" rx="14" ry="4" fill="#000" opacity="0.1"/>
+              <circle className="smq-snow" cx="20" cy="36" r="13"/>
+              <circle className="smq-snow" cx="20" cy="17" r="10"/>
+              <circle cx="16" cy="14" r="1.6" fill="#2d3748"/>
+              <circle cx="24" cy="14" r="1.6" fill="#2d3748"/>
+            </svg>
+            <span className="text-[9px] text-gray-600">노드 3</span>
+          </div>
+          {/* 노드4 bottom-right */}
+          <div ref={sm4Ref} className="flex flex-col items-center gap-1">
+            <svg viewBox="0 0 40 52" className="w-9 h-12" xmlns="http://www.w3.org/2000/svg">
+              <ellipse cx="20" cy="49" rx="14" ry="4" fill="#000" opacity="0.1"/>
+              <circle className="smq-snow" cx="20" cy="36" r="13"/>
+              <circle className="smq-snow" cx="20" cy="17" r="10"/>
+              <circle cx="16" cy="14" r="1.6" fill="#2d3748"/>
+              <circle cx="24" cy="14" r="1.6" fill="#2d3748"/>
+            </svg>
+            <span className="text-[9px] text-gray-600">노드 4</span>
+          </div>
+        </div>
+
+        {/* JS가 left/top으로 위치 제어 */}
+        <div ref={cursorRef} className="smq-demo-cursor">
+          <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M3 2L9 17L12 11.5L18 9L3 2Z" fill="white" stroke="#555"
+              strokeWidth="1.2" strokeLinejoin="round"/>
+          </svg>
+        </div>
+        <div ref={rippleRef} className="smq-demo-ripple" />
       </div>
 
       <button
