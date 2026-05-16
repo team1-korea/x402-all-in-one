@@ -7,6 +7,7 @@ import StaffCodeQuest from '../quests/StaffCodeQuest';
 import FeedbackQuest from '../quests/FeedbackQuest';
 import InterestsQuest from '../quests/InterestsQuest';
 import SnowmanSabotageQuest from '../quests/SnowmanSabotageQuest';
+import BlockBuilderQuest from '../quests/BlockBuilderQuest';
 
 const ThreeJsQuest = lazy(() => import('../quests/ThreeJsQuest'));
 
@@ -56,9 +57,7 @@ export default function QuestPage() {
           <ThreeJsQuest {...props} />
         </Suspense>
       )}
-      {quest.questType === 'drag-drop' && (
-        <div className="text-slate-500 text-center p-8">이 퀘스트는 준비 중입니다.</div>
-      )}
+      {quest.questType === 'drag-drop' && <BlockBuilderQuest {...props} />}
     </div>
   );
 }
