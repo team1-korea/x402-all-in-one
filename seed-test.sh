@@ -32,7 +32,7 @@ upsert() {
 echo ""
 echo "Supabase에 테스트 토큰 주입 중..."
 
-for step in 2 3 4 5 6 7 8 9 10; do
+for step in 1 2 3 4 5 6 7 8 9 10; do
   code=$(upsert "test-$step" "$step")
   if [[ "$code" == "200" || "$code" == "201" ]]; then
     echo "  ✅ test-$step (step $step)"
@@ -44,6 +44,7 @@ done
 echo ""
 echo "아래 URL로 접속하세요:"
 echo ""
+echo "  Quest 1  (블록 연결 퍼즐)        → $QUEST_BASE/quest/test-1"
 echo "  Quest 2  (OX - Claude 스킬)     → $QUEST_BASE/quest/test-2"
 echo "  Quest 3  (OX - x402)            → $QUEST_BASE/quest/test-3"
 echo "  Quest 4  (찾아서 클릭)           → $QUEST_BASE/quest/test-4"
