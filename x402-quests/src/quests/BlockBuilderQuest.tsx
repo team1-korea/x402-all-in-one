@@ -163,7 +163,8 @@ export default function BlockBuilderQuest({ quest }: Props) {
       if (id !== undefined && type === 'input' && dragLine.fromId !== id) {
         const fromBlock = blocks.find(b => b.id === dragLine.fromId);
         const toBlock = blocks.find(b => b.id === id);
-        if (fromBlock && toBlock && fromBlock.hash === toBlock.prevHash) {
+        const alreadyLinked = links.some(l => l.from === dragLine.fromId && l.to === id);
+        if (!alreadyLinked && fromBlock && toBlock && fromBlock.hash === toBlock.prevHash) {
           const newLinks = [...links, { from: dragLine.fromId, to: id }];
           setLinks(newLinks);
           checkWinCondition(newLinks);
@@ -194,8 +195,10 @@ export default function BlockBuilderQuest({ quest }: Props) {
 
   // ── Win condition ────────────────────────────────────────
   const checkWinCondition = (currentLinks: BlockLink[]) => {
-    if (currentLinks.length < 3) return;
+    if (gameState !== 'playing' || currentLinks.length < 3) return;
     setGameState('won');
+    setShowTooltip(false);
+    setHoveredBlock(null);
     setTimeout(() => {
       setShowArrows(false);
       arrangeBlocksInOrder();
