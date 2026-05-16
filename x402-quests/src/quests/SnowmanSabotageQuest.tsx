@@ -366,6 +366,95 @@ function LandingScreen({ onStart }: { onStart: () => void }) {
   const cursorRef = useRef<HTMLDivElement | null>(null);
   const rippleRef = useRef<HTMLDivElement | null>(null);
 
+  useEffect(() => {
+    const area   = areaRef.current;
+    const cursor = cursorRef.current;
+    const ripple = rippleRef.current;
+    if (!area || !cursor || !ripple) return;
+
+    // TypeScript cannot narrow these inside nested async functions,
+    // so we assert non-null after the guard above.
+    const _area   = area   as HTMLDivElement;
+    const _cursor = cursor as HTMLDivElement;
+    const _ripple = ripple as HTMLDivElement;
+
+    const ORDER = [sm1Ref, sm4Ref, sm2Ref]; // 노드3은 파랗게 유지
+    let cancelled = false;
+
+    function getCenter(ref: { current: HTMLDivElement | null }) {
+      const svg = ref.current?.querySelector('svg');
+      if (!svg) return { x: 0, y: 0 };
+      const aR = _area.getBoundingClientRect();
+      const sR = svg.getBoundingClientRect();
+      // 눈사람 머리 중심: SVG viewBox 내 cy=17, 전체 높이 52
+      return {
+        x: sR.left - aR.left + sR.width / 2,
+        y: sR.top  - aR.top  + sR.height * (17 / 52),
+      };
+    }
+
+    function placeCursor(x: number, y: number, animate: boolean) {
+      _cursor.style.transition = animate
+        ? 'left 0.55s cubic-bezier(0.25,0.46,0.45,0.94), top 0.55s cubic-bezier(0.25,0.46,0.45,0.94)'
+        : 'none';
+      _cursor.style.left = `${x}px`;
+      _cursor.style.top  = `${y}px`;
+    }
+
+    const sleep = (ms: number) => new Promise<void>(r => setTimeout(r, ms));
+
+    async function doClick(ref: { current: HTMLDivElement | null }) {
+      const { x, y } = getCenter(ref);
+
+      // 커서 스쿼시 재시작 (reflow trick)
+      _cursor.classList.remove('smq-cursor-click');
+      void _cursor.offsetWidth;
+      _cursor.classList.add('smq-cursor-click');
+
+      // 리플 재시작
+      _ripple.classList.remove('smq-ripple-pop');
+      _ripple.style.left = `${x - 16}px`;
+      _ripple.style.top  = `${y - 16}px`;
+      void _ripple.offsetWidth;
+      _ripple.classList.add('smq-ripple-pop');
+
+      // 눈사람 빨갛게
+      ref.current?.classList.add('smq-node-red');
+
+      await sleep(450);
+      _cursor.classList.remove('smq-cursor-click');
+      _ripple.classList.remove('smq-ripple-pop');
+    }
+
+    async function runLoop() {
+      // 시작 시 화면 밖에서 대기
+      placeCursor(-40, -40, false);
+      await sleep(400);
+
+      while (!cancelled) {
+        // 전체 리셋
+        [sm1Ref, sm2Ref, sm3Ref, sm4Ref].forEach(r =>
+          r.current?.classList.remove('smq-node-red')
+        );
+        await sleep(500);
+
+        for (const ref of ORDER) {
+          if (cancelled) return;
+          const { x, y } = getCenter(ref);
+          placeCursor(x - 2, y - 2, true);
+          await sleep(620); // transition 완료 대기
+          await doClick(ref);
+          await sleep(650);
+        }
+
+        await sleep(1000); // 루프 간 대기
+      }
+    }
+
+    runLoop();
+    return () => { cancelled = true; };
+  }, []);
+
   return (
     <>
       <style>{`
