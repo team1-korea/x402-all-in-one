@@ -422,6 +422,7 @@ function LandingScreen({ onStart }: { onStart: () => void }) {
       ref.current?.classList.add('smq-node-red');
 
       await sleep(450);
+      if (cancelled) return;
       _cursor.classList.remove('smq-cursor-click');
       _ripple.classList.remove('smq-ripple-pop');
     }
