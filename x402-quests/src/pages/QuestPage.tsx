@@ -43,6 +43,10 @@ export default function QuestPage() {
 
   const props = { quest };
 
+  if (quest.questType === 'drag-drop') {
+    return <BlockBuilderQuest {...props} />;
+  }
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-center">
       {(quest.questType === 'theory-ox' || quest.questType === 'theory-mc') && (
@@ -57,7 +61,6 @@ export default function QuestPage() {
           <ThreeJsQuest {...props} />
         </Suspense>
       )}
-      {quest.questType === 'drag-drop' && <BlockBuilderQuest {...props} />}
     </div>
   );
 }
