@@ -1,0 +1,629 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  padding: 2rem;
+  text-align: center;
+  user-select: none;
+  position: relative;
+  overflow: hidden;
+}
+
+.gameArea {
+  position: relative;
+  width: 100%;
+  flex: 1;
+  min-height: 500px;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 20px;
+  overflow: visible;
+}
+
+.blocksClip {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow: hidden;
+  border-radius: 20px;
+  z-index: 10;
+}
+
+.gameArea::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border: 4px solid #ffffff;
+  border-radius: 20px;
+  pointer-events: none;
+  z-index: 30;
+}
+
+.svgLayer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.blockCard {
+  position: absolute;
+  width: 220px;
+  background: #1a1a1a;
+  border: 2px solid #ffffff;
+  border-radius: 10px;
+  padding: 1rem;
+  color: #fff;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  z-index: 10;
+  transition: transform 0.2s, box-shadow 0.2s;
+  overflow: visible;
+  will-change: left, filter, opacity;
+}
+
+.blockCard.connected {
+  border-color: #4ade80;
+  box-shadow: 0 0 15px rgba(74, 222, 128, 0.3);
+}
+
+.blockCard.arranging {
+  transition: left 0.6s ease-out, top 0.6s ease-out, transform 0.2s, box-shadow 0.2s;
+}
+
+.blockCard.scrolling {
+  transition: none !important;
+}
+
+.blockCard:hover {
+  transform: scale(1.02);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
+  z-index: 20;
+}
+
+.blockHeader {
+  font-weight: bold;
+  font-size: 1.1rem;
+  color: #a78bfa;
+  border-bottom: 1px solid #333;
+  padding-bottom: 0.5rem;
+  margin-bottom: 0.5rem;
+  display: flex;
+  justify-content: space-between;
+}
+
+.hashRow {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  font-size: 0.7rem;
+  font-family: monospace;
+  color: #888;
+}
+
+.hashValue {
+  color: #fff;
+  background: #333;
+  padding: 2px 5px;
+  border-radius: 4px;
+  margin-top: 2px;
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.socket {
+  width: 20px;
+  height: 20px;
+  background: #333;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  position: absolute;
+  cursor: crosshair;
+  transition: all 0.2s;
+  z-index: 60;
+}
+
+.socket:hover {
+  transform: scale(1.2);
+  background: #a78bfa;
+}
+
+.socket.input {
+  top: 50%;
+  left: -10px;
+  transform: translateY(-50%);
+}
+
+.socket.output {
+  top: 50%;
+  right: -10px;
+  transform: translateY(-50%);
+}
+
+.genesisBlock .output {
+  background: #ef4444;
+}
+
+.invalidLine {
+  animation: shakeAndFade 0.8s ease-out forwards;
+}
+
+@keyframes shakeAndFade {
+  0% { opacity: 1; transform: translateX(0); }
+  10% { transform: translateX(-5px); }
+  20% { transform: translateX(5px); }
+  30% { transform: translateX(-5px); }
+  40% { transform: translateX(5px); }
+  50% { transform: translateX(-3px); }
+  60% { transform: translateX(3px); }
+  70% { opacity: 0.7; transform: translateX(-2px); }
+  80% { opacity: 0.4; transform: translateX(2px); }
+  100% { opacity: 0; transform: translateX(0); }
+}
+
+.hintContainer {
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100;
+  animation: hintSlideUp 0.4s ease-out;
+}
+
+.hintMessage {
+  background: rgba(0, 0, 0, 0.9);
+  border: 2px solid #a78bfa;
+  border-radius: 12px;
+  padding: 1rem 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: #fff;
+  font-size: 1rem;
+  box-shadow: 0 4px 20px rgba(167, 139, 250, 0.3);
+}
+
+.hintIcon {
+  font-size: 1.5rem;
+}
+
+@keyframes hintSlideUp {
+  from { opacity: 0; transform: translateX(-50%) translateY(20px); }
+  to { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+.trainBlock {
+  opacity: 0.85;
+  border-color: #ffffff;
+  transition: none;
+}
+
+.trainBlock:hover {
+  transform: none;
+}
+
+.finalBlock {
+  opacity: 1;
+  border-color: #ffffff;
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+}
+
+.attachingBlock {
+  animation: blockAttachSlideIn 0.8s ease-out forwards;
+}
+
+@keyframes blockAttachSlideIn {
+  from { opacity: 0; transform: translateX(100px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.latestBlock {
+  border: 3px solid #ffd700 !important;
+  box-shadow: 0 0 25px rgba(255, 215, 0, 0.5), 0 0 50px rgba(255, 215, 0, 0.2) !important;
+  animation: latestBlockGlow 2s ease-in-out infinite;
+}
+
+@keyframes latestBlockGlow {
+  0%, 100% { box-shadow: 0 0 25px rgba(255, 215, 0, 0.5), 0 0 50px rgba(255, 215, 0, 0.2); }
+  50% { box-shadow: 0 0 35px rgba(255, 215, 0, 0.7), 0 0 70px rgba(255, 215, 0, 0.3); }
+}
+
+.latestBlockLabel {
+  position: absolute;
+  top: -32px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(135deg, #ffd700, #ffaa00);
+  color: #000;
+  font-size: 0.75rem;
+  font-weight: bold;
+  padding: 4px 12px;
+  border-radius: 12px;
+  white-space: nowrap;
+  z-index: 100;
+  box-shadow: 0 2px 8px rgba(255, 215, 0, 0.4);
+}
+
+.pendingBlock {
+  position: absolute;
+  width: 220px;
+  background: rgba(30, 30, 35, 0.6);
+  border: 2px dashed rgba(255, 255, 255, 0.4);
+  border-radius: 10px;
+  padding: 1rem;
+  color: rgba(255, 255, 255, 0.5);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  z-index: 10;
+  animation: pendingPulse 2s ease-in-out infinite;
+}
+
+.pendingBlock .blockHeader {
+  color: rgba(167, 139, 250, 0.6);
+  border-bottom-color: rgba(51, 51, 51, 0.5);
+}
+
+.pendingBlock .hashRow {
+  color: rgba(136, 136, 136, 0.6);
+}
+
+.pendingBlock .hashValue {
+  background: rgba(51, 51, 51, 0.5);
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.hashValuePending {
+  color: rgba(255, 255, 255, 0.4);
+  background: rgba(51, 51, 51, 0.5);
+  padding: 2px 5px;
+  border-radius: 4px;
+  margin-top: 2px;
+  width: 100%;
+  text-align: center;
+  font-style: italic;
+  animation: hashBlink 1.5s ease-in-out infinite;
+}
+
+.pendingBlockLabel {
+  position: absolute;
+  top: -32px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(100, 100, 120, 0.8);
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: bold;
+  padding: 4px 12px;
+  border-radius: 12px;
+  white-space: nowrap;
+  z-index: 100;
+  animation: pendingLabelPulse 2s ease-in-out infinite;
+}
+
+.pendingSocket {
+  background: rgba(51, 51, 51, 0.5) !important;
+  border-color: rgba(255, 255, 255, 0.3) !important;
+}
+
+@keyframes pendingPulse {
+  0%, 100% { opacity: 0.6; border-color: rgba(255, 255, 255, 0.3); }
+  50% { opacity: 0.9; border-color: rgba(255, 255, 255, 0.5); }
+}
+
+@keyframes pendingLabelPulse {
+  0%, 100% { background: rgba(100, 100, 120, 0.7); }
+  50% { background: rgba(120, 120, 140, 0.9); }
+}
+
+@keyframes hashBlink {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.8; }
+}
+
+.blockTooltip {
+  position: absolute;
+  transform: translateX(-50%) translateY(-100%);
+  background: rgba(0, 0, 0, 0.95);
+  border: 1px solid #a78bfa;
+  border-radius: 10px;
+  padding: 1rem;
+  min-width: 220px;
+  margin-top: -10px;
+  z-index: 20000;
+  animation: tooltipFadeIn 0.2s ease-out;
+  pointer-events: none;
+}
+
+.blockTooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 8px solid transparent;
+  border-top-color: #a78bfa;
+}
+
+.blockTooltipBelow {
+  position: absolute;
+  transform: translateX(-50%) translateY(0);
+  background: rgba(0, 0, 0, 0.95);
+  border: 1px solid #a78bfa;
+  border-radius: 10px;
+  padding: 1rem;
+  min-width: 220px;
+  margin-top: 10px;
+  z-index: 20000;
+  animation: tooltipFadeIn 0.2s ease-out;
+  pointer-events: none;
+}
+
+.blockTooltipBelow::before {
+  content: '';
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 8px solid transparent;
+  border-bottom-color: #a78bfa;
+}
+
+.tooltipTitle {
+  font-size: 0.85rem;
+  font-weight: bold;
+  color: #a78bfa;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(167, 139, 250, 0.3);
+  text-align: center;
+}
+
+.tooltipRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.75rem;
+  padding: 0.25rem 0;
+  color: #ccc;
+}
+
+.tooltipRow span:first-child { color: #888; }
+.tooltipRow span:last-child { color: #fff; font-weight: 500; }
+
+.tooltipHash {
+  font-family: monospace;
+  background: #333;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.65rem;
+  max-width: 180px;
+  text-align: right;
+}
+
+.tooltipDivider {
+  height: 1px;
+  background: rgba(167, 139, 250, 0.2);
+  margin: 0.5rem 0;
+}
+
+@keyframes tooltipFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.helpButton {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  width: 44px;
+  height: 44px;
+  background: rgba(0, 0, 0, 0.7);
+  border: 2px solid #ffffff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  cursor: pointer;
+  z-index: 40;
+  transition: all 0.2s;
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.helpButton:hover {
+  background: rgba(167, 139, 250, 0.3);
+  border-color: #a78bfa;
+  transform: scale(1.05);
+}
+
+.helpTooltip {
+  position: absolute;
+  top: calc(100% + 12px);
+  right: 0;
+  background: rgba(0, 0, 0, 0.95);
+  border: 2px solid #a78bfa;
+  border-radius: 12px;
+  padding: 1.25rem;
+  min-width: 300px;
+  z-index: 100;
+  animation: helpTooltipFadeIn 0.2s ease-out;
+}
+
+.helpTooltip::before {
+  content: '';
+  position: absolute;
+  bottom: 100%;
+  right: 16px;
+  border: 8px solid transparent;
+  border-bottom-color: #a78bfa;
+}
+
+@keyframes helpTooltipFadeIn {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.helpTooltipTitle {
+  font-size: 1rem;
+  font-weight: bold;
+  color: #a78bfa;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(167, 139, 250, 0.3);
+}
+
+.helpTooltipList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: hint-counter;
+  text-align: left;
+}
+
+.helpTooltipList li {
+  color: #ccc;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  padding: 0.5rem 0;
+  padding-left: 1.5rem;
+  position: relative;
+  counter-increment: hint-counter;
+}
+
+.helpTooltipList li::before {
+  content: counter(hint-counter) '.';
+  position: absolute;
+  left: 0;
+  color: #a78bfa;
+  font-weight: bold;
+}
+
+.successOverlay {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  z-index: 50;
+  animation: successSlideIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.successCard {
+  position: relative;
+  background: linear-gradient(165deg, rgba(18, 18, 22, 0.98) 0%, rgba(12, 12, 14, 0.99) 100%);
+  border: 1px solid rgba(74, 222, 128, 0.25);
+  border-radius: 20px;
+  padding: 2rem 2.25rem;
+  text-align: center;
+  backdrop-filter: blur(16px);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), 0 0 40px rgba(74, 222, 128, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  max-width: 380px;
+}
+
+.successCard::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #4ade80, transparent);
+  border-radius: 0 0 4px 4px;
+}
+
+.successIcon {
+  position: relative;
+  width: 56px;
+  height: 56px;
+  margin: 0 auto 1.25rem;
+  background: linear-gradient(145deg, #4ade80, #22c55e);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  color: #000;
+  font-weight: bold;
+  box-shadow: 0 6px 20px rgba(74, 222, 128, 0.35);
+}
+
+.successTitle {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #4ade80;
+  margin: 0 0 0.5rem 0;
+}
+
+.successDesc {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.875rem;
+  line-height: 1.5;
+  margin: 0 0 1.25rem 0;
+}
+
+.successDesc2 {
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 0.9rem;
+  font-weight: 500;
+  line-height: 1.6;
+  margin: 0 0 1.25rem 0;
+  padding: 0.875rem 1rem;
+  background: rgba(74, 222, 128, 0.06);
+  border: 1px solid rgba(74, 222, 128, 0.15);
+  border-radius: 10px;
+}
+
+.highlightChain { color: #60a5fa; font-weight: bold; }
+.highlightBlockchain { color: rgb(230, 72, 72); font-weight: bold; }
+
+.successButtons {
+  display: flex;
+  gap: 0.625rem;
+  justify-content: center;
+  align-items: center;
+}
+
+.successBtn {
+  height: 44px;
+  padding: 0 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  border-radius: 10px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+.successBtn.outline {
+  background: transparent;
+  color: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.successBtn.outline:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+@keyframes successSlideIn {
+  from { opacity: 0; transform: translateX(20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
