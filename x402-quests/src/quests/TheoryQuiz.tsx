@@ -1,4 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
+import ReactMarkdown from 'react-markdown';
+import remarkBreaks from 'remark-breaks';
 import type { QuestData, AnswerResult } from '../types';
 import { submitAnswer } from '../api';
 import ResultDisplay from '../components/ResultDisplay';
@@ -10,6 +12,7 @@ interface Props {
 const THEORY_WAIT_SEC = 30;
 
 export default function TheoryQuiz({ quest }: Props) {
+  const [remaining, setRemaining] = useState(THEORY_WAIT_SEC);
   const [quizUnlocked, setQuizUnlocked] = useState(false);
   const [selected, setSelected] = useState<(number | null)[]>([]);
   const [result, setResult] = useState<AnswerResult | null>(null);
@@ -19,9 +22,14 @@ export default function TheoryQuiz({ quest }: Props) {
   const isOX = quest.questType === 'theory-ox';
 
   useEffect(() => {
-    const id = setTimeout(() => setQuizUnlocked(true), THEORY_WAIT_SEC * 1000);
+    if (quizUnlocked) return;
+    if (remaining <= 0) {
+      setQuizUnlocked(true);
+      return;
+    }
+    const id = setTimeout(() => setRemaining((r) => r - 1), 1000);
     return () => clearTimeout(id);
-  }, []);
+  }, [remaining, quizUnlocked]);
 
   useEffect(() => {
     if (questions.length > 0) {
@@ -51,36 +59,43 @@ export default function TheoryQuiz({ quest }: Props) {
   };
 
   return (
-    <div className="max-w-lg w-full mx-auto px-4 py-12">
-      <div className="bg-gray-900 rounded-xl p-6 border border-gray-800">
+    <div className="w-full max-w-3xl mx-auto px-6 py-10">
+      <div className="bg-gray-900 rounded-xl p-8 border border-gray-800">
         <span className="text-xs text-blue-400 uppercase tracking-widest">
           Quest {quest.step} · {isOX ? 'OX 퀴즈' : '객관식'}
         </span>
-        <h1 className="text-xl font-bold mt-2 mb-4">{quest.name}</h1>
+        <h1 className="text-2xl font-bold mt-2 mb-6">{quest.name}</h1>
 
-        <div className="bg-gray-800 rounded-lg p-4 text-sm text-slate-300 leading-relaxed whitespace-pre-line">
-          {quest.theory}
+        <div className="bg-gray-800 rounded-lg p-6 mb-6
+          prose prose-invert max-w-none
+          [&_p]:text-slate-300 [&_p]:leading-8 [&_p]:my-6
+          [&_strong]:text-white [&_strong]:font-semibold
+          [&_li]:text-slate-300 [&_li]:leading-7 [&_li]:my-1
+          [&_ol]:my-4 [&_ul]:my-4
+          [&_code]:text-blue-300 [&_code]:bg-gray-900 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:rounded [&_code]:text-sm
+          [&>*:first-child]:mt-0 [&>*:last-child]:mb-0">
+          <ReactMarkdown remarkPlugins={[remarkBreaks]}>{quest.theory ?? ''}</ReactMarkdown>
         </div>
 
         {!quizUnlocked && (
           <button
             disabled
-            className="mt-6 w-full py-3 bg-gray-700 text-gray-400 cursor-not-allowed rounded-lg font-medium"
+            className="w-full py-3 bg-gray-700 text-gray-400 cursor-not-allowed rounded-lg font-medium"
           >
-            30초 이후에 열립니다
+            {remaining}초 이후에 열립니다
           </button>
         )}
 
         {quizUnlocked && (
-          <div className="mt-6 space-y-6">
+          <div className="space-y-6">
             {questions.map((q, qIdx) => (
               <div key={qIdx}>
-                <p className="font-medium mb-3 text-slate-200">
+                <div className="font-medium mb-3 text-slate-200 prose prose-invert prose-sm max-w-none">
                   {questions.length > 1 && (
                     <span className="text-blue-400 mr-2">Q{qIdx + 1}.</span>
                   )}
-                  {q.question}
-                </p>
+                  <ReactMarkdown>{q.question}</ReactMarkdown>
+                </div>
 
                 {isOX ? (
                   <div className="flex gap-4">
@@ -111,7 +126,9 @@ export default function TheoryQuiz({ quest }: Props) {
                         }`}
                       >
                         <span className="text-slate-500 mr-2">{String.fromCharCode(65 + i)}.</span>
-                        {choice}
+                        <span className="prose prose-invert prose-sm inline [&>p]:inline">
+                          <ReactMarkdown>{choice}</ReactMarkdown>
+                        </span>
                       </button>
                     ))}
                   </div>
