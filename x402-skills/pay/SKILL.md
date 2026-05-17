@@ -34,7 +34,7 @@ USDC(EIP-3009)를 사용해 유료 퀘스트 API를 호출합니다.
 
 ```json
 {
-  "x402Version": 1,
+  "x402Version": 2,
   "accepts": [{
     "scheme": "exact",
     "network": "eip155:402",
@@ -108,7 +108,7 @@ const signature = await walletClient.signTypedData({
 
 ```ts
 const payload = {
-  x402Version: 1,
+  x402Version: 2,
   accepted: accepts[0],
   payload: {
     signature,

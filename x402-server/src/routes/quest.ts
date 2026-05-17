@@ -89,7 +89,7 @@ router.get("/:productId/:step", async (req: Request, res: Response) => {
   if (!paymentHeader) {
     const requirements = buildPaymentRequirements(productId, step, quest.price);
     const body: X402Response & { difficulty: string } = {
-      x402Version: 1,
+      x402Version: 2,
       accepts: [requirements],
       error: "결제가 필요합니다",
       difficulty: quest.difficulty,
