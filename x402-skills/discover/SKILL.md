@@ -29,23 +29,34 @@ curl "http://localhost:4010/v1/services?productId=product-a&wallet={walletAddres
 
 ```json
 {
-  "quests": [
+  "productId": "product-a",
+  "services": [
     {
-      "step": 1,
+      "id": "quest-1",
       "name": "퀘스트 1 — 드래그앤드롭",
+      "description": "x402 결제 흐름 순서 맞추기",
+      "questType": "drag-drop",
+      "status": "available",
       "price": "무료",
-      "completed": false
+      "endpoint": "http://localhost:4010/v1/quest/product-a/1"
     },
     {
-      "step": 2,
+      "id": "quest-2",
       "name": "퀘스트 2 — Claude 스킬",
+      "description": "Claude Code와 스킬 시스템을 알아보세요",
+      "questType": "theory-ox",
+      "status": "locked",
       "price": "1 TONE",
-      "completed": false
+      "endpoint": "http://localhost:4010/v1/quest/product-a/2"
     }
-  ],
-  "currentStep": 1,
-  "completed": false
+  ]
 }
 ```
 
-응답에서 `currentStep`을 확인한 뒤 `x402-quest` 스킬로 해당 퀘스트를 진행하세요.
+`status` 값:
+- `available` — 지금 진행 가능
+- `purchased` — 결제 완료, 웹 앱 방문 대기
+- `cleared` — 완료
+- `locked` — 이전 퀘스트 미완료
+
+`status === "available"` 인 퀘스트부터 `x402-quest` 스킬로 진행하세요.
