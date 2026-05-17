@@ -1,110 +1,116 @@
-import { useEffect, useRef, useState } from 'react';
-import * as THREE from 'three';
+import { useState, useRef } from 'react';
 import type { QuestData, AnswerResult } from '../types';
 import { submitAnswer } from '../api';
 import ResultDisplay from '../components/ResultDisplay';
 
 interface Props { quest: QuestData }
 
+const STEPS = [
+  { label: 'GET /api/data 요청', sub: '클라이언트 → 서버 (결제 헤더 없음)' },
+  { label: '402 Payment Required', sub: '서버 → 클라이언트 (결제 금액·수신자·네트워크 포함)' },
+  { label: '지갑으로 결제 서명', sub: '클라이언트가 EVM 트랜잭션 생성 & 서명' },
+  { label: 'X-PAYMENT 헤더로 재요청', sub: '클라이언트 → 서버 (서명된 결제 포함)' },
+  { label: '서버가 온체인 결제 검증', sub: '서버가 블록체인에서 결제 유효성 확인' },
+  { label: '200 OK + X-PAYMENT-RESPONSE', sub: '서버 → 클라이언트 (데이터 응답 + 결제 확인)' },
+];
+
+function shuffle<T>(arr: T[]): T[] {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
 export default function ThreeJsQuest({ quest }: Props) {
-  const mountRef = useRef<HTMLDivElement>(null);
-  const [hint, setHint] = useState(false);
+  const [order, setOrder] = useState<number[]>(() => shuffle([0, 1, 2, 3, 4, 5]));
   const [result, setResult] = useState<AnswerResult | null>(null);
   const [loading, setLoading] = useState(false);
+  const dragIndexRef = useRef<number | null>(null);
 
-  useEffect(() => {
-    if (!mountRef.current || result?.correct) return;
+  const handleDragStart = (index: number) => {
+    dragIndexRef.current = index;
+  };
 
-    const el = mountRef.current;
-    const w = el.clientWidth;
-    const h = 320;
+  const handleDragOver = (e: React.DragEvent, index: number) => {
+    e.preventDefault();
+    const from = dragIndexRef.current;
+    if (from === null || from === index) return;
+    setOrder(prev => {
+      const next = [...prev];
+      [next[from], next[index]] = [next[index], next[from]];
+      return next;
+    });
+    dragIndexRef.current = index;
+  };
 
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    renderer.setSize(w, h);
-    renderer.setPixelRatio(window.devicePixelRatio);
-    el.appendChild(renderer.domElement);
+  const handleDragEnd = () => {
+    dragIndexRef.current = null;
+  };
 
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(60, w / h, 0.1, 100);
-    camera.position.set(0, 0, 3);
-
-    const materials = [
-      new THREE.MeshStandardMaterial({ color: 0x1e40af }),
-      new THREE.MeshStandardMaterial({ color: 0x1e40af }),
-      new THREE.MeshStandardMaterial({ color: 0x1e40af }),
-      new THREE.MeshStandardMaterial({ color: 0x1e40af }),
-      new THREE.MeshStandardMaterial({ color: 0x7f1d1d, emissive: 0x3b0000 }),
-      new THREE.MeshStandardMaterial({ color: 0x1e40af }),
-    ];
-
-    const cube = new THREE.Mesh(new THREE.BoxGeometry(1.4, 1.4, 1.4), materials);
-    scene.add(cube);
-
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
-    scene.add(ambientLight);
-    const dirLight = new THREE.DirectionalLight(0xffffff, 1);
-    dirLight.position.set(5, 5, 5);
-    scene.add(dirLight);
-
-    const raycaster = new THREE.Raycaster();
-    const mouse = new THREE.Vector2();
-
-    const handleClick = async (e: MouseEvent) => {
-      if (loading || result?.correct) return;
-      const rect = renderer.domElement.getBoundingClientRect();
-      mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
-      mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
-      raycaster.setFromCamera(mouse, camera);
-      const hits = raycaster.intersectObject(cube);
-      if (!hits.length) return;
-      const faceIndex = Math.floor(hits[0].faceIndex! / 2);
-      if (faceIndex === 4) {
-        setLoading(true);
-        const res = await submitAnswer(quest.productId, quest.step, quest.walletAddress, {
-          secretCode: '3DAVAX',
-        });
-        setResult(res);
-        setLoading(false);
-      } else {
-        setHint(true);
-        setTimeout(() => setHint(false), 1500);
-      }
-    };
-
-    renderer.domElement.addEventListener('click', handleClick);
-
-    let animId: number;
-    const animate = () => {
-      animId = requestAnimationFrame(animate);
-      cube.rotation.x += 0.005;
-      cube.rotation.y += 0.008;
-      renderer.render(scene, camera);
-    };
-    animate();
-
-    return () => {
-      cancelAnimationFrame(animId);
-      renderer.domElement.removeEventListener('click', handleClick);
-      el.removeChild(renderer.domElement);
-      renderer.dispose();
-    };
-  }, [quest, loading, result]);
+  const handleSubmit = async () => {
+    if (loading || result?.correct) return;
+    setLoading(true);
+    try {
+      const res = await submitAnswer(quest.productId, quest.step, quest.walletAddress, { order });
+      setResult(res);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="max-w-lg w-full mx-auto px-4 py-12">
       <div className="bg-gray-900 rounded-xl p-6 border border-gray-800">
-        <span className="text-xs text-pink-400 uppercase tracking-widest">Quest {quest.step} · 3D 인터랙션</span>
+        <span className="text-xs text-blue-400 uppercase tracking-widest">Quest {quest.step} · x402 프로토콜</span>
         <h1 className="text-xl font-bold mt-2 mb-1">{quest.name}</h1>
-        <p className="text-slate-400 text-sm mb-4">
-          회전하는 큐브에서 <span className="text-red-400 font-medium">비밀 면</span>을 찾아 클릭하세요!
-          {hint && <span className="text-yellow-400 ml-2">← 다른 면입니다</span>}
+        <p className="text-slate-400 text-sm mb-6">
+          x402 결제 프로토콜이 동작하는 순서를 드래그해서 맞춰보세요.
         </p>
 
         {!result?.correct && (
-          <div ref={mountRef} className="w-full h-80 rounded-xl overflow-hidden bg-gray-950 cursor-pointer" />
+          <div className="flex flex-col gap-2 mb-6">
+            {order.map((stepIdx, position) => (
+              <div
+                key={position}
+                draggable
+                onDragStart={() => handleDragStart(position)}
+                onDragOver={e => handleDragOver(e, position)}
+                onDragEnd={handleDragEnd}
+                className="flex items-start gap-3 bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 cursor-grab active:cursor-grabbing select-none"
+              >
+                <span className="text-gray-500 text-sm font-mono mt-0.5 w-4 shrink-0">{position + 1}</span>
+                <div>
+                  <p className="text-sm font-medium text-white">{STEPS[stepIdx].label}</p>
+                  <p className="text-xs text-slate-500 mt-0.5">{STEPS[stepIdx].sub}</p>
+                </div>
+                <span className="ml-auto text-gray-600 text-sm shrink-0">⠿</span>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {!result?.correct && (
+          <button
+            onClick={handleSubmit}
+            disabled={loading}
+            className="w-full py-3 bg-blue-600 hover:bg-blue-500 disabled:bg-gray-700 disabled:cursor-not-allowed rounded-lg font-semibold text-white transition-colors"
+          >
+            {loading ? '확인 중...' : '순서 제출 →'}
+          </button>
         )}
 
         {result && <ResultDisplay correct={result.correct} message={result.message} />}
+
+        {result && !result.correct && (
+          <button
+            onClick={() => { setResult(null); setOrder(shuffle([0, 1, 2, 3, 4, 5])); }}
+            className="w-full mt-3 py-2 border border-gray-700 hover:border-gray-500 rounded-lg text-sm text-slate-400 hover:text-white transition-colors"
+          >
+            다시 시도
+          </button>
+        )}
       </div>
     </div>
   );

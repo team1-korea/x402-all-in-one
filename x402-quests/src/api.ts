@@ -17,6 +17,7 @@ export async function submitAnswer(
   walletAddress: string,
   body: {
     answers?: number[];
+    order?: number[];
     secretCode?: string;
     feedback?: { good: string; bad: string; next: string };
     interests?: string[];
