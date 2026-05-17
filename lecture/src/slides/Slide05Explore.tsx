@@ -1,10 +1,9 @@
 interface Props { animKey: number }
 
 const holes = [
-  '[TODO: 몇 번 응답을 돌려보내나요?]',
-  '[TODO: 어떤 정보들이 들어있나요? (어느 체인, 얼마, 어느 지갑으로)]',
-  '[TODO: 받는 지갑 주소는 응답의 어느 필드에서 가져오나요?]',
+  '[TODO: 이 서명이 언제까지 유효해야 하나요?]',
   '[TODO: 어떤 인코딩 방식으로 변환해야 하나요?]',
+  '[TODO: 누구에게 넘겨서 온체인 검증을 맡기나요?]',
 ]
 
 const Slide05Explore = ({ animKey }: Props) => (

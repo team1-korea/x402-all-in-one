@@ -7,7 +7,7 @@ const Slide04Install = ({ animKey }: Props) => (
       <p className="fade-in-stagger font-mono text-xs tracking-widest uppercase text-sage mb-4" style={{ animationDelay: '0s' }}>03 · 장착</p>
       <h2 className="fade-in-stagger font-serif text-5xl text-dark mb-8" style={{ animationDelay: '0.2s' }}>클로드 무장시키기</h2>
       <pre className="fade-in-stagger w-full bg-[#1e2d24] rounded-xl px-7 py-5 font-mono text-lg text-[#d4ede0] text-center mb-6" style={{ animationDelay: '0.5s' }}>
-        npx x402-meetup --url=https://api.x402-meetup.example.com
+        npx team1-x402 --url=https://[서버주소]:4010
       </pre>
       <div className="fade-in-stagger w-full bg-cream/70 border border-forest/20 rounded-xl px-6 py-5 mb-5 font-sans text-base text-dark/80" style={{ animationDelay: '0.9s' }}>
         설치 확인: Claude Code에서{' '}

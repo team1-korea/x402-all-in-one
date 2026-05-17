@@ -65,14 +65,14 @@ disable-model-invocation: false
 
 **1단계.** 유료 엔드포인트에 X-PAYMENT 없이 GET 요청을 보낸다.
 
-**2단계.** 서버가 HTTP `[TODO: 몇 번 응답을 돌려보내나요?]` 로 응답한다.  
-응답 본문의 `accepts[0]` 에는 `[TODO: 어떤 정보들이 들어있나요? (어느 체인인지, 얼마인지, 어느 지갑으로 보내야 하는지)]` 가 담겨있다.
+**2단계.** 서버가 HTTP `402` 로 응답한다.  
+응답 본문의 `accepts[0]` 에는 어느 체인인지, 얼마인지(`amount`), 어느 지갑으로 보내야 하는지(`payTo`) 가 담겨있다.
 
 **3단계.** 그 정보를 꺼내 EIP-3009 `TransferWithAuthorization` 서명을 만든다.  
 `authorization` 메시지에는:
 - `from`: 내 지갑 주소
-- `to`: `[TODO: 받는 지갑 주소는 응답의 어느 필드에서 가져오나요?]`
-- `value`: `[TODO: 금액은 응답의 어느 필드에서 가져오나요?]` (BigInt로 변환)
+- `to`: `payTo` (응답에서 받은 수신 지갑 주소)
+- `value`: `amount` (BigInt로 변환)
 - `validAfter`: `0`
 - `validBefore`: `[TODO: 이 서명이 언제까지 유효해야 하나요?]` (Unix timestamp)
 - `nonce`: `0x` + 32바이트 랜덤 hex (`randomBytes(32).toString('hex')`)
@@ -82,11 +82,11 @@ viem의 `account.signTypedData()` 로 서명한다.
 **4단계.** `authorization.value` 를 **문자열로 변환**한 뒤 paymentPayload를 조립한다.  
 전체를 `[TODO: 어떤 인코딩 방식으로 변환해야 하나요?]` 하여 `X-PAYMENT` 헤더에 담는다.
 
-**5단계.** `[TODO: 어떤 HTTP 메서드로]` 같은 URL로 `X-PAYMENT` 헤더를 포함해 다시 요청한다.
+**5단계.** GET 으로 같은 URL에 `X-PAYMENT` 헤더를 포함해 다시 요청한다.
 
-**6단계.** 서버는 요청을 `[TODO: 누구에게 넘겨서 검증하나요?]` 에게 전달하여 검증을 맡긴다.
+**6단계.** 서버는 요청을 `[TODO: 누구에게 넘겨서 온체인 검증을 맡기나요?]` 에게 전달하여 검증을 맡긴다.
 
-**7단계.** 검증과 정산이 완료되면 서버가 `[TODO: 최종적으로 우리에게 무엇을 돌려주나요?]` 를 응답으로 준다.
+**7단계.** 검증과 정산이 완료되면 서버가 퀘스트 문제를 응답으로 준다.
 
 ---
 

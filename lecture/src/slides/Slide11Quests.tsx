@@ -1,30 +1,45 @@
 interface Props { animKey: number }
 
+const quests = [
+  { id: '1', price: '무료', type: '드래그앤드롭 — x402 흐름 순서 맞추기' },
+  { id: '2', price: '1 TONE', type: 'OX — Claude 스킬 시스템' },
+  { id: '3', price: '1 TONE', type: 'OX — x402 프로토콜 이론' },
+  { id: '4', price: '1 TONE', type: '게임 — 아발란체 합의를 방해하라' },
+  { id: '5', price: '1 TONE', type: '객관식 — Anthropic & Claude 모델' },
+  { id: '6', price: '1 TONE', type: '오프라인 — 스태프 찾아 비밀코드 받기' },
+  { id: '7', price: '1 TONE', type: '객관식 — Kite AI & 아발란체 생태계' },
+  { id: '8', price: '1 TONE', type: '피드백 — 오늘 밋업 한 줄 소감' },
+  { id: '9', price: '1 TONE', type: '정렬 — x402 결제 흐름 순서 맞추기' },
+  { id: '10', price: '1 TONE', type: '네트워킹 — 참가자 3명 관심사 모으기' },
+]
+
 const Slide11Quests = ({ animKey }: Props) => (
   <div className="slide bg-beige content-z-index">
     <div className="ambient-shape bg-sage" style={{ width: '40vw', height: '40vw', bottom: '-8%', left: '-5%', opacity: 0.07, animationDelay: '-5s' }} />
-    <div key={animKey} className="flex flex-col items-center w-full max-w-2xl content-z-index">
+    <div key={animKey} className="flex flex-col items-center w-full max-w-3xl content-z-index">
       <p className="fade-in-stagger font-mono text-xs tracking-widest uppercase text-sage mb-4" style={{ animationDelay: '0s' }}>07 · Marathon — 퀘스트 구성</p>
-      <h2 className="fade-in-stagger font-serif text-5xl text-dark mb-8" style={{ animationDelay: '0.2s' }}>10개 퀘스트</h2>
-      <table className="fade-in-stagger w-full text-sm mb-6" style={{ animationDelay: '0.5s', borderCollapse: 'collapse' }}>
+      <h2 className="fade-in-stagger font-serif text-5xl text-dark mb-6" style={{ animationDelay: '0.2s' }}>10개 퀘스트</h2>
+      <table className="fade-in-stagger w-full text-xs mb-5" style={{ animationDelay: '0.5s', borderCollapse: 'collapse' }}>
         <thead>
           <tr>
-            {['퀘스트', '가격', '유형'].map(h => (
-              <th key={h} className="bg-forest/10 text-forest font-mono text-xs tracking-wider uppercase px-4 py-2.5 text-left border-b border-forest/20">{h}</th>
+            {['#', '가격', '내용'].map(h => (
+              <th key={h} className="bg-forest/10 text-forest font-mono text-xs tracking-wider uppercase px-3 py-2 text-left border-b border-forest/20">{h}</th>
             ))}
           </tr>
         </thead>
         <tbody>
-          <tr className="border-b border-sage/10">
-            <td className="px-4 py-3 text-dark/80 font-sans">1~9</td>
-            <td className="px-4 py-3 font-sans"><strong className="text-terracotta font-medium">1 TONE 각</strong></td>
-            <td className="px-4 py-3 text-dark/70 font-sans">OX / 객관식 (Avalanche, Claude, AI)</td>
-          </tr>
-          <tr className="border-b border-sage/10">
-            <td className="px-4 py-3 text-dark/80 font-sans">10</td>
-            <td className="px-4 py-3 font-sans"><strong className="text-terracotta font-medium">1 TONE</strong></td>
-            <td className="px-4 py-3 text-dark/70 font-sans">웹 연동 — UUID URL 방문 후 코드 수령</td>
-          </tr>
+          {quests.map(({ id, price, type }) => (
+            <tr key={id} className="border-b border-sage/10">
+              <td className="px-3 py-1.5 font-mono text-terracotta">{id}</td>
+              <td className="px-3 py-1.5 font-sans whitespace-nowrap">
+                {price === '무료'
+                  ? <span className="text-sage">{price}</span>
+                  : <strong className="text-terracotta font-medium">{price}</strong>
+                }
+              </td>
+              <td className="px-3 py-1.5 text-dark/70 font-sans">{type}</td>
+            </tr>
+          ))}
         </tbody>
       </table>
       <div className="fade-in-stagger w-full bg-cream/70 border border-forest/20 rounded-xl px-6 py-4 font-sans text-base text-dark/80" style={{ animationDelay: '0.9s' }}>

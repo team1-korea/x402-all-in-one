@@ -61,14 +61,21 @@ curl -X POST http://localhost:4010/v1/register
 curl "http://localhost:4010/v1/services?productId=product-a&wallet={walletAddress}"
 ```
 
-### 2. 퀘스트 1 이상 (모두 유료) — x402 결제 흐름
+### 2. 퀘스트 1 (무료) — 바로 접근
 
-1. `GET /v1/quest/product-a/1` → HTTP 402 + paymentRequirements 수신
+```bash
+curl http://localhost:4010/v1/quest/product-a/1 \
+  -H "X-Wallet-Address: {walletAddress}"
+```
+
+### 3. 퀘스트 2~10 (각 1 TONE) — x402 결제 흐름
+
+1. `GET /v1/quest/product-a/2` → HTTP 402 + paymentRequirements 수신
 2. `paymentRequirements` 기반으로 X-PAYMENT 헤더 생성 (`x402-pay` 스킬 참고)
-3. `GET /v1/quest/product-a/1` + `X-PAYMENT` 헤더로 재요청 → 문제 수신
-4. `POST /v1/quest/product-a/1/answer` 로 정답 제출
+3. `GET /v1/quest/product-a/{step}` + `X-PAYMENT` 헤더로 재요청 → 문제 수신
+4. `POST /v1/quest/product-a/{step}/answer` 로 정답 제출
 
-### 5. 퀘스트 10 (웹 연동형)
+### 4. 퀘스트 10 (네트워킹형)
 
 1. x402 결제 후 응답에서 `questUrl` 수령
 2. 사용자에게 안내:
