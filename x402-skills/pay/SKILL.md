@@ -1,158 +1,161 @@
 ---
 name: x402-pay
-description: x402 엔드포인트의 결제 요건을 확인하고 TONE 토큰(EIP-3009)으로 결제하여 유료 API를 호출합니다.
+description: x402 결제 흐름을 직접 구현합니다. EIP-3009 서명을 생성하고 X-PAYMENT 헤더로 유료 API를 호출합니다.
 user-invocable: true
 disable-model-invocation: false
 ---
 
-# x402 결제 방법
+# x402 결제 흐름
 
-## 네트워크 정보 (고정값 — 수정 금지)
+USDC(EIP-3009)를 사용해 유료 퀘스트 API를 호출합니다.
+아래 흐름에서 `[TODO]` 부분은 **여러분이 직접 채운 내용**을 그대로 따릅니다.
 
-| 항목            | 값                                                          |
-|-----------------|-------------------------------------------------------------|
-| Chain ID        | 402                                                         |
-| RPC URL         | https://subnets.avax.network/apix/testnet/rpc               |
-| Facilitator     | https://unloc.kr/facilitator                                |
-| TONE 토큰       | 0x6ac929821e85970910f5dbafaee81823d71b17f3                  |
-| EIP-712 name    | TONE                                                        |
-| EIP-712 version | 1                                                           |
-| x402Version     | 2 (paymentPayload에 반드시 2 사용)                          |
+## 네트워크 / 지갑 정보
 
-## 결제 페이로드 구조 (고정값 — 수정 금지)
+| 항목 | 값 |
+|------|----|
+| Chain ID | 402 |
+| RPC URL | https://subnets.avax.network/apix/testnet/rpc |
+| Facilitator | [TODO: 누가 결제를 검증해?] |
+
+지갑 정보는 `.x402-wallet.json`에서 읽습니다 (`privateKey`, `walletAddress`).
+
+---
+
+## 1단계: 결제 요건 확인 (402 수신)
+
+유료 엔드포인트를 결제 없이 호출하면 서버가 반환하는 것:
+
+```
+[TODO: 서버가 몇 번 응답을 돌려줘?]
+```
+
+응답 구조:
 
 ```json
 {
-  "x402Version": 2,
-  "resource": {
-    "url": "<요청 URL>",
-    "description": "<설명>",
-    "mimeType": "application/json"
-  },
-  "accepted": {
+  "x402Version": 1,
+  "accepts": [{
     "scheme": "exact",
     "network": "eip155:402",
-    "asset": "<TONE 토큰 주소>",
-    "amount": "<wei 단위 금액 문자열>",
-    "payTo": "<수신 지갑 주소>",
+    "asset": "0x65e1ec07cdc00f18e11dd0370c6158029f61721e",
+    "amount": "10000000",
+    "payTo": "0x7486fE46d82541ac4ae3b09b9a7061b8123A61Ba",
     "maxTimeoutSeconds": 60,
-    "extra": { "assetTransferMethod": "eip3009", "name": "TONE", "version": "1" }
-  },
-  "payload": {
-    "signature": "<EIP-712 서명>",
-    "authorization": {
-      "from": "<내 지갑>",
-      "to": "<수신 지갑>",
-      "value": "<금액 문자열 (BigInt 아님)>",
-      "validAfter": "0",
-      "validBefore": "<Unix timestamp 문자열>",
-      "nonce": "<0x + 32바이트 hex>"
-    }
-  }
+    "resource": "<요청한 URL>",
+    "extra": { "assetTransferMethod": "eip3009", "name": "USD Coin", "version": "2" }
+  }],
+  "error": "결제가 필요합니다",
+  "difficulty": "easy"
 }
 ```
 
-전체 paymentPayload를 **base64로 인코딩**하여 `X-PAYMENT` 헤더에 담는다.
+`accepts[0]`의 값을 그대로 2단계에서 사용합니다.
 
 ---
 
-## 전체 흐름 — 빈칸을 채워주세요
+## 2단계: EIP-3009 서명 생성
 
-아래 흐름에서 `[TODO: ...]` 부분을 자연어로 채워주세요.
-아이폰을 사러 애플스토어에 가는 것처럼 생각하면 됩니다.
+viem으로 EIP-712 서명을 만듭니다.
 
----
-
-**1단계.** 유료 엔드포인트에 X-PAYMENT 없이 GET 요청을 보낸다.
-
-**2단계.** 서버가 HTTP `402` 로 응답한다.  
-응답 본문의 `accepts[0]` 에는 어느 체인인지, 얼마인지(`amount`), 어느 지갑으로 보내야 하는지(`payTo`) 가 담겨있다.
-
-**3단계.** 그 정보를 꺼내 EIP-3009 `TransferWithAuthorization` 서명을 만든다.  
-`authorization` 메시지에는:
-- `from`: 내 지갑 주소
-- `to`: `payTo` (응답에서 받은 수신 지갑 주소)
-- `value`: `amount` (BigInt로 변환)
-- `validAfter`: `0`
-- `validBefore`: `[TODO: 이 서명이 언제까지 유효해야 하나요?]` (Unix timestamp)
-- `nonce`: `0x` + 32바이트 랜덤 hex (`randomBytes(32).toString('hex')`)
-
-viem의 `account.signTypedData()` 로 서명한다.
-
-**4단계.** `authorization.value` 를 **문자열로 변환**한 뒤 paymentPayload를 조립한다.  
-전체를 `[TODO: 어떤 인코딩 방식으로 변환해야 하나요?]` 하여 `X-PAYMENT` 헤더에 담는다.
-
-**5단계.** GET 으로 같은 URL에 `X-PAYMENT` 헤더를 포함해 다시 요청한다.
-
-**6단계.** 서버는 요청을 `[TODO: 누구에게 넘겨서 온체인 검증을 맡기나요?]` 에게 전달하여 검증을 맡긴다.
-
-**7단계.** 검증과 정산이 완료되면 서버가 퀘스트 문제를 응답으로 준다.
-
----
-
-## 구현 코드 스켈레톤 (viem)
-
-```js
-import { privateKeyToAccount } from 'viem/accounts';
-import { randomBytes } from 'crypto';
-
-const account = privateKeyToAccount('<등록 시 받은 privateKey>');
-
-// 1단계: 유료 엔드포인트 호출
-const firstRes = await fetch('<URL>');
-// 위 흐름 2단계에 따라 응답 처리 ...
-
-const { accepts } = await firstRes.json();
-const req = accepts[0];
-
-const now = Math.floor(Date.now() / 1000);
-const nonce = '0x' + randomBytes(32).toString('hex');
-
-// 위 흐름 3단계에 따라 서명 생성 ...
-const domain = {
-  name: 'TONE', version: '1', chainId: 402,
-  verifyingContract: req.asset,
-};
-const types = {
-  TransferWithAuthorization: [
-    { name: 'from', type: 'address' },
-    { name: 'to', type: 'address' },
-    { name: 'value', type: 'uint256' },
-    { name: 'validAfter', type: 'uint256' },
-    { name: 'validBefore', type: 'uint256' },
-    { name: 'nonce', type: 'bytes32' },
-  ],
-};
-const message = {
-  from: account.address,
-  to: /* 흐름 3단계 참고 */,
-  value: BigInt(/* 흐름 3단계 참고 */),
+```ts
+const authorization = {
+  from: walletAddress,
+  to: payTo,                    // accepts[0].payTo
+  value: BigInt(amount),        // accepts[0].amount
   validAfter: 0n,
-  validBefore: BigInt(/* 흐름 3단계 참고 */),
-  nonce,
+  validBefore: [TODO: validBefore 값은 어떻게 계산해?],
+  nonce: crypto.getRandomValues(new Uint8Array(32)),
 };
-const signature = await account.signTypedData({ domain, types, primaryType: 'TransferWithAuthorization', message });
+```
 
-// 위 흐름 4단계에 따라 paymentPayload 조립 후 인코딩 ...
-const paymentPayload = {
-  x402Version: 2,
-  resource: { url: '<URL>', description: 'Quest access', mimeType: 'application/json' },
-  accepted: req,
+EIP-712 도메인 (`extra.name`, `extra.version` 사용):
+
+```ts
+const domain = {
+  name: "USD Coin",    // extra.name
+  version: "2",        // extra.version
+  chainId: 402,
+  verifyingContract: asset,   // accepts[0].asset
+};
+```
+
+서명:
+
+```ts
+const signature = await walletClient.signTypedData({
+  domain,
+  types: {
+    TransferWithAuthorization: [
+      { name: "from", type: "address" },
+      { name: "to", type: "address" },
+      { name: "value", type: "uint256" },
+      { name: "validAfter", type: "uint256" },
+      { name: "validBefore", type: "uint256" },
+      { name: "nonce", type: "bytes32" },
+    ],
+  },
+  primaryType: "TransferWithAuthorization",
+  message: authorization,
+});
+```
+
+---
+
+## 3단계: X-PAYMENT 헤더 생성
+
+페이로드를 조립하고:
+
+```ts
+const payload = {
+  x402Version: 1,
+  accepted: accepts[0],
   payload: {
     signature,
-    authorization: {
-      from: account.address,
-      to: /* 흐름 3단계 참고 */,
-      value: String(BigInt(/* 흐름 3단계 참고 */)),
-      validAfter: '0',
-      validBefore: String(/* 흐름 3단계 참고 */),
-      nonce,
-    },
+    authorization,
   },
 };
-const xPayment = Buffer.from(JSON.stringify(paymentPayload)).toString('base64');
-
-// 위 흐름 5단계에 따라 재요청 ...
-const finalRes = await fetch('<URL>', { headers: { 'X-PAYMENT': xPayment } });
-const data = await finalRes.json();
 ```
+
+헤더 값으로 변환:
+
+```
+[TODO: 이 페이로드를 X-PAYMENT 헤더에 넣기 전에 어떻게 변환해?]
+```
+
+---
+
+## 4단계: 결제 헤더 포함 재요청
+
+같은 URL에 `X-PAYMENT` 헤더를 붙여 재요청합니다:
+
+```
+X-PAYMENT: <변환된 페이로드>
+```
+
+성공 시 서버 응답:
+
+```json
+{
+  "id": "quest-2",
+  "name": "퀘스트 2 — Claude 스킬",
+  "questType": "theory-ox",
+  "difficulty": "easy",
+  "questUrl": "http://<quest-ui>/quest/<uuid>",
+  "hint": "브라우저를 열어 이 URL을 방문하고 퀘스트를 완료하세요!",
+  "settleTx": "0x..."
+}
+```
+
+`questUrl`을 브라우저에서 열어 퀘스트를 완료합니다.
+
+---
+
+## 에러 처리
+
+| 코드 | 원인 | 조치 |
+|------|------|------|
+| `402` | 결제 헤더 없음 또는 서명 검증 실패 | 서명 파라미터 확인 |
+| `400` | X-PAYMENT 파싱 오류 | 인코딩 방식 확인 |
+| `403` | 미등록 사용자 | `/x402-quest` 로 Step 0부터 시작 |
+| `502` | facilitator 연결 실패 | `[TODO]`의 facilitator `/health` 확인 |
