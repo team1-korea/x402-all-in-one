@@ -9,7 +9,9 @@ const router = Router();
 const INITIAL_AIRDROP = BigInt(100 * 1_000_000);
 
 // POST /v1/register
-router.post("/", async (_req: Request, res: Response) => {
+router.post("/", async (req: Request, res: Response) => {
+  const nickname = req.body?.nickname as string | undefined;
+
   const privateKey = generatePrivateKey();
   const account = privateKeyToAccount(privateKey);
   const walletAddress = account.address;
@@ -31,6 +33,7 @@ router.post("/", async (_req: Request, res: Response) => {
     privateKey,
     registeredAt: new Date().toISOString(),
     initialAirdropTx: airdropTx,
+    nickname,
   });
 
   res.json({
