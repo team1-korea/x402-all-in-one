@@ -6,6 +6,7 @@ CREATE TABLE IF NOT EXISTS users (
   private_key     TEXT NOT NULL,
   registered_at   TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   initial_airdrop_tx TEXT,
+  nickname        TEXT,
   current_product_id TEXT,
   current_step    INTEGER NOT NULL DEFAULT 0,
   is_completed    BOOLEAN NOT NULL DEFAULT FALSE,
