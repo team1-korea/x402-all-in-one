@@ -5,6 +5,7 @@ export interface UserRecord {
   privateKey: string;
   registeredAt: string;
   initialAirdropTx?: string;
+  nickname?: string;
   currentProductId?: string;
   currentStep?: number;
   isCompleted?: boolean;
@@ -27,6 +28,7 @@ function toRecord(row: Record<string, unknown>): UserRecord {
     privateKey: row.private_key as string,
     registeredAt: row.registered_at as string,
     initialAirdropTx: row.initial_airdrop_tx as string | undefined,
+    nickname: row.nickname as string | undefined,
     currentProductId: row.current_product_id as string | undefined,
     currentStep: row.current_step as number | undefined,
     isCompleted: row.is_completed as boolean | undefined,
@@ -40,6 +42,7 @@ export async function createUser(record: UserRecord): Promise<void> {
     private_key: record.privateKey,
     registered_at: record.registeredAt,
     initial_airdrop_tx: record.initialAirdropTx,
+    nickname: record.nickname ?? null,
   });
 }
 
