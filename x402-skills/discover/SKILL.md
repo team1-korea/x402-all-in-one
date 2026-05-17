@@ -37,7 +37,7 @@ curl "http://localhost:4010/v1/services?productId=product-a&wallet={walletAddres
       "description": "x402 결제 흐름 순서 맞추기",
       "questType": "drag-drop",
       "status": "available",
-      "price": "무료",
+      "price": "1 TONE",
       "endpoint": "http://localhost:4010/v1/quest/product-a/1"
     },
     {

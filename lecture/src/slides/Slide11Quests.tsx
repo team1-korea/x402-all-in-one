@@ -1,7 +1,7 @@
 interface Props { animKey: number }
 
 const quests = [
-  { id: '1', price: '무료', type: '드래그앤드롭 — x402 흐름 순서 맞추기' },
+  { id: '1', price: '1 TONE', type: '드래그앤드롭 — x402 흐름 순서 맞추기' },
   { id: '2', price: '1 TONE', type: 'OX — Claude 스킬 시스템' },
   { id: '3', price: '1 TONE', type: 'OX — x402 프로토콜 이론' },
   { id: '4', price: '1 TONE', type: '게임 — 아발란체 합의를 방해하라' },
@@ -32,10 +32,7 @@ const Slide11Quests = ({ animKey }: Props) => (
             <tr key={id} className="border-b border-sage/10">
               <td className="px-3 py-1.5 font-mono text-terracotta">{id}</td>
               <td className="px-3 py-1.5 font-sans whitespace-nowrap">
-                {price === '무료'
-                  ? <span className="text-sage">{price}</span>
-                  : <strong className="text-terracotta font-medium">{price}</strong>
-                }
+                <strong className="text-terracotta font-medium">{price}</strong>
               </td>
               <td className="px-3 py-1.5 text-dark/70 font-sans">{type}</td>
             </tr>

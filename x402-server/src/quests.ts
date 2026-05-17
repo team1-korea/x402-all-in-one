@@ -8,7 +8,7 @@ export const PRODUCT_QUESTS: Record<string, Quest[]> = {
       id: "quest-1",
       name: "퀘스트 1 — 드래그앤드롭",
       description: "드래그앤드롭 인터랙션",
-      price: 0n,
+      price: TONE1,
       questType: "drag-drop",
     },
     {

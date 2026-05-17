@@ -260,6 +260,18 @@ router.post("/:productId/:step/answer", async (req: Request, res: Response) => {
     return;
   }
 
+  if (quest.questType === "drag-drop") {
+    const { participation } = req.body as { participation?: boolean };
+    if (participation !== true) {
+      res.status(400).json({ error: "participation 필드가 필요합니다" });
+      return;
+    }
+    await recordAnswer(walletAddress, productId, currentStepNum, quest.questType, { participation }, true);
+    await updateQuestStatus(walletAddress, productId, currentStepNum, isLastStep);
+    res.json({ correct: true, message: "블록 연결 완료! x402 흐름을 파악했습니다 🧱" });
+    return;
+  }
+
   if (quest.questType === "snowman-sabotage") {
     const { participation } = req.body as { participation?: boolean };
     if (participation !== true) {
