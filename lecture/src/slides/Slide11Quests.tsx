@@ -1,16 +1,16 @@
 interface Props { animKey: number }
 
 const quests = [
-  { id: '1', price: '1 TONE', type: '드래그앤드롭 — x402 흐름 순서 맞추기' },
-  { id: '2', price: '1 TONE', type: 'OX — Claude 스킬 시스템' },
-  { id: '3', price: '1 TONE', type: 'OX — x402 프로토콜 이론' },
-  { id: '4', price: '1 TONE', type: '게임 — 아발란체 합의를 방해하라' },
-  { id: '5', price: '1 TONE', type: '객관식 — Anthropic & Claude 모델' },
-  { id: '6', price: '1 TONE', type: '오프라인 — 스태프 찾아 비밀코드 받기' },
-  { id: '7', price: '1 TONE', type: '객관식 — Kite AI & 아발란체 생태계' },
-  { id: '8', price: '1 TONE', type: '피드백 — 오늘 밋업 한 줄 소감' },
-  { id: '9', price: '1 TONE', type: '정렬 — x402 결제 흐름 순서 맞추기' },
-  { id: '10', price: '1 TONE', type: '네트워킹 — 참가자 3명 관심사 모으기' },
+  { id: '1', price: '10 USDC', type: '드래그앤드롭 — x402 흐름 순서 맞추기' },
+  { id: '2', price: '10 USDC', type: 'OX — Claude 스킬 시스템' },
+  { id: '3', price: '10 USDC', type: 'OX — x402 프로토콜 이론' },
+  { id: '4', price: '10 USDC', type: '게임 — 아발란체 합의를 방해하라' },
+  { id: '5', price: '10 USDC', type: '객관식 — Anthropic & Claude 모델' },
+  { id: '6', price: '10 USDC', type: '오프라인 — 스태프 찾아 비밀코드 받기' },
+  { id: '7', price: '10 USDC', type: '객관식 — Kite AI & 아발란체 생태계' },
+  { id: '8', price: '10 USDC', type: '피드백 — 오늘 밋업 한 줄 소감' },
+  { id: '9', price: '10 USDC', type: '정렬 — x402 결제 흐름 순서 맞추기' },
+  { id: '10', price: '10 USDC', type: '네트워킹 — 참가자 3명 관심사 모으기' },
 ]
 
 const Slide11Quests = ({ animKey }: Props) => (

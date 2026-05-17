@@ -15,7 +15,7 @@ const Slide10Go = ({ animKey }: Props) => (
         /x402-quest
       </pre>
       <div className="fade-in-stagger bg-terracotta/5 border border-terracotta/25 rounded-xl px-6 py-4 font-sans text-base text-terracotta/90 text-center" style={{ animationDelay: '1.2s' }}>
-        초기 지급 <strong className="text-dark font-medium">10 TONE</strong> · 10개 퀘스트 각 1 TONE · 10 TONE으로 딱 완주
+        초기 지급 <strong className="text-dark font-medium">100 USDC</strong> · 10개 퀘스트 각 10 USDC · 100 USDC로 딱 완주
       </div>
     </div>
   </div>
