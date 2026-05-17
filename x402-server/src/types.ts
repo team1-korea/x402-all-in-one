@@ -14,12 +14,16 @@ export interface QuestQuestion {
   answerIndex: number;
 }
 
+export type Difficulty = 'very-easy' | 'easy' | 'medium';
+
 export interface Quest {
   id: string;
   name: string;
   description: string;
   price: bigint;
   questType: QuestType;
+  difficulty: Difficulty;
+  entryPoint?: boolean;
   // theory quests: OX has 2 questions, MC has 1
   theory?: string;
   questions?: QuestQuestion[];

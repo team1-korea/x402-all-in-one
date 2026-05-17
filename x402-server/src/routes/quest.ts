@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
 import { Router, type Request, type Response } from "express";
-import { getQuest } from "../quests.js";
+import { getQuest, getAllQuests } from "../quests.js";
 import { verifyPayment, settlePayment } from "../facilitator.js";
 import {
   getUser,
@@ -32,7 +32,7 @@ function buildPaymentRequirements(
   return {
     scheme: "exact",
     network: `eip155:${process.env.CHAIN_ID || "402"}`,
-    asset: process.env.TONE_TOKEN!,
+    asset: process.env.PAYMENT_TOKEN!,
     amount: price.toString(),
     payTo: process.env.PAY_TO!,
     maxTimeoutSeconds: 60,
@@ -41,11 +41,32 @@ function buildPaymentRequirements(
     mimeType: "application/json",
     extra: {
       assetTransferMethod: "eip3009",
-      name: "TONE",
-      version: "1",
+      name: process.env.TOKEN_NAME || "USDC",
+      version: process.env.TOKEN_VERSION || "2",
     },
   };
 }
+
+// GET /v1/quest/:productId — 퀘스트 목록 + 난이도
+router.get("/:productId", (req: Request, res: Response) => {
+  const { productId } = req.params;
+  const quests = getAllQuests(productId);
+  if (!quests) {
+    res.status(404).json({ error: "Product not found" });
+    return;
+  }
+  res.json(
+    quests.map((q) => ({
+      id: q.id,
+      name: q.name,
+      description: q.description,
+      price: q.price.toString(),
+      questType: q.questType,
+      difficulty: q.difficulty,
+      ...(q.entryPoint && { entryPoint: true }),
+    }))
+  );
+});
 
 // GET /v1/quest/:productId/:step
 router.get("/:productId/:step", async (req: Request, res: Response) => {
@@ -67,10 +88,11 @@ router.get("/:productId/:step", async (req: Request, res: Response) => {
 
   if (!paymentHeader) {
     const requirements = buildPaymentRequirements(productId, step, quest.price);
-    const body: X402Response = {
+    const body: X402Response & { difficulty: string } = {
       x402Version: 1,
       accepts: [requirements],
       error: "결제가 필요합니다",
+      difficulty: quest.difficulty,
     };
     res.status(402).json(body);
     return;
@@ -113,18 +135,6 @@ router.get("/:productId/:step", async (req: Request, res: Response) => {
       return;
     }
 
-    if (user.currentProductId && user.currentProductId !== productId) {
-      res.status(403).json({ error: "다른 상품 경로를 진행 중입니다." });
-      return;
-    }
-
-    const userStep = user.currentStep ?? 0;
-    if (userStep !== currentStepNum - 1) {
-      res.status(403).json({
-        error: `이전 단계를 완료해야 합니다. 현재 진행 가능 단계: ${userStep + 1}`,
-      });
-      return;
-    }
   }
 
   let settleResult;
@@ -167,6 +177,7 @@ router.get("/:productId/:step", async (req: Request, res: Response) => {
     id: quest.id,
     name: quest.name,
     questType: quest.questType,
+    difficulty: quest.difficulty,
     questUrl: `${QUEST_BASE}/quest/${uuid}`,
     hint: "브라우저를 열어 이 URL을 방문하고 퀘스트를 완료하세요!",
     settleTx: settleResult.transaction,

@@ -37,8 +37,8 @@ function getWalletClient() {
 }
 
 export async function airdrop(to: string, amount: bigint): Promise<string> {
-  const tokenAddress = process.env.TONE_TOKEN as Hex | undefined;
-  if (!tokenAddress) throw new Error("TONE_TOKEN not set");
+  const tokenAddress = process.env.PAYMENT_TOKEN as Hex | undefined;
+  if (!tokenAddress) throw new Error("PAYMENT_TOKEN not set");
 
   const client = getWalletClient();
   const txHash = await client.writeContract({

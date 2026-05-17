@@ -24,6 +24,7 @@ router.get("/:uuid", async (req: Request, res: Response) => {
   // webCode / staffCode / answerIndex are NOT exposed to frontend
   res.json({
     questType: quest.questType,
+    difficulty: quest.difficulty,
     step: token.step,
     productId: token.productId,
     walletAddress: token.walletAddress,
