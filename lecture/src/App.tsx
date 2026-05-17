@@ -15,9 +15,12 @@ import Slide12Leaderboard from './slides/Slide12Leaderboard'
 import Slide13Bonus from './slides/Slide13Bonus'
 
 const TOTAL_SLIDES = 13
+// step 수: 0이면 step-through 없음, n이면 n번 눌러야 다음 슬라이드로
+const STEP_COUNTS = [0, 3, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0]
 
 function App() {
   const [currentSlide, setCurrentSlide] = useState(0)
+  const [currentSteps, setCurrentSteps] = useState(() => Array(TOTAL_SLIDES).fill(0))
   const [cursorPos, setCursorPos] = useState({ x: -100, y: -100 })
   const [isClicking, setIsClicking] = useState(false)
   const [animKeys, setAnimKeys] = useState(() => Array(TOTAL_SLIDES).fill(0))
@@ -25,26 +28,38 @@ function App() {
   const goTo = (next: number) => {
     setCurrentSlide(next)
     setAnimKeys(prev => prev.map((k, i) => (i === next ? k + 1 : k)))
+    setCurrentSteps(prev => prev.map((s, i) => (i === next ? 0 : s)))
   }
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'ArrowRight' || e.key === ' ') {
         e.preventDefault()
-        setCurrentSlide(prev => {
-          const next = Math.min(prev + 1, TOTAL_SLIDES - 1)
-          setAnimKeys(keys => keys.map((k, i) => (i === next ? k + 1 : k)))
-          return next
-        })
+        const stepCount = STEP_COUNTS[currentSlide]
+        const step = currentSteps[currentSlide]
+        if (stepCount > 0 && step < stepCount) {
+          setCurrentSteps(prev => prev.map((s, i) => (i === currentSlide ? s + 1 : s)))
+        } else {
+          const next = Math.min(currentSlide + 1, TOTAL_SLIDES - 1)
+          if (next !== currentSlide) {
+            setCurrentSlide(next)
+            setAnimKeys(keys => keys.map((k, i) => (i === next ? k + 1 : k)))
+            setCurrentSteps(prev => prev.map((s, i) => (i === next ? 0 : s)))
+          }
+        }
       }
       if (e.key === 'ArrowLeft') {
         e.preventDefault()
-        setCurrentSlide(prev => Math.max(prev - 1, 0))
+        const prev = Math.max(currentSlide - 1, 0)
+        if (prev !== currentSlide) {
+          setCurrentSlide(prev)
+          setCurrentSteps(s => s.map((v, i) => (i === currentSlide || i === prev ? 0 : v)))
+        }
       }
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [])
+  }, [currentSlide, currentSteps])
 
   useEffect(() => {
     const onMove = (e: MouseEvent) => setCursorPos({ x: e.clientX, y: e.clientY })
@@ -77,13 +92,13 @@ function App() {
         }}
       >
         <Slide01Title animKey={animKeys[0]} />
-        <Slide02Agenda animKey={animKeys[1]} />
+        <Slide02Agenda animKey={animKeys[1]} step={currentSteps[1]} />
         <Slide03Skills animKey={animKeys[2]} />
         <Slide04Install animKey={animKeys[3]} />
         <Slide05Explore animKey={animKeys[4]} />
         <Slide06IphoneStory animKey={animKeys[5]} />
         <Slide07Comparison animKey={animKeys[6]} />
-        <Slide08Hints animKey={animKeys[7]} />
+        <Slide08Hints animKey={animKeys[7]} step={currentSteps[7]} />
         <Slide09Test animKey={animKeys[8]} />
         <Slide10Go animKey={animKeys[9]} />
         <Slide11Quests animKey={animKeys[10]} />
