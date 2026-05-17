@@ -1,4 +1,4 @@
-import { useEffect, useState, lazy, Suspense } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { fetchQuest } from '../api';
 import type { QuestData } from '../types';
@@ -8,8 +8,7 @@ import FeedbackQuest from '../quests/FeedbackQuest';
 import InterestsQuest from '../quests/InterestsQuest';
 import SnowmanSabotageQuest from '../quests/SnowmanSabotageQuest';
 import BlockBuilderQuest from '../quests/BlockBuilderQuest';
-
-const ThreeJsQuest = lazy(() => import('../quests/ThreeJsQuest'));
+import ThreeJsQuest from '../quests/ThreeJsQuest';
 
 export default function QuestPage() {
   const { uuid } = useParams<{ uuid: string }>();
@@ -56,11 +55,7 @@ export default function QuestPage() {
       {quest.questType === 'staff-code' && <StaffCodeQuest {...props} />}
       {quest.questType === 'feedback' && <FeedbackQuest {...props} />}
       {quest.questType === 'interests' && <InterestsQuest {...props} />}
-      {quest.questType === 'threejs' && (
-        <Suspense fallback={<p className="text-slate-500 animate-pulse">3D 로딩 중...</p>}>
-          <ThreeJsQuest {...props} />
-        </Suspense>
-      )}
+      {quest.questType === 'threejs' && <ThreeJsQuest {...props} />}
     </div>
   );
 }
