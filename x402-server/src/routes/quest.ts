@@ -243,18 +243,20 @@ router.post("/:productId/:step/answer", async (req: Request, res: Response) => {
   }
 
   if (quest.questType === "threejs") {
-    if (!secretCode) {
-      res.status(400).json({ error: "secretCode가 필요합니다" });
+    const { order } = req.body as { order?: number[] };
+    if (!Array.isArray(order) || order.length !== 6) {
+      res.status(400).json({ error: "order 배열(6개)이 필요합니다" });
       return;
     }
-    const correct = secretCode === quest.webCode;
-    await recordAnswer(walletAddress, productId, currentStepNum, quest.questType, { secretCode }, correct);
+    const CORRECT = [0, 1, 2, 3, 4, 5];
+    const correct = CORRECT.every((v, i) => order[i] === v);
+    await recordAnswer(walletAddress, productId, currentStepNum, quest.questType, { order }, correct);
     if (!correct) {
-      res.json({ correct: false, message: "올바른 요소를 찾지 못했습니다!" });
+      res.json({ correct: false, message: "순서가 맞지 않습니다. 다시 시도해보세요!" });
       return;
     }
     await updateQuestStatus(walletAddress, productId, currentStepNum, isLastStep);
-    res.json({ correct: true, message: "찾았습니다! 🎉" });
+    res.json({ correct: true, message: "완벽합니다! x402 흐름을 이해했습니다 🎉" });
     return;
   }
 
