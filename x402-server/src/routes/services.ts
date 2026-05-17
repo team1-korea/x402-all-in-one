@@ -41,7 +41,8 @@ router.get("/", async (req: Request, res: Response) => {
         description: q.description,
         questType: q.questType,
         status,
-        price: q.price === 0n ? "무료" : "1 TONE",
+        price: q.price === 0n ? "무료" : "10 USDC",
+        difficulty: q.difficulty,
         endpoint: `http://localhost:4010/v1/quest/${productId}/${stepNum}`,
       };
 
