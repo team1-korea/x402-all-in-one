@@ -7,6 +7,7 @@ import servicesRouter from "./routes/services.js";
 import questRouter from "./routes/quest.js";
 import usersRouter from "./routes/users.js";
 import questApiRouter from "./routes/quest-api.js";
+import dashboardRouter from "./routes/dashboard.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -41,6 +42,7 @@ app.use("/v1/register", usersRouter);
 app.use("/v1/services", servicesRouter);
 app.use("/v1/quest", questRouter);
 app.use("/quest-api", questApiRouter);
+app.use("/v1/dashboard", dashboardRouter);
 
 const port = Number(process.env.PORT || 4010);
 app.listen(port, () => {
