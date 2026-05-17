@@ -10,7 +10,8 @@ const INITIAL_AIRDROP = BigInt(100 * 1_000_000);
 
 // POST /v1/register
 router.post("/", async (req: Request, res: Response) => {
-  const nickname = req.body?.nickname as string | undefined;
+  const raw = req.body?.nickname;
+  const nickname = typeof raw === 'string' && raw.trim() ? raw.trim() : undefined;
 
   const privateKey = generatePrivateKey();
   const account = privateKeyToAccount(privateKey);
