@@ -74,15 +74,16 @@ curl http://localhost:4010/v1/quest/product-a
 
 ## Step 2 — 퀘스트 구매 (x402 결제)
 
+**반드시 `x402-pay` 스킬을 invoke해서 결제를 진행합니다. 직접 결제 코드를 작성하지 않습니다.**
+
+x402-pay 스킬은 실행 시 TODO 구멍이 남아있으면 결제를 거부하고 사용자에게 안내합니다. TODO가 채워진 경우에만 결제가 진행됩니다.
+
 ```bash
 # 1. 402 응답 수신 (결제 요구사항 + difficulty 포함)
 GET /v1/quest/product-a/{step}
 
-# 2. X-PAYMENT 헤더로 재요청 → questUrl 수신
-GET /v1/quest/product-a/{step}  +  X-PAYMENT 헤더
+# 2. x402-pay 스킬 invoke → X-PAYMENT 헤더 생성 → questUrl 수신
 ```
-
-자세한 결제 방법은 `x402-pay` 스킬을 참고하세요.
 
 ## Step 3 — 브라우저에서 퀘스트 수행
 
