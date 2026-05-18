@@ -1,33 +1,77 @@
-interface Props { animKey: number }
+interface Props { animKey: number; step?: number }
 
-const steps = [
-  { n: '1', text: '아 아이폰 사고 싶다 → 필요한 게 생겼다' },
-  { n: '2', text: '애플스토어에서 목록 확인 → 원하는 것 찾기' },
-  { n: '3', jsx: <>"아이폰 13 주세요" → <strong className="text-terracotta font-medium">원하는 것을 요청</strong></> },
-  { n: '4', jsx: <><strong className="text-terracotta font-medium">"결제해주세요"</strong> → 얼마를, 어디로, 언제까지</> },
-  { n: '5', jsx: <>카드 꽂기 → <strong className="text-terracotta font-medium">서명 생성</strong> + 다시 요청</> },
-  { n: '6', text: '카드사 승인 → 검증 + 블록체인 정산' },
-  { n: '7', jsx: <><strong className="text-terracotta font-medium">아이폰 수령</strong> → 서비스 응답</> },
+const frames = [
+  { num: '①', sub: '욕구 발생',  caption: '아 아이폰 사고 싶다',    img: '/story-01-desire.png' },
+  { num: '②', sub: '탐색',      caption: '애플스토어 목록 확인',    img: '/story-02-explore.png' },
+  { num: '③', sub: '요청',      caption: '"아이폰 13 주세요"',      img: '/story-03-request.png' },
+  { num: '④', sub: '결제 요구', caption: '"결제해주세요"',           img: '/story-04-payment.png' },
+  { num: '⑤', sub: '서명',      caption: '카드 꽂기',               img: '/story-05-sign.png' },
+  { num: '⑥', sub: '승인',      caption: '카드사 처리',             img: '/story-06-approve.png' },
+  { num: '⑦', sub: '수령',      caption: '아이폰 수령!',            img: '/story-07-receive.png' },
 ]
 
-const Slide06IphoneStory = ({ animKey }: Props) => (
+function StoryFrame({ frame, revealed }: { frame: typeof frames[0]; revealed: boolean }) {
+  return (
+    <div
+      data-testid="story-frame"
+      style={{
+        opacity: revealed ? 1 : 0.12,
+        filter: revealed ? 'none' : 'blur(3px)',
+        transition: 'opacity 0.5s ease, filter 0.5s ease',
+        border: `1.5px solid ${revealed ? '#C4714A40' : '#d4c8b8'}`,
+        borderRadius: '10px',
+        overflow: 'hidden',
+        background: 'rgba(255,253,249,0.8)',
+      }}
+    >
+      <div style={{ aspectRatio: '4/3', background: '#e8e2d8', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
+        <img
+          src={frame.img}
+          alt={frame.caption}
+          style={{ width: '100%', height: '100%', objectFit: 'cover', position: 'absolute', inset: 0 }}
+          onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none' }}
+        />
+        <span style={{ fontFamily: 'serif', fontSize: '2rem', opacity: 0.25, position: 'relative', zIndex: 1 }}>
+          {frame.num}
+        </span>
+      </div>
+      <div style={{ padding: '8px 10px', borderTop: '1px solid #e8e2d8' }}>
+        <p style={{ fontFamily: 'monospace', fontSize: '9px', color: '#C4714A', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '3px' }}>
+          {frame.num} {frame.sub}
+        </p>
+        <p style={{ fontFamily: 'sans-serif', fontSize: '11px', color: '#1A1A1A', lineHeight: 1.3 }}>
+          {frame.caption}
+        </p>
+      </div>
+    </div>
+  )
+}
+
+const Slide07IphoneStory = ({ animKey, step = 0 }: Props) => (
   <div className="slide bg-beige content-z-index">
     <div className="ambient-shape bg-sage" style={{ width: '45vw', height: '45vw', bottom: '-10%', right: '-10%', opacity: 0.07, animationDelay: '-4s' }} />
-    <div key={animKey} className="flex flex-col items-center w-full max-w-2xl content-z-index">
-      <p className="fade-in-stagger font-mono text-xs tracking-widest uppercase text-sage mb-4" style={{ animationDelay: '0s' }}>05 · Theory — 아이폰 비유</p>
-      <h2 className="fade-in-stagger font-serif text-5xl text-dark mb-8" style={{ animationDelay: '0.2s' }}>아이폰 사러 애플스토어 가기</h2>
-      <div className="fade-in-stagger flex flex-col gap-3 w-full" style={{ animationDelay: '0.5s' }}>
-        {steps.map(({ n, text, jsx }) => (
-          <div key={n} className="flex items-start gap-4">
-            <div className="bg-forest text-[#d4ede0] w-7 h-7 rounded-full flex items-center justify-center font-mono text-xs flex-shrink-0 mt-0.5">
-              {n}
-            </div>
-            <p className="font-sans text-base text-dark leading-relaxed">{jsx ?? text}</p>
-          </div>
+    <div key={animKey} className="flex flex-col items-center w-full max-w-5xl content-z-index">
+      <p className="fade-in-stagger font-mono text-xs tracking-widest uppercase text-sage mb-3" style={{ animationDelay: '0s' }}>
+        06 · Theory — 아이폰 비유
+      </p>
+      <h2 className="fade-in-stagger font-serif text-4xl text-dark mb-6" style={{ animationDelay: '0.2s' }}>
+        아이폰 사러 애플스토어 가기
+      </h2>
+
+      <div className="fade-in-stagger w-full grid grid-cols-4 gap-3 mb-3" style={{ animationDelay: '0.4s' }}>
+        {frames.slice(0, 4).map((f, i) => (
+          <StoryFrame key={f.num} frame={f} revealed={step > i} />
         ))}
+      </div>
+
+      <div className="fade-in-stagger w-full grid grid-cols-4 gap-3" style={{ animationDelay: '0.4s' }}>
+        {frames.slice(4).map((f, i) => (
+          <StoryFrame key={f.num} frame={f} revealed={step > i + 4} />
+        ))}
+        <div />
       </div>
     </div>
   </div>
 )
 
-export default Slide06IphoneStory
+export default Slide07IphoneStory
