@@ -1,6 +1,6 @@
 interface Props { animKey: number }
 
-const Slide10Go = ({ animKey }: Props) => (
+const Slide11Go = ({ animKey }: Props) => (
   <div className="slide bg-beige content-z-index">
     <div className="ambient-shape bg-terracotta" style={{ width: '60vw', height: '60vw', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', opacity: 0.04, animationDelay: '-1s' }} />
     <div key={animKey} className="flex flex-col items-center w-full content-z-index">
@@ -21,4 +21,4 @@ const Slide10Go = ({ animKey }: Props) => (
   </div>
 )
 
-export default Slide10Go
+export default Slide11Go

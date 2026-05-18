@@ -25,6 +25,14 @@ describe('Slide07IphoneStory', () => {
     expect(frames[3]).toHaveStyle({ opacity: '0.12' })
   })
 
+  it('step=5이면 row2 첫 프레임이 표시된다', () => {
+    const { container } = render(<Slide07IphoneStory animKey={0} step={5} />)
+    const frames = container.querySelectorAll('[data-testid="story-frame"]')
+    expect(frames[4]).toHaveStyle({ opacity: '1' })
+    expect(frames[5]).toHaveStyle({ opacity: '0.12' })
+    expect(frames[6]).toHaveStyle({ opacity: '0.12' })
+  })
+
   it('7개 프레임 캡션을 모두 렌더링한다', () => {
     render(<Slide07IphoneStory animKey={0} step={7} />)
     expect(screen.getByText('아 아이폰 사고 싶다')).toBeInTheDocument()

@@ -32,11 +32,11 @@ const hints: Hint[] = [
   },
 ]
 
-const Slide08Hints = ({ animKey, step = 0 }: Props) => (
+const Slide09Hints = ({ animKey, step = 0 }: Props) => (
   <div className="slide bg-beige content-z-index">
     <div className="ambient-shape bg-terracotta" style={{ width: '35vw', height: '35vw', top: '-5%', left: '-5%', opacity: 0.04, animationDelay: '-2s' }} />
     <div key={animKey} className="flex flex-col items-center w-full max-w-3xl content-z-index">
-      <p className="fade-in-stagger font-mono text-xs tracking-widest uppercase text-sage mb-3" style={{ animationDelay: '0s' }}>06 · Lab</p>
+      <p className="fade-in-stagger font-mono text-xs tracking-widest uppercase text-sage mb-3" style={{ animationDelay: '0s' }}>07 · Lab</p>
       <h2 className="fade-in-stagger font-serif text-5xl text-dark mb-2" style={{ animationDelay: '0.2s' }}>구멍 채우기</h2>
       <p className="fade-in-stagger font-sans font-light text-sm text-sage mb-6" style={{ animationDelay: '0.4s' }}>
         x402-pay/SKILL.md 열고 [TODO] 3개를 자연어로 채우세요
@@ -80,4 +80,4 @@ const Slide08Hints = ({ animKey, step = 0 }: Props) => (
   </div>
 )
 
-export default Slide08Hints
+export default Slide09Hints

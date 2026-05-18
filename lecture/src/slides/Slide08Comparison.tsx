@@ -15,7 +15,7 @@ const Slide07Comparison = ({ animKey }: Props) => (
   <div className="slide bg-beige content-z-index">
     <div className="ambient-shape bg-forest" style={{ width: '40vw', height: '40vw', top: '-8%', left: '-5%', opacity: 0.04, animationDelay: '-7s' }} />
     <div key={animKey} className="flex flex-col items-center w-full max-w-3xl content-z-index">
-      <p className="fade-in-stagger font-mono text-xs tracking-widest uppercase text-sage mb-4" style={{ animationDelay: '0s' }}>05 · Theory — x402 대응표</p>
+      <p className="fade-in-stagger font-mono text-xs tracking-widest uppercase text-sage mb-4" style={{ animationDelay: '0s' }}>06 · Theory — x402 대응표</p>
       <h2 className="fade-in-stagger font-serif text-5xl text-dark mb-8" style={{ animationDelay: '0.2s' }}>x402 = 아이폰 구매 흐름</h2>
       <div
         className="fade-in-stagger w-full"

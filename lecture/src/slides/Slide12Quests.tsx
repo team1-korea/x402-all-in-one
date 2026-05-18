@@ -13,11 +13,11 @@ const quests = [
   { id: '10', price: '10 USDC', type: '네트워킹 — 참가자 3명 관심사 모으기' },
 ]
 
-const Slide11Quests = ({ animKey }: Props) => (
+const Slide12Quests = ({ animKey }: Props) => (
   <div className="slide bg-beige content-z-index">
     <div className="ambient-shape bg-sage" style={{ width: '40vw', height: '40vw', bottom: '-8%', left: '-5%', opacity: 0.07, animationDelay: '-5s' }} />
     <div key={animKey} className="flex flex-col items-center w-full max-w-3xl content-z-index">
-      <p className="fade-in-stagger font-mono text-xs tracking-widest uppercase text-sage mb-4" style={{ animationDelay: '0s' }}>07 · Marathon — 퀘스트 구성</p>
+      <p className="fade-in-stagger font-mono text-xs tracking-widest uppercase text-sage mb-4" style={{ animationDelay: '0s' }}>08 · Marathon — 퀘스트 구성</p>
       <h2 className="fade-in-stagger font-serif text-5xl text-dark mb-6" style={{ animationDelay: '0.2s' }}>10개 퀘스트</h2>
       <table className="fade-in-stagger w-full text-xs mb-5" style={{ animationDelay: '0.5s', borderCollapse: 'collapse' }}>
         <thead>
@@ -46,4 +46,4 @@ const Slide11Quests = ({ animKey }: Props) => (
   </div>
 )
 
-export default Slide11Quests
+export default Slide12Quests
