@@ -50,27 +50,25 @@ function StoryFrame({ frame, revealed }: { frame: typeof frames[0]; revealed: bo
 const Slide07IphoneStory = ({ animKey, step = 0 }: Props) => (
   <div className="slide bg-beige content-z-index">
     <div className="ambient-shape bg-sage" style={{ width: '45vw', height: '45vw', bottom: '-10%', right: '-10%', opacity: 0.07, animationDelay: '-4s' }} />
-    <div key={animKey} className="flex flex-col items-center w-full max-w-5xl content-z-index">
-      <p className="fade-in-stagger font-mono text-sm tracking-widest uppercase text-sage mb-4" style={{ animationDelay: '0s' }}>
-        06 · Theory — 아이폰 비유
-      </p>
-      <h2 className="fade-in-stagger font-serif text-5xl text-dark mb-7" style={{ animationDelay: '0.2s' }}>
-        아이폰 사러 애플스토어 가기
-      </h2>
 
-      <div className="fade-in-stagger w-full grid grid-cols-4 gap-3 mb-3" style={{ animationDelay: '0.4s' }}>
-        {frames.slice(0, 4).map((f, i) => (
-          <StoryFrame key={f.num} frame={f} revealed={step > i} />
-        ))}
+    {step === 0 ? (
+      <div key={`${animKey}-title`} className="flex flex-col items-center content-z-index">
+        <p className="fade-in-stagger font-mono text-sm tracking-widest uppercase text-sage mb-5" style={{ animationDelay: '0s' }}>
+          06 · Theory — 아이폰 비유
+        </p>
+        <h2 className="fade-in-stagger font-serif text-6xl text-dark" style={{ animationDelay: '0.2s' }}>
+          아이폰 사러 애플스토어 가기
+        </h2>
       </div>
-
-      <div className="fade-in-stagger w-full grid grid-cols-4 gap-3" style={{ animationDelay: '0.4s' }}>
-        {frames.slice(4).map((f, i) => (
-          <StoryFrame key={f.num} frame={f} revealed={step > i + 4} />
-        ))}
-        <div />
+    ) : (
+      <div key={`${animKey}-grid`} className="fade-in-stagger w-full max-w-7xl content-z-index">
+        <div className="w-full grid grid-cols-4 gap-4">
+          {frames.map((f, i) => (
+            <StoryFrame key={f.num} frame={f} revealed={step > i} />
+          ))}
+        </div>
       </div>
-    </div>
+    )}
   </div>
 )
 

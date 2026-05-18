@@ -30,7 +30,7 @@ function getMaxStep(steps: number[]): number {
   return steps.length > 0 ? Math.max(...steps) : 0
 }
 
-export default function Slide12Leaderboard({ animKey: _ }: Props) {
+export default function Slide13Leaderboard({ animKey: _ }: Props) {
   const [stats, setStats] = useState<DashboardStats | null>(null)
 
   useEffect(() => {
@@ -48,53 +48,21 @@ export default function Slide12Leaderboard({ animKey: _ }: Props) {
 
   if (!stats) {
     return (
-      <div className="slide" style={{ background: '#0f1a14' }}>
-        <p className="font-mono text-sm animate-pulse" style={{ color: '#5a8068' }}>
-          대시보드 로딩 중...
-        </p>
+      <div className="slide bg-beige content-z-index">
+        <p className="font-mono text-sm text-sage animate-pulse">대시보드 로딩 중...</p>
       </div>
     )
   }
 
   return (
-    <div
-      className="slide"
-      style={{
-        background: '#0f1a14',
-        justifyContent: 'flex-start',
-        alignItems: 'stretch',
-        padding: '2rem',
-        overflowX: 'auto',
-      }}
-    >
+    <div className="slide bg-beige" style={{ justifyContent: 'flex-start', alignItems: 'center', padding: '3rem 4rem', overflowX: 'auto' }}>
       {/* Header */}
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          marginBottom: '1.5rem',
-          paddingBottom: '1rem',
-          borderBottom: '1px solid #2a4030',
-          flexShrink: 0,
-        }}
-      >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-          <span
-            style={{
-              display: 'inline-block',
-              width: '8px',
-              height: '8px',
-              borderRadius: '50%',
-              background: '#4ade80',
-              animation: 'pulse 1.5s infinite',
-            }}
-          />
-          <span className="font-mono font-bold" style={{ fontSize: '1.1rem', color: '#7eca9c' }}>
-            Quest Dashboard
-          </span>
+      <div className="w-full flex items-center justify-between mb-6 pb-5 border-b border-forest/15 flex-shrink-0 content-z-index">
+        <div className="flex items-center gap-3">
+          <span style={{ display: 'inline-block', width: 8, height: 8, borderRadius: '50%', background: '#3D6B4F', animation: 'pulse 1.5s infinite' }} />
+          <span className="font-mono font-semibold text-lg text-forest tracking-wide">Quest Dashboard</span>
         </div>
-        <div style={{ display: 'flex', gap: '1.5rem' }}>
+        <div className="flex gap-6">
           <StatBox num={stats.totalUsers} label="참가자" />
           <StatBox num={stats.completedUsers} label="완료" />
           <StatBox num={stats.totalQuestAccesses} label="퀘스트 접근" />
@@ -103,11 +71,9 @@ export default function Slide12Leaderboard({ animKey: _ }: Props) {
 
       {/* Matrix */}
       {stats.users.length === 0 ? (
-        <p className="font-mono text-sm text-center" style={{ color: '#3a5040', marginTop: '4rem' }}>
-          아직 참가자가 없습니다
-        </p>
+        <p className="font-mono text-sm text-sage/50 mt-16">아직 참가자가 없습니다</p>
       ) : (
-        <div style={{ overflowX: 'auto', flex: 1 }}>
+        <div style={{ overflowX: 'auto', flex: 1, width: '100%' }} className="content-z-index">
           <table style={{ borderSpacing: '4px', borderCollapse: 'separate' }}>
             <thead>
               <tr>
@@ -123,15 +89,8 @@ export default function Slide12Leaderboard({ animKey: _ }: Props) {
               {Array.from({ length: QUEST_COUNT }, (_, i) => i + 1).map((q) => (
                 <tr key={q}>
                   <td
-                    className="font-mono"
-                    style={{
-                      fontSize: '10px',
-                      color: '#3a5040',
-                      textAlign: 'right',
-                      paddingRight: '8px',
-                      verticalAlign: 'middle',
-                      whiteSpace: 'nowrap',
-                    }}
+                    className="font-mono text-sage/50"
+                    style={{ fontSize: 10, textAlign: 'right', paddingRight: 8, verticalAlign: 'middle', whiteSpace: 'nowrap' }}
                   >
                     Q{q}
                   </td>
@@ -152,50 +111,36 @@ export default function Slide12Leaderboard({ animKey: _ }: Props) {
 
 function StatBox({ num, label }: { num: number; label: string }) {
   return (
-    <div style={{ textAlign: 'right' }}>
-      <div className="font-mono font-bold" style={{ fontSize: '1.5rem', color: '#7eca9c' }}>{num}</div>
-      <div className="font-mono" style={{ fontSize: '10px', color: '#5a8068', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{label}</div>
+    <div className="text-right">
+      <div className="font-mono font-bold text-2xl text-terracotta">{num}</div>
+      <div className="font-mono text-sage uppercase tracking-widest" style={{ fontSize: 10 }}>{label}</div>
     </div>
   )
 }
 
 function UserHeader({ user }: { user: DashboardUser }) {
-  const borderColor = user.isCompleted
-    ? '#4ade80'
-    : isNew(user.registeredAt)
-    ? '#60a5fa'
-    : '#2a4030'
-  const nameColor = isNew(user.registeredAt) && !user.isCompleted ? '#60a5fa' : '#d4ede0'
+  const isCompleted = user.isCompleted
+  const newUser = isNew(user.registeredAt)
+  const borderColor = isCompleted ? '#3D6B4F' : newUser ? '#C4714A' : '#d4cfc5'
+  const nameColor = isCompleted ? '#3D6B4F' : newUser ? '#C4714A' : '#1A1A1A'
 
   return (
     <div
       className="font-mono"
       style={{
-        background: '#1a2b20',
-        border: `1px solid ${borderColor}`,
-        borderRadius: '8px',
+        background: '#FFFDF9',
+        border: `1.5px solid ${borderColor}`,
+        borderRadius: 8,
         padding: '6px 4px',
         textAlign: 'center',
-        minWidth: '60px',
-        marginBottom: '2px',
+        minWidth: 60,
+        marginBottom: 2,
       }}
     >
-      <div
-        style={{
-          fontSize: '11px',
-          fontWeight: 600,
-          color: nameColor,
-          overflow: 'hidden',
-          textOverflow: 'ellipsis',
-          whiteSpace: 'nowrap',
-          maxWidth: '64px',
-        }}
-      >
+      <div style={{ fontSize: 11, fontWeight: 600, color: nameColor, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 64 }}>
         {user.nickname}
       </div>
-      <div style={{ fontSize: '9px', color: '#5a8068' }}>
-        {user.purchasedSteps.length}/10
-      </div>
+      <div style={{ fontSize: 9, color: '#7A9E87' }}>{user.purchasedSteps.length}/10</div>
     </div>
   )
 }
@@ -206,26 +151,22 @@ function QuestCell({ step, user }: { step: number; user: DashboardUser }) {
   const isCurrent = done && step === maxStep && !user.isCompleted
 
   const base: React.CSSProperties = {
-    width: '60px',
-    height: '28px',
-    borderRadius: '4px',
+    width: 60,
+    height: 28,
+    borderRadius: 4,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    fontSize: '10px',
+    fontSize: 10,
     fontWeight: 700,
     fontFamily: 'monospace',
   }
 
   if (isCurrent) {
-    return (
-      <div style={{ ...base, background: '#fbbf24', color: '#0f1a14', animation: 'pulse 1s step-end infinite' }}>
-        ▶
-      </div>
-    )
+    return <div style={{ ...base, background: '#C4714A', color: '#FFFDF9', animation: 'pulse 1s step-end infinite' }}>▶</div>
   }
   if (done) {
-    return <div style={{ ...base, background: '#4ade80', color: '#0f1a14' }}>✓</div>
+    return <div style={{ ...base, background: '#3D6B4F', color: '#FFFDF9' }}>✓</div>
   }
-  return <div style={{ ...base, background: '#2a4030' }} />
+  return <div style={{ ...base, background: '#F5F0E8', border: '1px solid #d4cfc5' }} />
 }
