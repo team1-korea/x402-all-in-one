@@ -758,19 +758,87 @@ git commit -m "chore(lecture): remove Slide05Explore — replaced by Verify + Op
 
 ## 이미지 에셋 (별도 작업 — 이 플랜 범위 밖)
 
-Slide07 스토리보드 이미지 7개를 AI로 생성해서 `lecture/public/` 에 배치:
+Slide07 스토리보드 이미지 7개를 AI로 생성해서 `lecture/public/` 에 배치.
+**생성 도구:** 나노바나나 (Google Gemini 계열) — 자연어 문장 형식
 
-| 파일명 | 장면 |
-|--------|------|
-| `story-01-desire.png` | 욕구 발생 — 아이폰 보며 갖고 싶어하는 사람 |
-| `story-02-explore.png` | 탐색 — 애플스토어 외관 또는 제품 목록 |
-| `story-03-request.png` | 요청 — 점원에게 "아이폰 13 주세요" |
-| `story-04-payment.png` | 결제 요구 — "결제해주세요" 카운터 장면 |
-| `story-05-sign.png` | 서명 — 카드 단말기에 카드 꽂는 장면 |
-| `story-06-approve.png` | 승인 — 카드사 승인 화면 또는 전산 처리 |
-| `story-07-receive.png` | 수령 — 박스 받아드는 장면 |
+---
 
-**AI 프롬프트 형식:**
-> `storyboard panel sketch illustration, hand-drawn pencil style, minimal line art, [장면], white background, thin black lines, small terracotta color accent, simple cinematic composition, no text, no speech bubbles`
+### 공통 스타일 지침 (모든 프롬프트에 적용)
 
-이미지 배치 후 별도 커밋 권장.
+- 스타일: 손으로 그린 연필 스케치, 미니멀 라인아트, 영화 스토리보드 패널 느낌
+- 배경: 크림색 또는 흰색, 깔끔하게
+- 선: 얇고 정교한 검정 잉크 라인
+- 컬러 포인트: 장면의 핵심 요소 하나에만 테라코타(주황-갈색 계열) 색상 강조
+- 비율: 가로형 4:3 (슬라이드 프레임 크기에 맞춤)
+- 금지: 텍스트, 말풍선, 워터마크, 사실적인 사진 질감
+
+---
+
+### story-01-desire.png
+
+```
+A young person sitting on a couch, holding their old cracked phone and staring longingly at a vivid poster on the wall showing a sleek new smartphone. Their expression shows desire and longing. Hand-drawn pencil sketch style, minimal line art, cream background, thin black ink lines. The glowing smartphone poster has a warm terracotta orange tint as the only color accent. Cinematic storyboard panel, 4:3 ratio, no text, no speech bubbles.
+```
+
+---
+
+### story-02-explore.png
+
+```
+A young person holding their phone and looking at a map app showing nearby store locations, with a location pin marking the closest Apple Store. Their finger points at the nearest pin on the map. Hand-drawn pencil sketch style, minimal line art, cream background, thin black ink lines. The nearest location pin on the map glows in terracotta orange as the only color accent. Cinematic storyboard panel, 4:3 ratio, no text, no speech bubbles.
+```
+
+---
+
+### story-03-request.png
+
+```
+A young customer standing at a clean retail counter, pointing at a display phone to a store employee behind the counter. The employee listens attentively. The store interior is minimal and bright. Hand-drawn pencil sketch style, minimal line art, cream background, thin black ink lines. The display phone being pointed at has a terracotta orange highlight as the only color accent. Cinematic storyboard panel, 4:3 ratio, no text, no speech bubbles.
+```
+
+---
+
+### story-04-payment.png
+
+```
+A store employee turns a payment terminal screen toward the customer, showing the total amount. The customer looks at the screen with a slightly surprised expression, reaching for their wallet. Hand-drawn pencil sketch style, minimal line art, cream background, thin black ink lines. The payment terminal screen glows in terracotta orange as the only color accent. Cinematic storyboard panel, 4:3 ratio, no text, no speech bubbles.
+```
+
+---
+
+### story-05-sign.png
+
+```
+Close-up of a hand holding a credit card and swiping it across a payment terminal. The focus is on the hand and card in motion, no insertion slot visible. Hand-drawn pencil sketch style, minimal line art, cream background, thin black ink lines. The card held in the hand is highlighted in terracotta orange as the only color accent. Cinematic storyboard panel, 4:3 ratio, no text, no speech bubbles.
+```
+
+---
+
+### story-06-approve.png
+
+```
+A payment terminal screen displays a large checkmark approval symbol. The store employee gives a small nod or thumbs-up gesture in the background. The scene feels calm and resolved. Hand-drawn pencil sketch style, minimal line art, cream background, thin black ink lines. The checkmark on the screen is drawn in terracotta orange as the only color accent. Cinematic storyboard panel, 4:3 ratio, no text, no speech bubbles.
+```
+
+---
+
+### story-07-receive.png
+
+```
+A young person holds up a clean white product box with both hands, eyes wide with delight, a big smile on their face. The box is the focal point, held slightly above eye level in a triumphant pose. Hand-drawn pencil sketch style, minimal line art, cream background, thin black ink lines. The product box has a terracotta orange logo or ribbon as the only color accent. Cinematic storyboard panel, 4:3 ratio, no text, no speech bubbles.
+```
+
+---
+
+### 배치 방법
+
+생성 후 `lecture/public/` 에 저장:
+- `story-01-desire.png`
+- `story-02-explore.png`
+- `story-03-request.png`
+- `story-04-payment.png`
+- `story-05-sign.png`
+- `story-06-approve.png`
+- `story-07-receive.png`
+
+이미지 배치 후 별도 커밋 권장: `git commit -m "assets(lecture): add storyboard images for Slide07"`
