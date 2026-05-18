@@ -35,11 +35,11 @@ function StoryFrame({ frame, revealed }: { frame: typeof frames[0]; revealed: bo
           {frame.num}
         </span>
       </div>
-      <div style={{ padding: '8px 10px', borderTop: '1px solid #e8e2d8' }}>
-        <p style={{ fontFamily: 'monospace', fontSize: '9px', color: '#C4714A', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '3px' }}>
+      <div style={{ padding: '10px 12px', borderTop: '1px solid #e8e2d8' }}>
+        <p style={{ fontFamily: 'monospace', fontSize: '11px', color: '#C4714A', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '4px' }}>
           {frame.num} {frame.sub}
         </p>
-        <p style={{ fontFamily: 'sans-serif', fontSize: '11px', color: '#1A1A1A', lineHeight: 1.3 }}>
+        <p style={{ fontFamily: 'sans-serif', fontSize: '14px', color: '#1A1A1A', lineHeight: 1.3 }}>
           {frame.caption}
         </p>
       </div>
@@ -51,10 +51,10 @@ const Slide07IphoneStory = ({ animKey, step = 0 }: Props) => (
   <div className="slide bg-beige content-z-index">
     <div className="ambient-shape bg-sage" style={{ width: '45vw', height: '45vw', bottom: '-10%', right: '-10%', opacity: 0.07, animationDelay: '-4s' }} />
     <div key={animKey} className="flex flex-col items-center w-full max-w-5xl content-z-index">
-      <p className="fade-in-stagger font-mono text-xs tracking-widest uppercase text-sage mb-3" style={{ animationDelay: '0s' }}>
+      <p className="fade-in-stagger font-mono text-sm tracking-widest uppercase text-sage mb-4" style={{ animationDelay: '0s' }}>
         06 · Theory — 아이폰 비유
       </p>
-      <h2 className="fade-in-stagger font-serif text-4xl text-dark mb-6" style={{ animationDelay: '0.2s' }}>
+      <h2 className="fade-in-stagger font-serif text-5xl text-dark mb-7" style={{ animationDelay: '0.2s' }}>
         아이폰 사러 애플스토어 가기
       </h2>
 

@@ -5,7 +5,7 @@ type Hint = {
   iphone: string
   hole: string
   hint: string
-  img?: string  // public/ 경로
+  img?: string
 }
 
 const hints: Hint[] = [
@@ -35,17 +35,17 @@ const hints: Hint[] = [
 const Slide09Hints = ({ animKey, step = 0 }: Props) => (
   <div className="slide bg-beige content-z-index">
     <div className="ambient-shape bg-terracotta" style={{ width: '35vw', height: '35vw', top: '-5%', left: '-5%', opacity: 0.04, animationDelay: '-2s' }} />
-    <div key={animKey} className="flex flex-col items-center w-full max-w-3xl content-z-index">
-      <p className="fade-in-stagger font-mono text-xs tracking-widest uppercase text-sage mb-3" style={{ animationDelay: '0s' }}>07 · Lab</p>
-      <h2 className="fade-in-stagger font-serif text-5xl text-dark mb-2" style={{ animationDelay: '0.2s' }}>구멍 채우기</h2>
-      <p className="fade-in-stagger font-sans font-light text-sm text-sage mb-6" style={{ animationDelay: '0.4s' }}>
+    <div key={animKey} className="flex flex-col items-center w-full max-w-5xl content-z-index">
+      <p className="fade-in-stagger font-mono text-sm tracking-widest uppercase text-sage mb-4" style={{ animationDelay: '0s' }}>07 · Lab</p>
+      <h2 className="fade-in-stagger font-serif text-6xl text-dark mb-3" style={{ animationDelay: '0.2s' }}>구멍 채우기</h2>
+      <p className="fade-in-stagger font-sans font-light text-base text-sage mb-8" style={{ animationDelay: '0.4s' }}>
         x402-pay/SKILL.md 열고 [TODO] 3개를 자연어로 채우세요
       </p>
-      <div className="flex flex-col gap-4 w-full">
+      <div className="flex flex-col gap-5 w-full">
         {hints.map(({ num, iphone, hole, hint, img }, i) => (
           <div
             key={num}
-            className="flex items-center gap-4 bg-cream/60 rounded-xl border border-sage/15 px-5 py-4"
+            className="flex items-center gap-5 bg-cream/60 rounded-xl border border-sage/15 px-6 py-5"
             style={{
               opacity: step > i ? 1 : 0.4,
               filter: step > i ? 'none' : 'blur(2.5px)',
@@ -56,24 +56,24 @@ const Slide09Hints = ({ animKey, step = 0 }: Props) => (
               <img
                 src={img}
                 alt={hole}
-                className="w-20 h-20 object-contain rounded-lg flex-shrink-0 bg-white/50"
+                className="w-24 h-24 object-contain rounded-lg flex-shrink-0 bg-white/50"
                 onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none' }}
               />
             )}
             <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2 mb-1">
-                <span className="font-mono text-terracotta text-xs">{num}</span>
-                <span className="font-mono text-xs text-sage bg-sage/10 px-2 py-0.5 rounded">
+              <div className="flex items-center gap-2.5 mb-1.5">
+                <span className="font-mono text-terracotta text-sm">{num}</span>
+                <span className="font-mono text-sm text-sage bg-sage/10 px-2.5 py-0.5 rounded">
                   아이폰 비유: {iphone}
                 </span>
               </div>
-              <p className="font-sans text-base text-dark font-medium mb-0.5">{hole}</p>
-              <p className="font-sans text-sm text-dark/60">{hint}</p>
+              <p className="font-sans text-lg text-dark font-medium mb-1">{hole}</p>
+              <p className="font-sans text-base text-dark/60">{hint}</p>
             </div>
           </div>
         ))}
       </div>
-      <div className="fade-in-stagger w-full mt-4 bg-forest/10 border border-forest/20 rounded-xl px-5 py-3 font-sans text-sm text-forest" style={{ animationDelay: '1.0s' }}>
+      <div className="fade-in-stagger w-full mt-5 bg-forest/10 border border-forest/20 rounded-xl px-6 py-4 font-sans text-base text-forest" style={{ animationDelay: '1.0s' }}>
         정확하지 않아도 됩니다 — 비슷한 의미면 Claude가 알아서 해석합니다
       </div>
     </div>

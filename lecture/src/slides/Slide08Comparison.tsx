@@ -14,21 +14,21 @@ const rows: [string, string, boolean][] = [
 const Slide07Comparison = ({ animKey }: Props) => (
   <div className="slide bg-beige content-z-index">
     <div className="ambient-shape bg-forest" style={{ width: '40vw', height: '40vw', top: '-8%', left: '-5%', opacity: 0.04, animationDelay: '-7s' }} />
-    <div key={animKey} className="flex flex-col items-center w-full max-w-3xl content-z-index">
-      <p className="fade-in-stagger font-mono text-xs tracking-widest uppercase text-sage mb-4" style={{ animationDelay: '0s' }}>06 · Theory — x402 대응표</p>
-      <h2 className="fade-in-stagger font-serif text-5xl text-dark mb-8" style={{ animationDelay: '0.2s' }}>x402 = 아이폰 구매 흐름</h2>
+    <div key={animKey} className="flex flex-col items-center w-full max-w-5xl content-z-index">
+      <p className="fade-in-stagger font-mono text-sm tracking-widest uppercase text-sage mb-5" style={{ animationDelay: '0s' }}>06 · Theory — x402 대응표</p>
+      <h2 className="fade-in-stagger font-serif text-6xl text-dark mb-10" style={{ animationDelay: '0.2s' }}>x402 = 아이폰 구매 흐름</h2>
       <div
         className="fade-in-stagger w-full"
-        style={{ display: 'grid', gridTemplateColumns: '1fr 2rem 1fr', animationDelay: '0.5s' }}
+        style={{ display: 'grid', gridTemplateColumns: '1fr 2.5rem 1fr', animationDelay: '0.5s' }}
       >
-        <div className="bg-forest/10 border border-forest/20 px-4 py-2 text-forest font-mono text-xs tracking-widest text-center rounded-tl-lg">아이폰 비유</div>
+        <div className="bg-forest/10 border border-forest/20 px-5 py-3 text-forest font-mono text-sm tracking-widest text-center rounded-tl-lg">아이폰 비유</div>
         <div />
-        <div className="bg-terracotta/10 border border-terracotta/20 px-4 py-2 text-terracotta font-mono text-xs tracking-widest text-center rounded-tr-lg">x402</div>
+        <div className="bg-terracotta/10 border border-terracotta/20 px-5 py-3 text-terracotta font-mono text-sm tracking-widest text-center rounded-tr-lg">x402</div>
         {rows.map(([left, right, highlight]) => (
           <Fragment key={left}>
-            <div className="bg-cream/50 border border-sage/15 px-4 py-2.5 text-dark/70 text-sm flex items-center rounded-l-md my-0.5">{left}</div>
-            <div className="flex items-center justify-center text-terracotta text-sm">↔</div>
-            <div className={`border px-4 py-2.5 text-sm flex items-center rounded-r-md my-0.5 ${highlight ? 'bg-terracotta/10 border-terracotta/25 text-terracotta font-medium' : 'bg-cream/50 border-sage/15 text-forest/80'}`}>
+            <div className="bg-cream/50 border border-sage/15 px-5 py-3 text-dark/70 text-base flex items-center rounded-l-md my-0.5">{left}</div>
+            <div className="flex items-center justify-center text-terracotta text-base">↔</div>
+            <div className={`border px-5 py-3 text-base flex items-center rounded-r-md my-0.5 ${highlight ? 'bg-terracotta/10 border-terracotta/25 text-terracotta font-medium' : 'bg-cream/50 border-sage/15 text-forest/80'}`}>
               {right}
             </div>
           </Fragment>
