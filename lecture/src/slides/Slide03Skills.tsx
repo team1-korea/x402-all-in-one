@@ -9,22 +9,22 @@ const skills = [
   { slash: '/ship',   desc: '테스트 → 빌드 → PR 생성까지 한 번에' },
 ]
 
-const reviewMarkdown = `---
-name: review
-description: PR diff를 읽고 버그·보안·품질 이슈를 리포트합니다
+const reviewMarkdown = `# ── 이 파일이 /review 를 만듭니다 ──
+
+name: review          ← /review 명령어 등록
 triggers:
-  - review this pr
+  - review this pr    ← 이 말을 들으면 자동 실행
   - code review
-  - check my diff
----
 
-1. \`git diff origin/main\` 으로 변경사항 전체 읽기
-2. 버그, 보안 취약점, 코드 품질 이슈 찾기
-3. 고칠 수 있으면 바로 고치고, 판단이 필요하면 물어보기
 
-출력 예시:
-[P1] auth.ts:47 — 세션 만료 시 undefined 반환 → 수정 완료
-[P2] api.ts:12 — 입력값 검증 없음 → 수정할까요?
+# ── 아래가 Claude에게 보내는 지시문 ──
+
+/review 를 실행하면 Claude는 아래를 따릅니다:
+
+1. git diff origin/main 으로 변경사항 읽기
+2. 버그·보안 이슈 찾기
+3. 고칠 수 있으면 바로 고치고,
+   판단이 필요하면 물어보기
 `
 
 const Slide03Skills = ({ animKey }: Props) => {

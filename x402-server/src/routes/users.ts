@@ -13,6 +13,11 @@ router.post("/", async (req: Request, res: Response) => {
   const raw = req.body?.nickname;
   const nickname = typeof raw === 'string' && raw.trim() ? raw.trim() : undefined;
 
+  if (!nickname) {
+    res.status(400).json({ error: "닉네임은 필수입니다" });
+    return;
+  }
+
   const privateKey = generatePrivateKey();
   const account = privateKeyToAccount(privateKey);
   const walletAddress = account.address;

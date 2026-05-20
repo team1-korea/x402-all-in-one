@@ -17,7 +17,7 @@ import Slide14Bonus from './slides/Slide14Bonus'
 
 const TOTAL_SLIDES = 14
 // step 수: 0이면 step-through 없음, n이면 n번 눌러야 다음 슬라이드로
-const STEP_COUNTS = [0, 3, 0, 0, 0, 0, 7, 0, 3, 0, 0, 0, 0, 0]
+const STEP_COUNTS = [0, 3, 0, 0, 0, 0, 7, 0, 4, 0, 0, 0, 0, 0]
 
 function App() {
   const [currentSlide, setCurrentSlide] = useState(0)

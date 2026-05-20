@@ -77,10 +77,10 @@ viem으로 EIP-712 서명을 만듭니다.
 ```ts
 const authorization = {
   from: walletAddress,
-  to: payTo,                    // accepts[0].payTo
+  to: [TODO: 받는 지갑 주소는 어디서 가져와?],
   value: BigInt(amount),        // accepts[0].amount
   validAfter: 0n,
-  validBefore: [TODO: validBefore 값은 어떻게 계산해?],
+  validBefore: BigInt(Math.floor(Date.now() / 1000)) + BigInt(maxTimeoutSeconds),
   nonce: crypto.getRandomValues(new Uint8Array(32)),
 };
 ```
@@ -133,20 +133,16 @@ const payload = {
 };
 ```
 
-헤더 값으로 변환:
-
-```
-[TODO: 이 페이로드를 X-PAYMENT 헤더에 넣기 전에 어떻게 변환해?]
-```
+JSON.stringify 후 base64(btoa)로 변환해 헤더에 담습니다.
 
 ---
 
 ## 4단계: 결제 헤더 포함 재요청
 
-같은 URL에 `X-PAYMENT` 헤더를 붙여 재요청합니다:
+같은 URL에 결제 서명을 실은 헤더를 붙여 재요청합니다:
 
 ```
-X-PAYMENT: <변환된 페이로드>
+[TODO: 재요청할 때 추가하는 헤더 이름은?]: <base64 인코딩된 페이로드>
 ```
 
 성공 시 서버 응답:
