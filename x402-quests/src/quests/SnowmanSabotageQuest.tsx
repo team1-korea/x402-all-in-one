@@ -13,7 +13,7 @@ const COLS = 7;
 const K = 5;
 const ALPHA = 3;
 const TOTAL_ROUNDS = 3;
-const ROUND_TIMEOUT_SEC = 30;
+const ROUND_TIMEOUT_SEC = 15;
 const TICK_NORMAL_MS = 300;
 const TICK_HOVER_MS = 80;
 const NS = 'http://www.w3.org/2000/svg';
@@ -237,7 +237,7 @@ export default function SnowmanSabotageQuest({ quest }: Props) {
     isHoveringRef.current = false;
     speedRef.current = TICK_NORMAL_MS;
 
-    // 30초 안전망 타이머 + 점진적 속도 증가
+    // 15초 안전망 타이머 + 점진적 속도 증가
     timerIntervalRef.current = setInterval(() => {
       timeLeftRef.current -= 1;
       setTimeLeft(timeLeftRef.current);

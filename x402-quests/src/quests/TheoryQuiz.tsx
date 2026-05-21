@@ -9,7 +9,7 @@ interface Props {
   quest: QuestData;
 }
 
-const THEORY_WAIT_SEC = 30;
+const THEORY_WAIT_SEC = 10;
 
 export default function TheoryQuiz({ quest }: Props) {
   const [remaining, setRemaining] = useState(THEORY_WAIT_SEC);
