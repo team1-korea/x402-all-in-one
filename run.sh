@@ -43,16 +43,20 @@ start_all() {
   echo "╚══════════════════════════════════════════════╝"
   echo ""
 
+  # 로그 디렉토리 생성
+  mkdir -p "$ROOT/logs"
+  log "run" "logs → $ROOT/logs/"
+
   # node_modules 체크
   for dir in x402-facilitator x402-server x402-quests lecture; do
     install_if_needed "$ROOT/$dir"
   done
 
-  # 4개 서비스 동시 시작
-  (cd "$ROOT/x402-facilitator" && npm run dev 2>&1 | stream "facilitator") &
-  (cd "$ROOT/x402-server"      && npm run dev 2>&1 | stream "server     ") &
-  (cd "$ROOT/x402-quests"      && npm run dev 2>&1 | stream "quests     ") &
-  (cd "$ROOT/lecture"          && npm run dev 2>&1 | stream "lecture    ") &
+  # 4개 서비스 동시 시작 (터미널 출력 + 파일 저장)
+  (cd "$ROOT/x402-facilitator" && npm run dev 2>&1 | tee "$ROOT/logs/facilitator.log" | stream "facilitator") &
+  (cd "$ROOT/x402-server"      && npm run dev 2>&1 | tee "$ROOT/logs/server.log"      | stream "server     ") &
+  (cd "$ROOT/x402-quests"      && npm run dev 2>&1 | tee "$ROOT/logs/quests.log"      | stream "quests     ") &
+  (cd "$ROOT/lecture"          && npm run dev 2>&1 | tee "$ROOT/logs/lecture.log"     | stream "lecture    ") &
 
   wait
 }

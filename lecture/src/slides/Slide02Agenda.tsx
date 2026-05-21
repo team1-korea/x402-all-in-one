@@ -15,7 +15,7 @@ const cards = [
   },
   {
     tag: '처방',
-    title: '결제 능력을 이식합니다',
+    title: '오늘 x402 스킬을 통해 돈 내는 법, 직접 가르치겠습니다',
     sub: 'x402 스킬을 장착하면 — 돈도 내는 AI가 됩니다',
     accent: 'border-forest',
   },

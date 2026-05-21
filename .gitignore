@@ -13,3 +13,4 @@ dist/
 
 # Build cache
 lecture/tsconfig.app.tsbuildinfo
+logs/

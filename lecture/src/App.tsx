@@ -17,7 +17,7 @@ import Slide14Bonus from './slides/Slide14Bonus'
 
 const TOTAL_SLIDES = 14
 // step 수: 0이면 step-through 없음, n이면 n번 눌러야 다음 슬라이드로
-const STEP_COUNTS = [0, 3, 0, 0, 0, 0, 7, 0, 4, 0, 0, 0, 0, 0]
+const STEP_COUNTS = [0, 3, 0, 0, 0, 7, 0, 0, 4, 0, 0, 0, 0, 0]
 
 function App() {
   const [currentSlide, setCurrentSlide] = useState(0)
@@ -95,9 +95,9 @@ function App() {
         <Slide03Skills animKey={animKeys[2]} />
         <Slide04Install animKey={animKeys[3]} />
         <Slide05Verify animKey={animKeys[4]} />
-        <Slide06OpenGuide animKey={animKeys[5]} />
-        <Slide07IphoneStory animKey={animKeys[6]} step={currentSteps[6]} />
-        <Slide08Comparison animKey={animKeys[7]} />
+        <Slide07IphoneStory animKey={animKeys[5]} step={currentSteps[5]} />
+        <Slide08Comparison animKey={animKeys[6]} />
+        <Slide06OpenGuide animKey={animKeys[7]} />
         <Slide09Hints animKey={animKeys[8]} step={currentSteps[8]} />
         <Slide10Test animKey={animKeys[9]} />
         <Slide11Go animKey={animKeys[10]} />
