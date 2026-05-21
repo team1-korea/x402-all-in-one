@@ -16,7 +16,7 @@ Avalanche L1 위에 등록된 x402 퀘스트 서비스 목록을 조회합니다
 | Chain ID    | 402                                           |
 | 네트워크     | Avalanche APIX L1 Testnet                     |
 | RPC URL     | https://subnets.avax.network/apix/testnet/rpc |
-| Facilitator | https://unloc.kr/facilitator                  |
+| Facilitator | https://pay.abcfe.net                  |
 | API         | http://localhost:4010                         |
 
 ## 전체 서비스 목록

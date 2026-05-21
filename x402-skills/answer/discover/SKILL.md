@@ -16,18 +16,18 @@ Avalanche L1 위에 등록된 x402 퀘스트 서비스 목록을 조회합니다
 | Chain ID    | 402                                           |
 | 네트워크     | Avalanche APIX L1 Testnet                     |
 | RPC URL     | https://subnets.avax.network/apix/testnet/rpc |
-| Facilitator | https://unloc.kr/facilitator                  |
+| Facilitator | https://pay.abcfe.net                  |
 
 ## 전체 서비스 목록
 
 ```bash
-curl http://localhost:4010/v1/services
+curl https://x402.abcfe.net/v1/services
 ```
 
 ## 키워드 검색
 
 ```bash
-curl "http://localhost:4010/v1/services/search?q={검색어}"
+curl "https://x402.abcfe.net/v1/services/search?q={검색어}"
 ```
 
 ## 응답 구조
@@ -43,7 +43,7 @@ curl "http://localhost:4010/v1/services/search?q={검색어}"
       "networks": ["avalanche-l1-402"],
       "endpoints": [
         {
-          "url": "http://localhost:4010/v1/quest/quest-1",
+          "url": "https://x402.abcfe.net/v1/quest/quest-1",
           "method": "GET",
           "pricing": { "amount": "0", "currency": "native", "note": "무료" }
         }
@@ -57,7 +57,7 @@ curl "http://localhost:4010/v1/services/search?q={검색어}"
       "networks": ["avalanche-l1-402"],
       "endpoints": [
         {
-          "url": "http://localhost:4010/v1/quest/quest-2",
+          "url": "https://x402.abcfe.net/v1/quest/quest-2",
           "method": "GET",
           "pricing": { "amount": "10000000000000000", "currency": "native", "note": "0.01 APIX" }
         }
@@ -71,7 +71,7 @@ curl "http://localhost:4010/v1/services/search?q={검색어}"
       "networks": ["avalanche-l1-402"],
       "endpoints": [
         {
-          "url": "http://localhost:4010/v1/quest/quest-3",
+          "url": "https://x402.abcfe.net/v1/quest/quest-3",
           "method": "GET",
           "pricing": { "amount": "10000000000000000", "currency": "native", "note": "0.01 APIX" }
         }

@@ -69,4 +69,4 @@ skills/
 | Chain ID | 402                                           |
 | 네트워크  | Avalanche APIX L1 Testnet                     |
 | RPC URL  | https://subnets.avax.network/apix/testnet/rpc |
-| Facilitator | https://unloc.kr/facilitator              |
+| Facilitator | https://pay.abcfe.net              |

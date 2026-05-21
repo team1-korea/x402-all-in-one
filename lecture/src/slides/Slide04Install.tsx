@@ -12,7 +12,7 @@ const Slide04Install = ({ animKey }: Props) => (
           <p className="font-mono text-sm tracking-widest uppercase text-forest mb-4">💻 터미널 있는 분</p>
           <pre className="bg-[#1e2d24] rounded-lg px-6 py-4 font-mono text-base text-[#d4ede0] whitespace-pre-wrap">
             {'npx team1-x402 --url='}
-            <span style={{ color: '#fbbf24' }}>강사화면 URL</span>
+            <span style={{ color: '#fbbf24' }}>https://x402.abcfe.net</span>
           </pre>
         </div>
 

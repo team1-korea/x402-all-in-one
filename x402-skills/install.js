@@ -25,7 +25,7 @@ async function install() {
   console.log(LOGO);
 
   const argUrl = process.argv.slice(2).find(a => a.startsWith('--url='))?.split('=')[1];
-  const resolvedUrl = argUrl || 'http://localhost:4010';
+  const resolvedUrl = argUrl || 'https://x402.abcfe.net';
 
   log(`API URL: ${resolvedUrl}`);
 

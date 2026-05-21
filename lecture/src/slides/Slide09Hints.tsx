@@ -23,7 +23,7 @@ const example402 = `HTTP/1.1 402 Payment Required
     "amount": "10000000",
     "payTo": "0x7486fE46d82541ac4ae3b09b9a7061b8123A61Ba",
     "maxTimeoutSeconds": 60,
-    "resource": "http://localhost:25000/v1/quest/product-a/2",
+    "resource": "https://x402.abcfe.net/v1/quest/product-a/2",
     "extra": {
       "assetTransferMethod": "eip3009",
       "name": "USD Coin",
@@ -40,7 +40,7 @@ const hints: Hint[] = [
     iphone: '카드사',
     hole: '누가 결제를 검증해?',
     hint: '서버 대신 결제를 검증·정산해주는 외부 서버',
-    answer: 'https://unloc.kr/facilitator',
+    answer: 'https://pay.abcfe.net',
   },
   {
     num: '②',

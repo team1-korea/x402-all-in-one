@@ -25,7 +25,7 @@ const llmsTxtContent = `# x402 Avalanche L1 — 빌더 밋업
 
 Chain ID    : 402
 네트워크    : Avalanche APIX L1 Testnet
-Facilitator : https://unloc.kr/facilitator
+Facilitator : https://pay.abcfe.net
 TONE Token  : 0x6ac929821e85970910f5dbafaee81823d71b17f3
 
 ## 동작 방식
