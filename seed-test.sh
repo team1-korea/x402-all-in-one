@@ -3,7 +3,7 @@
 
 ROOT="$(cd "$(dirname "$0")" && pwd)"
 ENV_FILE="$ROOT/x402-server/.env"
-QUEST_BASE="${QUEST_BASE_URL:-http://localhost:25001}"
+QUEST_BASE="${QUEST_BASE_URL:-http://localhost:40212}"
 
 # .env에서 Supabase 설정 읽기
 SUPABASE_URL=$(grep '^SUPABASE_URL=' "$ENV_FILE" | cut -d= -f2-)

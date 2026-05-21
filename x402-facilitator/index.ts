@@ -51,7 +51,7 @@ function requiredEnv(name: string): string {
   return value;
 }
 
-const port = Number(process.env.PORT || "4022");
+const port = Number(process.env.PORT || "40211");
 const chainId = Number(requiredEnv("EVM_CHAIN_ID"));
 const rpcUrl = requiredEnv("EVM_RPC_URL");
 const privateKey = requiredEnv("EVM_PRIVATE_KEY") as Hex;

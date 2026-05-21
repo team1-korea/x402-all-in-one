@@ -1,6 +1,6 @@
 import type { QuestData, AnswerResult } from './types';
 
-const API_BASE = (import.meta.env.VITE_API_BASE as string) || 'http://localhost:4010';
+const API_BASE = (import.meta.env.VITE_API_BASE as string) || 'http://localhost:40210';
 
 export async function fetchQuest(uuid: string): Promise<QuestData> {
   const res = await fetch(`${API_BASE}/quest-api/${uuid}`);

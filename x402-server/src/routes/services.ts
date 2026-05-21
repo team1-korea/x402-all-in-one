@@ -43,7 +43,7 @@ router.get("/", async (req: Request, res: Response) => {
         status,
         price: q.price === 0n ? "무료" : "10 USDC",
         difficulty: q.difficulty,
-        endpoint: `http://localhost:4010/v1/quest/${productId}/${stepNum}`,
+        endpoint: `${process.env.API_BASE_URL || "http://localhost:40210"}/v1/quest/${productId}/${stepNum}`,
       };
 
       if ((status === "cleared" || status === "purchased") && user) {

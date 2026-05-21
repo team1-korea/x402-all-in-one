@@ -28,7 +28,7 @@ function buildPaymentRequirements(
   step: string,
   price: bigint,
 ): PaymentRequirements {
-  const API_BASE = process.env.API_BASE_URL || "http://localhost:4010";
+  const API_BASE = process.env.API_BASE_URL || "http://localhost:40210";
   return {
     scheme: "exact",
     network: `eip155:${process.env.CHAIN_ID || "402"}`,

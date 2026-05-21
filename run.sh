@@ -4,10 +4,10 @@ set -e
 ROOT="$(cd "$(dirname "$0")" && pwd)"
 
 # ── 포트 ──────────────────────────────────────────────
-SERVER_PORT=4010
-FACILITATOR_PORT=4022
-QUESTS_PORT=25001
-LECTURE_PORT=5173
+SERVER_PORT=40210
+FACILITATOR_PORT=40211
+QUESTS_PORT=40212
+LECTURE_PORT=40213
 
 # ── 로그 prefix 출력 ──────────────────────────────────
 log() { local prefix="$1"; shift; echo "[$prefix] $*"; }

@@ -31,7 +31,7 @@ app.get("/health", (_req, res) => {
 });
 
 app.get("/llms.txt", (_req, res) => {
-  const base = process.env.API_BASE_URL || "http://localhost:4010";
+  const base = process.env.API_BASE_URL || "http://localhost:40210";
   const template = readFileSync(join(__dirname, "..", "llms.txt"), "utf8");
   const content = template.replaceAll("{{BASE_URL}}", base);
   res.setHeader("Content-Type", "text/plain; charset=utf-8");
@@ -44,7 +44,7 @@ app.use("/v1/quest", questRouter);
 app.use("/quest-api", questApiRouter);
 app.use("/v1/dashboard", dashboardRouter);
 
-const port = Number(process.env.PORT || 4010);
+const port = Number(process.env.PORT || 40210);
 app.listen(port, () => {
   console.log(`x402-server listening on http://localhost:${port}`);
   console.log(`facilitator: ${process.env.FACILITATOR_URL}`);

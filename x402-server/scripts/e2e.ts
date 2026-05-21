@@ -3,7 +3,7 @@
  * x402 E2E 테스트
  *
  * 실행: npx tsx scripts/e2e.ts [server-url]
- * 예)   npx tsx scripts/e2e.ts http://localhost:4010
+ * 예)   npx tsx scripts/e2e.ts http://localhost:40210
  *
  * 커버 흐름:
  *  1. POST /v1/register          → 지갑 생성 + 100 USDC 에어드랍
@@ -18,7 +18,7 @@ import { createPublicClient, createWalletClient, defineChain, http, type Hex } f
 import { privateKeyToAccount } from "viem/accounts";
 import { randomBytes } from "crypto";
 
-const API_BASE = process.argv[2]?.replace(/\/$/, "") || "http://localhost:4010";
+const API_BASE = process.argv[2]?.replace(/\/$/, "") || "http://localhost:40210";
 const PRODUCT = "product-a";
 const TEST_STEP = "2"; // theory-ox, answerIndex [0, 0]
 
