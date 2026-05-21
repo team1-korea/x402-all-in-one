@@ -1,6 +1,6 @@
 {
   "name": "team1-x402",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "Avalanche L1 x402 퀘스트 스킬 설치 CLI",
   "main": "install.js",
   "bin": {

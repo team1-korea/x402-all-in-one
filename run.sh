@@ -73,6 +73,16 @@ case "${1:-start}" in
   lecture)
     cd "$ROOT/lecture" && npm run dev
     ;;
+  stop)
+    for port in $FACILITATOR_PORT $SERVER_PORT $QUESTS_PORT $LECTURE_PORT; do
+      pids=$(lsof -ti tcp:$port 2>/dev/null) || true
+      if [ -n "$pids" ]; then
+        echo "$pids" | xargs kill -9 2>/dev/null || true
+        log "stop" "killed process on :$port"
+      fi
+    done
+    log "stop" "all services stopped."
+    ;;
   install)
     for dir in x402-facilitator x402-server x402-quests lecture; do
       log "install" "$dir..."
@@ -81,7 +91,7 @@ case "${1:-start}" in
     log "install" "done."
     ;;
   *)
-    echo "Usage: $0 [start|facilitator|server|quests|lecture|install]"
+    echo "Usage: $0 [start|facilitator|server|quests|lecture|install|stop]"
     exit 1
     ;;
 esac
