@@ -170,4 +170,4 @@ JSON.stringify 후 base64(btoa)로 변환해 헤더에 담습니다.
 | `402` | 결제 헤더 없음 또는 서명 검증 실패 | 서명 파라미터 확인 |
 | `400` | X-PAYMENT 파싱 오류 | 인코딩 방식 확인 |
 | `403` | 미등록 사용자 | `/x402-quest` 로 Step 0부터 시작 |
-| `502` | facilitator 연결 실패 | `[TODO]`의 facilitator `/health` 확인 |
+| `502` | facilitator 연결 실패 | facilitator `/health` 확인 |

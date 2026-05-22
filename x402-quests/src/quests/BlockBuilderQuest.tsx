@@ -392,7 +392,6 @@ export default function BlockBuilderQuest({ quest }: Props) {
 
           {/* Initial 4 blocks */}
           {(() => {
-            const showId = gameState === 'won';
             return blocks.map(block => (
               <div
                 key={block.id}
@@ -416,7 +415,7 @@ export default function BlockBuilderQuest({ quest }: Props) {
                 onMouseLeave={() => { setHoveredBlock(null); setShowTooltip(false); }}
               >
                 <div className={styles.blockHeader}>
-                  <span>{showId ? `블록 #${block.realData.height}` : '??? 블록'}</span>
+                  <span>블록 #{block.realData.height}</span>
                 </div>
                 <div className={styles.hashRow}>
                   <span>prevHash</span>

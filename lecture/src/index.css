@@ -95,7 +95,6 @@ body {
   100% { opacity: 1; transform: scale(1); }
 }
 
-/* Ambient background shapes */
 .ambient-shape {
   position: absolute;
   border-radius: 50%;

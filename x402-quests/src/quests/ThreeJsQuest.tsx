@@ -27,6 +27,7 @@ export default function ThreeJsQuest({ quest }: Props) {
   const [order, setOrder] = useState<number[]>(() => shuffle([0, 1, 2, 3, 4, 5]));
   const [result, setResult] = useState<AnswerResult | null>(null);
   const [loading, setLoading] = useState(false);
+  const [showAnswer, setShowAnswer] = useState(false);
   const dragIndexRef = useRef<number | null>(null);
 
   const handleDragStart = (index: number) => {
@@ -78,10 +79,10 @@ export default function ThreeJsQuest({ quest }: Props) {
                 onDragStart={() => handleDragStart(position)}
                 onDragOver={e => handleDragOver(e, position)}
                 onDragEnd={handleDragEnd}
-                className="flex items-start gap-3 bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 cursor-grab active:cursor-grabbing select-none"
+                className="flex items-center gap-3 bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 cursor-grab active:cursor-grabbing select-none"
               >
-                <span className="text-gray-500 text-sm font-mono mt-0.5 w-4 shrink-0">{position + 1}</span>
-                <div>
+                <span className="text-gray-500 text-sm font-mono w-4 shrink-0 text-center">{position + 1}</span>
+                <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-white">{STEPS[stepIdx].label}</p>
                   <p className="text-xs text-slate-500 mt-0.5">{STEPS[stepIdx].sub}</p>
                 </div>
@@ -102,6 +103,29 @@ export default function ThreeJsQuest({ quest }: Props) {
         )}
 
         {result && <ResultDisplay correct={result.correct} message={result.message} />}
+
+        {result?.correct && !showAnswer && (
+          <button
+            onClick={() => setShowAnswer(true)}
+            className="w-full mt-3 py-2 border border-blue-700 hover:border-blue-500 rounded-lg text-sm text-blue-400 hover:text-blue-200 transition-colors"
+          >
+            정답 순서 보기 →
+          </button>
+        )}
+
+        {result?.correct && showAnswer && (
+          <div className="mt-4 flex flex-col gap-2">
+            {[0, 1, 2, 3, 4, 5].map((stepIdx, i) => (
+              <div key={stepIdx} className="flex items-center gap-3 bg-gray-800/60 border border-green-800/40 rounded-lg px-4 py-3">
+                <span className="text-green-600 text-sm font-mono w-4 shrink-0 text-center">{i + 1}</span>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-white">{STEPS[stepIdx].label}</p>
+                  <p className="text-xs text-slate-500 mt-0.5">{STEPS[stepIdx].sub}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
 
         {result && !result.correct && (
           <button

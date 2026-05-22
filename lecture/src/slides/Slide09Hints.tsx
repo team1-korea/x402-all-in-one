@@ -128,6 +128,7 @@ const Slide09Hints = ({ animKey, step = 0 }: Props) => {
             position: 'fixed', inset: 0, zIndex: 9999,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             backgroundColor: 'rgba(30, 40, 30, 0.72)',
+            cursor: 'auto',
           }}
           onClick={() => setPreviewOpen(false)}
         >

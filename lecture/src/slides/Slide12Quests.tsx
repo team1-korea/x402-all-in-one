@@ -8,9 +8,9 @@ const quests = [
   { id: '5', price: '10 USDC', type: '객관식 — Anthropic & Claude 모델' },
   { id: '6', price: '10 USDC', type: '오프라인 — 스태프 찾아 비밀코드 받기' },
   { id: '7', price: '10 USDC', type: '객관식 — Kite AI & 아발란체 생태계' },
-  { id: '8', price: '10 USDC', type: '피드백 — 오늘 밋업 한 줄 소감' },
-  { id: '9', price: '10 USDC', type: '정렬 — x402 결제 흐름 순서 맞추기' },
-  { id: '10', price: '10 USDC', type: '네트워킹 — 참가자 3명 관심사 모으기' },
+  { id: '8', price: '10 USDC', type: '정렬 — x402 결제 흐름 순서 맞추기' },
+  { id: '9', price: '10 USDC', type: '네트워킹 — 참가자 3명 관심사 모으기' },
+  { id: '10', price: '10 USDC', type: '피드백 — 오늘 밋업 한 줄 소감' },
 ]
 
 const Slide12Quests = ({ animKey }: Props) => (
