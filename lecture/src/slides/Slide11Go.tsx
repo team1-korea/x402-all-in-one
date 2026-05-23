@@ -1,6 +1,22 @@
+import { useState } from 'react'
+
 interface Props { animKey: number }
 
+const SERVER_URL = import.meta.env.VITE_SERVER_URL ?? 'https://x402.abcfe.net'
+
 const Slide11Go = ({ animKey }: Props) => {
+  const [status, setStatus] = useState<'idle' | 'loading' | 'done'>('idle')
+
+  const startMarathon = async () => {
+    setStatus('loading')
+    try {
+      await fetch(`${SERVER_URL}/v1/marathon/start`, { method: 'POST' })
+      setStatus('done')
+    } catch {
+      setStatus('idle')
+    }
+  }
+
   return (
     <div className="slide bg-beige content-z-index">
       <div className="ambient-shape bg-terracotta" style={{ width: '60vw', height: '60vw', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', opacity: 0.04, animationDelay: '-1s' }} />
@@ -21,6 +37,23 @@ const Slide11Go = ({ animKey }: Props) => {
           <div className="bg-terracotta/10 border border-terracotta/30 rounded-xl px-8 py-3 font-mono text-lg text-terracotta font-semibold">
             100 USDC 에어드랍
           </div>
+        </div>
+
+        {/* 마라톤 시작 버튼 */}
+        <div className="fade-in-stagger" style={{ animationDelay: '1.3s' }}>
+          {status === 'done' ? (
+            <div className="bg-forest/10 border border-forest/30 rounded-xl px-10 py-4 font-mono text-lg text-forest font-semibold">
+              ✓ 마라톤 시작됨 — 참가자 화면이 열렸습니다
+            </div>
+          ) : (
+            <button
+              onClick={startMarathon}
+              disabled={status === 'loading'}
+              className="bg-terracotta hover:bg-terracotta/85 disabled:opacity-50 text-cream font-sans font-semibold text-xl px-12 py-4 rounded-xl transition-all duration-150 cursor-none"
+            >
+              {status === 'loading' ? '시작 중...' : '🏁 마라톤 시작하기'}
+            </button>
+          )}
         </div>
       </div>
     </div>
