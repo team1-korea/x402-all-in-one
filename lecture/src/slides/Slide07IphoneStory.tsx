@@ -4,13 +4,13 @@ import { createPortal } from 'react-dom'
 interface Props { animKey: number; step?: number }
 
 const frames = [
-  { num: '①', sub: '욕구 발생',  caption: '아 아이폰 사고 싶다',    img: '/story-01-desire.png',   x402: '구매 필요 확인',                    highlight: false },
-  { num: '②', sub: '탐색',      caption: '애플스토어 목록 확인',    img: '/story-02-explore.png',  x402: 'llms.txt 확인',                     highlight: false },
-  { num: '③', sub: '요청',      caption: '"아이폰 13 주세요"',      img: '/story-03-request.png',  x402: '전자책 다운로드 요청',              highlight: false },
-  { num: '④', sub: '결제 요구', caption: '"결제해주세요"',           img: '/story-04-payment.png',  x402: '402 — 결제 필요',                   highlight: true  },
-  { num: '⑤', sub: '서명',      caption: '카드 꽂기',               img: '/story-05-sign.png',     x402: '결제 서명 & 재요청',                highlight: false },
-  { num: '⑥', sub: '승인',      caption: '카드사 처리',             img: '/story-06-approve.png',  x402: '결제 검증 & 승인',                  highlight: false },
-  { num: '⑦', sub: '수령',      caption: '아이폰 수령!',            img: '/story-07-receive.png',  x402: '전자책 PDF 링크 수신',              highlight: false },
+  { num: '①', sub: '욕구 발생',  caption: '아 이 책 읽고 싶다',     img: '/story-01-desire.png',   x402: '구매 필요 확인',          highlight: false },
+  { num: '②', sub: '탐색',      caption: '서점에서 책 찾기',        img: '/story-02-explore.png',  x402: 'llms.txt 확인',           highlight: false },
+  { num: '③', sub: '요청',      caption: '"이 책 주세요"',           img: '/story-03-request.png',  x402: '전자책 다운로드 요청',    highlight: false },
+  { num: '④', sub: '결제 요구', caption: '"결제해주세요"',           img: '/story-04-payment.png',  x402: '402 — 결제 필요',         highlight: true  },
+  { num: '⑤', sub: '서명',      caption: '카드 꽂기',               img: '/story-05-sign.png',     x402: '결제 서명 & 재요청',      highlight: false },
+  { num: '⑥', sub: '승인',      caption: '카드사 처리',             img: '/story-06-approve.png',  x402: '결제 검증 & 승인',        highlight: false },
+  { num: '⑦', sub: '수령',      caption: '책 수령!',                img: '/story-07-receive.png',  x402: '전자책 PDF 링크 수신',    highlight: false },
 ]
 
 function StoryFrame({ frame, revealed, onOpen }: { frame: typeof frames[0]; revealed: boolean; onOpen: () => void }) {
@@ -88,7 +88,7 @@ function ImageModal({ frame, onClose }: { frame: typeof frames[0]; onClose: () =
       >
         <div style={{ textAlign: 'center', minWidth: 0 }}>
           <p style={{ fontFamily: 'monospace', fontSize: '11px', color: '#C4714A', letterSpacing: '0.08em', marginBottom: '6px', textTransform: 'uppercase' }}>
-            아이폰 비유
+            서점 비유
           </p>
           <p style={{ fontFamily: 'sans-serif', fontSize: '22px', color: '#fff', lineHeight: 1.3 }}>
             <span style={{ fontFamily: 'monospace', color: '#C4714A', marginRight: '8px' }}>{frameNum}.</span>
@@ -130,10 +130,10 @@ const Slide07IphoneStory = ({ animKey, step = 0 }: Props) => {
       {step === 0 ? (
         <div key={`${animKey}-title`} className="flex flex-col items-center content-z-index">
           <p className="fade-in-stagger font-mono text-sm tracking-widest uppercase text-sage mb-5" style={{ animationDelay: '0s' }}>
-            06 · Theory — 아이폰 비유
+            06 · Theory — 서점 비유
           </p>
           <h2 className="fade-in-stagger font-serif text-6xl text-dark" style={{ animationDelay: '0.2s' }}>
-            아이폰 사러 애플스토어 가기
+            책 사러 서점 가기
           </h2>
         </div>
       ) : (

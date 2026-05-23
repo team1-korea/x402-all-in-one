@@ -12,8 +12,8 @@ interface RowDef {
 }
 
 const preRows: RowDef[] = [
-  { left: '핸드폰 구매욕구', right: '구매 필요 확인', highlight: false, isPre: true },
-  { left: '가까운 애플스토어 찾기', right: 'llms.txt 확인', highlight: false, isPre: true, hasPreview: true },
+  { left: '책 구매욕구', right: '구매 필요 확인', highlight: false, isPre: true },
+  { left: '온라인 서점 찾기', right: 'llms.txt 확인', highlight: false, isPre: true, hasPreview: true },
 ]
 
 const llmsTxtContent = `# x402 Avalanche L1 — 빌더 밋업
@@ -47,12 +47,12 @@ TONE Token  : 0x6ac929821e85970910f5dbafaee81823d71b17f3
 `
 
 const x402Rows: RowDef[] = [
-  { left: '"아이폰 13 주세요"', right: 'GET /v1/quest/{productId}/{step}', highlight: false },
+  { left: '"이 책 주세요"', right: '전자책 다운로드 요청', highlight: false },
   { left: '"결제해주세요"', right: 'HTTP 402 + accepts[0]', highlight: true },
-  { left: '가격표 + 계좌번호', right: '체인 / 금액 / 수신 지갑', highlight: false },
+  { left: '가격 + 결제 수단', right: '체인 / 금액 / 수신 지갑', highlight: false },
   { left: '카드 꽂기', right: 'EIP-3009 서명 → X-PAYMENT 헤더', highlight: false },
-  { left: '카드사 승인', right: 'facilitator: 검증 + 온체인 정산', highlight: false },
-  { left: '아이폰 수령', right: '퀘스트 문제 응답', highlight: false },
+  { left: '카드사 처리', right: 'Facilitator 검증 & 온체인 정산', highlight: false },
+  { left: '책 수령!', right: '전자책 PDF 링크 수신', highlight: false },
 ]
 
 const allRows = [...preRows, ...x402Rows]
@@ -65,13 +65,13 @@ const Slide08Comparison = ({ animKey }: Props) => {
       <div className="ambient-shape bg-forest" style={{ width: '40vw', height: '40vw', top: '-8%', left: '-5%', opacity: 0.04, animationDelay: '-7s' }} />
       <div key={animKey} className="flex flex-col items-center w-full max-w-5xl content-z-index">
         <p className="fade-in-stagger font-mono text-sm tracking-widest uppercase text-sage mb-5" style={{ animationDelay: '0s' }}>08 · Theory — x402 대응표</p>
-        <h2 className="fade-in-stagger font-serif text-6xl text-dark mb-10" style={{ animationDelay: '0.2s' }}>x402 = 아이폰 구매 흐름</h2>
+        <h2 className="fade-in-stagger font-serif text-6xl text-dark mb-10" style={{ animationDelay: '0.2s' }}>x402 = 전자책 구매 흐름</h2>
         <div
           className="fade-in-stagger w-full"
           style={{ display: 'grid', gridTemplateColumns: '1fr 2.5rem 1fr 4rem', animationDelay: '0.5s' }}
         >
           {/* Headers */}
-          <div className="bg-forest/10 border border-forest/20 px-5 py-3 text-forest font-mono text-sm tracking-widest text-center rounded-tl-lg">아이폰 비유</div>
+          <div className="bg-forest/10 border border-forest/20 px-5 py-3 text-forest font-mono text-sm tracking-widest text-center rounded-tl-lg">서점 비유</div>
           <div />
           <div className="bg-terracotta/10 border border-terracotta/20 px-5 py-3 text-terracotta font-mono text-sm tracking-widest text-center rounded-tr-lg">x402</div>
           <div />
