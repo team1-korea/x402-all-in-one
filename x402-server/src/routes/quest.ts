@@ -2,6 +2,7 @@ import { randomUUID } from "node:crypto";
 import { Router, type Request, type Response } from "express";
 import { getQuest, getAllQuests } from "../quests.js";
 import { verifyPayment, settlePayment } from "../facilitator.js";
+import { marathonState } from "./marathon.js";
 import {
   getUser,
   updateQuestStatus,
@@ -75,6 +76,11 @@ router.get("/:productId/:step", async (req: Request, res: Response) => {
 
   if (!quest) {
     res.status(404).json({ error: "Quest not found" });
+    return;
+  }
+
+  if (!quest.entryPoint && !marathonState.started) {
+    res.status(403).json({ error: "마라톤이 아직 시작되지 않았습니다" });
     return;
   }
 
