@@ -55,9 +55,12 @@ export default function Slide13Leaderboard({ animKey: _ }: Props) {
   }
 
   return (
-    <div className="slide bg-beige" style={{ justifyContent: 'flex-start', alignItems: 'center', padding: '3rem 4rem', overflowX: 'auto' }}>
+    <div
+      className="slide bg-beige"
+      style={{ flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'stretch', padding: '2rem 3rem', overflow: 'hidden' }}
+    >
       {/* Header */}
-      <div className="w-full flex items-center justify-between mb-6 pb-5 border-b border-forest/15 flex-shrink-0 content-z-index">
+      <div className="flex items-center justify-between mb-4 pb-4 border-b border-forest/15 flex-shrink-0">
         <div className="flex items-center gap-3">
           <span style={{ display: 'inline-block', width: 8, height: 8, borderRadius: '50%', background: '#3D6B4F', animation: 'pulse 1.5s infinite' }} />
           <span className="font-mono font-semibold text-lg text-forest tracking-wide">Quest Dashboard</span>
@@ -71,15 +74,17 @@ export default function Slide13Leaderboard({ animKey: _ }: Props) {
 
       {/* Matrix */}
       {stats.users.length === 0 ? (
-        <p className="font-mono text-sm text-sage/50 mt-16">아직 참가자가 없습니다</p>
+        <div className="flex-1 flex items-center justify-center">
+          <p className="font-mono text-sm text-sage/50">아직 참가자가 없습니다</p>
+        </div>
       ) : (
-        <div style={{ overflowX: 'auto', flex: 1, width: '100%' }} className="content-z-index">
-          <table style={{ borderSpacing: '4px', borderCollapse: 'separate' }}>
+        <div style={{ flex: 1, overflow: 'auto', display: 'flex', alignItems: 'stretch' }}>
+          <table style={{ width: '100%', height: '100%', borderSpacing: '4px', borderCollapse: 'separate', tableLayout: 'fixed' }}>
             <thead>
               <tr>
-                <th style={{ width: '2.5rem' }} />
+                <th style={{ width: '2rem' }} />
                 {stats.users.map((u) => (
-                  <th key={u.walletAddress} style={{ padding: 0, verticalAlign: 'bottom' }}>
+                  <th key={u.walletAddress} style={{ padding: '0 2px 4px', verticalAlign: 'bottom' }}>
                     <UserHeader user={u} />
                   </th>
                 ))}
@@ -87,15 +92,15 @@ export default function Slide13Leaderboard({ animKey: _ }: Props) {
             </thead>
             <tbody>
               {Array.from({ length: QUEST_COUNT }, (_, i) => i + 1).map((q) => (
-                <tr key={q}>
+                <tr key={q} style={{ height: `${90 / QUEST_COUNT}%` }}>
                   <td
                     className="font-mono text-sage/50"
-                    style={{ fontSize: 10, textAlign: 'right', paddingRight: 8, verticalAlign: 'middle', whiteSpace: 'nowrap' }}
+                    style={{ fontSize: 10, textAlign: 'right', paddingRight: 6, verticalAlign: 'middle', whiteSpace: 'nowrap' }}
                   >
                     Q{q}
                   </td>
                   {stats.users.map((u) => (
-                    <td key={u.walletAddress} style={{ padding: 0 }}>
+                    <td key={u.walletAddress} style={{ padding: '2px' }}>
                       <QuestCell step={q} user={u} />
                     </td>
                   ))}
@@ -131,13 +136,12 @@ function UserHeader({ user }: { user: DashboardUser }) {
         background: '#FFFDF9',
         border: `1.5px solid ${borderColor}`,
         borderRadius: 8,
-        padding: '6px 4px',
+        padding: '5px 4px',
         textAlign: 'center',
-        minWidth: 60,
         marginBottom: 2,
       }}
     >
-      <div style={{ fontSize: 11, fontWeight: 600, color: nameColor, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 64 }}>
+      <div style={{ fontSize: 11, fontWeight: 600, color: nameColor, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
         {user.nickname}
       </div>
       <div style={{ fontSize: 9, color: '#7A9E87' }}>{user.purchasedSteps.length}/10</div>
@@ -151,8 +155,9 @@ function QuestCell({ step, user }: { step: number; user: DashboardUser }) {
   const isCurrent = done && step === maxStep && !user.isCompleted
 
   const base: React.CSSProperties = {
-    width: 60,
-    height: 28,
+    width: '100%',
+    height: '100%',
+    minHeight: 24,
     borderRadius: 4,
     display: 'flex',
     alignItems: 'center',

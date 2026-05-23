@@ -8,6 +8,8 @@ import questRouter from "./routes/quest.js";
 import usersRouter from "./routes/users.js";
 import questApiRouter from "./routes/quest-api.js";
 import dashboardRouter from "./routes/dashboard.js";
+import marathonRouter from "./routes/marathon.js";
+import adminRouter from "./routes/admin.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -43,6 +45,8 @@ app.use("/v1/services", servicesRouter);
 app.use("/v1/quest", questRouter);
 app.use("/quest-api", questApiRouter);
 app.use("/v1/dashboard", dashboardRouter);
+app.use("/v1/marathon", marathonRouter);
+app.use("/v1/admin", adminRouter);
 
 const port = Number(process.env.PORT || 40210);
 app.listen(port, () => {

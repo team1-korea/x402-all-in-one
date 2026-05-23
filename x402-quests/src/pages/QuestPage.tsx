@@ -10,10 +10,33 @@ import SnowmanSabotageQuest from '../quests/SnowmanSabotageQuest';
 import BlockBuilderQuest from '../quests/BlockBuilderQuest';
 import ThreeJsQuest from '../quests/ThreeJsQuest';
 
+const API_BASE = (import.meta.env.VITE_API_BASE as string) || 'https://x402.abcfe.net';
+
+function useMarathonStarted() {
+  const [started, setStarted] = useState(false);
+
+  useEffect(() => {
+    if (started) return;
+    const check = async () => {
+      try {
+        const res = await fetch(`${API_BASE}/v1/marathon/status`);
+        const data = await res.json() as { started: boolean };
+        if (data.started) setStarted(true);
+      } catch { /* ignore */ }
+    };
+    check();
+    const id = setInterval(check, 2000);
+    return () => clearInterval(id);
+  }, [started]);
+
+  return started;
+}
+
 export default function QuestPage() {
   const { uuid } = useParams<{ uuid: string }>();
   const [quest, setQuest] = useState<QuestData | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const marathonStarted = useMarathonStarted();
 
   useEffect(() => {
     if (!uuid) return;
@@ -36,6 +59,28 @@ export default function QuestPage() {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <p className="text-slate-500 animate-pulse">퀘스트 로딩 중...</p>
+      </div>
+    );
+  }
+
+  if (!marathonStarted) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen text-center px-4 gap-4">
+        <div style={{ fontSize: 48 }}>🏁</div>
+        <p style={{ fontSize: 24, fontWeight: 600, color: '#1A1A1A' }}>퀘스트 준비 완료</p>
+        <p style={{ color: '#7A9E87', fontSize: 14 }}>발표자가 마라톤을 시작하면 자동으로 열립니다</p>
+        <div style={{ display: 'flex', gap: 6, marginTop: 8 }}>
+          {[0, 1, 2].map(i => (
+            <span
+              key={i}
+              style={{
+                width: 8, height: 8, borderRadius: '50%',
+                background: '#C4714A',
+                animation: `pulse 1.2s ease-in-out ${i * 0.4}s infinite`,
+              }}
+            />
+          ))}
+        </div>
       </div>
     );
   }
