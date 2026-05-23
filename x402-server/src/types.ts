@@ -14,7 +14,7 @@ export interface QuestQuestion {
   answerIndex: number;
 }
 
-export type Difficulty = 'very-easy' | 'easy' | 'medium';
+export type Difficulty = 'very-easy' | 'easy' | 'medium' | 'hard';
 
 export interface Quest {
   id: string;
