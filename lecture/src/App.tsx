@@ -7,7 +7,6 @@ import Slide04Install from './slides/Slide04Install'
 import Slide05Verify from './slides/Slide05Verify'
 import Slide06OpenGuide from './slides/Slide06OpenGuide'
 import Slide07IphoneStory from './slides/Slide07IphoneStory'
-import Slide08Comparison from './slides/Slide08Comparison'
 import Slide09Hints from './slides/Slide09Hints'
 import Slide10Test from './slides/Slide10Test'
 import Slide11Go from './slides/Slide11Go'
@@ -16,9 +15,9 @@ import Slide13Leaderboard from './slides/Slide13Leaderboard'
 import Slide14Bonus from './slides/Slide14Bonus'
 import SlidePayFailed from './slides/SlidePayFailed'
 
-const TOTAL_SLIDES = 15
+const TOTAL_SLIDES = 14
 // step 수: 0이면 step-through 없음, n이면 n번 눌러야 다음 슬라이드로
-const STEP_COUNTS = [0, 3, 0, 0, 0, 0, 0, 0, 7, 0, 4, 0, 0, 0, 0]
+const STEP_COUNTS = [0, 3, 0, 0, 0, 0, 0, 0, 7, 4, 0, 0, 0, 0]
 
 function App() {
   const [currentSlide, setCurrentSlide] = useState(0)
@@ -100,12 +99,11 @@ function App() {
         <SlidePayFailed animKey={animKeys[6]} />
         <Slide06OpenGuide animKey={animKeys[7]} />
         <Slide07IphoneStory animKey={animKeys[8]} step={currentSteps[8]} />
-        <Slide08Comparison animKey={animKeys[9]} />
-        <Slide09Hints animKey={animKeys[10]} step={currentSteps[10]} />
-        <Slide11Go animKey={animKeys[11]} />
-        <Slide12Quests animKey={animKeys[12]} />
-        <Slide13Leaderboard animKey={animKeys[13]} />
-        <Slide14Bonus animKey={animKeys[14]} />
+        <Slide09Hints animKey={animKeys[9]} step={currentSteps[9]} />
+        <Slide11Go animKey={animKeys[10]} />
+        <Slide12Quests animKey={animKeys[11]} />
+        <Slide13Leaderboard animKey={animKeys[12]} />
+        <Slide14Bonus animKey={animKeys[13]} />
       </div>
 
       <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-3 z-50">

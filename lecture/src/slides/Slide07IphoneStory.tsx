@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom'
 
 interface Props { animKey: number; step?: number }
 
-const llmsTxtContent = `# x402 Avalanche L1 — 빌더 밋업
+const llmsTxtContent = `# 전자책 서점 — BookStore API
 
 > USDC(EIP-3009)으로 결제합니다.
 > API 키 없음, 가입 없음.
@@ -20,17 +20,21 @@ USDC Token  : 0x65e1ec07cdc00f18e11dd0370c6158029f61721e
 결제 없이 유료 엔드포인트를 호출하면
 서버는 HTTP 402와 결제 요건을 반환합니다.
 에이전트가 X-PAYMENT 헤더에 서명된 결제를 담아
-재요청하면 퀘스트 URL을 반환합니다.
+재요청하면 전자책 다운로드 URL을 반환합니다.
 
-## 퀘스트 목록
+## 전자책 목록
 
-| # | 퀘스트                      | 가격    |
-|---|-----------------------------|---------|
-| 1 | 드래그앤드롭 — x402 흐름    | 10 USDC |
-| 2 | OX — Claude 스킬            | 10 USDC |
-| 3 | OX — x402 프로토콜          | 10 USDC |
-| 4 | 게임 — 합의를 방해하라      | 10 USDC |
-| 5 | 객관식 — Claude 모델        | 10 USDC |
+| ID  | 제목                        | 가격   |
+|-----|-----------------------------|--------|
+| 101 | x402 프로토콜 완전 가이드   | 5 USDC |
+| 102 | 블록체인 입문               | 3 USDC |
+| 103 | AI 에이전트 설계 패턴       | 7 USDC |
+| 104 | 스마트 컨트랙트 실전        | 8 USDC |
+
+## API 엔드포인트
+
+GET /ebook/catalog    → 전체 목록 조회 (무료)
+GET /ebook/{id}       → 전자책 다운로드 URL (결제 필요)
 `
 
 const frames = [
