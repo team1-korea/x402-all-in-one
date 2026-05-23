@@ -4,60 +4,14 @@ import { createPortal } from 'react-dom'
 interface Props { animKey: number; step?: number }
 
 const frames = [
-  { num: '①', sub: '욕구 발생',  caption: '아 이 책 읽고 싶다',     img: '/story-01-desire.png',   x402: '구매 필요 확인',          highlight: false, customScene: false },
-  { num: '②', sub: '탐색',      caption: '서점에서 책 찾기',        img: '/story-02-explore.png',  x402: 'llms.txt 확인',           highlight: false, customScene: true  },
-  { num: '③', sub: '요청',      caption: '"이 책 주세요"',           img: '/story-03-request.png',  x402: '전자책 다운로드 요청',    highlight: false, customScene: false },
-  { num: '④', sub: '결제 요구', caption: '"결제해주세요"',           img: '/story-04-payment.png',  x402: '402 — 결제 필요',         highlight: true,  customScene: false },
-  { num: '⑤', sub: '서명',      caption: '카드 꽂기',               img: '/story-05-sign.png',     x402: '결제 서명 & 재요청',      highlight: false, customScene: false },
-  { num: '⑥', sub: '승인',      caption: '카드사 처리',             img: '/story-06-approve.png',  x402: '결제 검증 & 승인',        highlight: false, customScene: false },
-  { num: '⑦', sub: '수령',      caption: '책 수령!',                img: '/story-07-receive.png',  x402: '전자책 PDF 링크 수신',    highlight: false, customScene: false },
+  { num: '①', sub: '욕구 발생',  caption: '아 이 책 읽고 싶다',  img: '/1.png', x402: '구매 필요 확인',        highlight: false },
+  { num: '②', sub: '탐색',      caption: '서점에서 책 찾기',     img: '/2.png', x402: 'llms.txt 확인',         highlight: false },
+  { num: '③', sub: '요청',      caption: '"이 책 주세요"',        img: '/3.png', x402: '전자책 다운로드 요청',  highlight: false },
+  { num: '④', sub: '결제 요구', caption: '"결제해주세요"',        img: '/4.png', x402: '402 — 결제 필요',       highlight: true  },
+  { num: '⑤', sub: '서명',      caption: '카드 꽂기',            img: '/5.png', x402: '결제 서명 & 재요청',    highlight: false },
+  { num: '⑥', sub: '승인',      caption: '카드사 처리',          img: '/6.png', x402: '결제 검증 & 승인',      highlight: false },
+  { num: '⑦', sub: '수령',      caption: '책 수령!',             img: '/7.png', x402: '전자책 PDF 링크 수신',  highlight: false },
 ]
-
-function BookSearchScene() {
-  return (
-    <svg viewBox="0 0 400 300" style={{ width: '100%', height: '100%' }} xmlns="http://www.w3.org/2000/svg">
-      {/* 배경 */}
-      <rect width="400" height="300" fill="#f5f0e8" />
-
-      {/* 모니터 스탠드 */}
-      <rect x="188" y="222" width="24" height="26" fill="#8a8080" />
-      <rect x="155" y="246" width="90" height="10" rx="5" fill="#7a7070" />
-
-      {/* 모니터 베젤 */}
-      <rect x="52" y="42" width="296" height="184" rx="10" fill="#3a3a3a" />
-
-      {/* 화면 */}
-      <rect x="65" y="54" width="270" height="160" rx="3" fill="#f8faf8" />
-
-      {/* 검색창 */}
-      <rect x="82" y="68" width="210" height="22" rx="11" fill="white" stroke="#d0d0d0" strokeWidth="1.5" />
-      <text x="155" y="83" fontSize="11" fill="#bbb" textAnchor="middle">책 제목으로 검색</text>
-      <circle cx="282" cy="79" r="7" fill="none" stroke="#bbb" strokeWidth="1.5" />
-      <line x1="287" y1="84" x2="292" y2="89" stroke="#bbb" strokeWidth="1.5" />
-
-      {/* 검색 결과 */}
-      <rect x="82" y="102" width="238" height="22" rx="3" fill="white" stroke="#e5e5e5" strokeWidth="1" />
-      <text x="90" y="117" fontSize="10" fill="#999">A-301  클린 코드</text>
-
-      {/* B-402 강조 행 */}
-      <rect x="82" y="127" width="238" height="24" rx="3" fill="#fff3e0" stroke="#e8a030" strokeWidth="1.5" />
-      <text x="90" y="143" fontSize="10" fill="#b06000" fontWeight="bold">B-402  x402 프로토콜 완전 가이드</text>
-
-      <rect x="82" y="154" width="238" height="22" rx="3" fill="white" stroke="#e5e5e5" strokeWidth="1" />
-      <text x="90" y="169" fontSize="10" fill="#999">C-215  블록체인 입문</text>
-
-      {/* 말풍선 */}
-      <rect x="248" y="4" width="140" height="46" rx="10" fill="white" stroke="#C4714A" strokeWidth="2" />
-      {/* 꼬리 (모니터 화면 상단을 향해) */}
-      <polygon points="272,50 260,66 294,50" fill="white" />
-      <line x1="260" y1="66" x2="272" y2="50" stroke="#C4714A" strokeWidth="2" />
-      <line x1="260" y1="66" x2="294" y2="50" stroke="#C4714A" strokeWidth="2" />
-
-      <text x="318" y="24" fontSize="13" textAnchor="middle" fill="#C4714A" fontWeight="bold">B-402에</text>
-      <text x="318" y="42" fontSize="13" textAnchor="middle" fill="#C4714A" fontWeight="bold">있습니다 📚</text>
-    </svg>
-  )
-}
 
 function StoryFrame({ frame, revealed, onOpen }: { frame: typeof frames[0]; revealed: boolean; onOpen: () => void }) {
   return (
@@ -77,21 +31,15 @@ function StoryFrame({ frame, revealed, onOpen }: { frame: typeof frames[0]; reve
         style={{ aspectRatio: '4/3', background: '#e8e2d8', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', cursor: revealed ? 'zoom-in' : 'default' }}
         onClick={revealed ? onOpen : undefined}
       >
-        {frame.customScene ? (
-          <BookSearchScene />
-        ) : (
-          <>
-            <img
-              src={frame.img}
-              alt={frame.caption}
-              style={{ width: '100%', height: '100%', objectFit: 'cover', position: 'absolute', inset: 0 }}
-              onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none' }}
-            />
-            <span style={{ fontFamily: 'serif', fontSize: '2rem', opacity: 0.25, position: 'relative', zIndex: 1 }}>
-              {frame.num}
-            </span>
-          </>
-        )}
+        <img
+          src={frame.img}
+          alt={frame.caption}
+          style={{ width: '100%', height: '100%', objectFit: 'cover', position: 'absolute', inset: 0 }}
+          onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none' }}
+        />
+        <span style={{ fontFamily: 'serif', fontSize: '2rem', opacity: 0.25, position: 'relative', zIndex: 1 }}>
+          {frame.num}
+        </span>
       </div>
       <div style={{ padding: '5px 8px', borderTop: '1px solid #e8e2d8' }}>
         <p style={{ fontFamily: 'monospace', fontSize: '10px', color: '#C4714A', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '2px' }}>
@@ -121,17 +69,11 @@ function ImageModal({ frame, onClose }: { frame: typeof frames[0]; onClose: () =
         gap: '24px',
       }}
     >
-      {frame.customScene ? (
-        <div style={{ maxWidth: '82vw', maxHeight: '58vh', width: '640px', borderRadius: '8px', overflow: 'hidden', boxShadow: '0 8px 48px rgba(0,0,0,0.5)' }}>
-          <BookSearchScene />
-        </div>
-      ) : (
-        <img
-          src={frame.img}
-          alt={frame.caption}
-          style={{ maxWidth: '82vw', maxHeight: '58vh', objectFit: 'contain', borderRadius: '8px', boxShadow: '0 8px 48px rgba(0,0,0,0.5)' }}
-        />
-      )}
+      <img
+        src={frame.img}
+        alt={frame.caption}
+        style={{ maxWidth: '82vw', maxHeight: '58vh', objectFit: 'contain', borderRadius: '8px', boxShadow: '0 8px 48px rgba(0,0,0,0.5)' }}
+      />
       <div
         onClick={e => e.stopPropagation()}
         style={{
