@@ -3,14 +3,44 @@ import { createPortal } from 'react-dom'
 
 interface Props { animKey: number; step?: number }
 
+const llmsTxtContent = `# x402 Avalanche L1 — 빌더 밋업
+
+> USDC(EIP-3009)으로 결제합니다.
+> API 키 없음, 가입 없음.
+
+## 네트워크 정보
+
+Chain ID    : 402
+네트워크    : Avalanche APIX L1 Testnet
+Facilitator : https://unloc.kr/facilitator
+USDC Token  : 0x65e1ec07cdc00f18e11dd0370c6158029f61721e
+
+## 동작 방식
+
+결제 없이 유료 엔드포인트를 호출하면
+서버는 HTTP 402와 결제 요건을 반환합니다.
+에이전트가 X-PAYMENT 헤더에 서명된 결제를 담아
+재요청하면 퀘스트 URL을 반환합니다.
+
+## 퀘스트 목록
+
+| # | 퀘스트                      | 가격    |
+|---|-----------------------------|---------|
+| 1 | 드래그앤드롭 — x402 흐름    | 10 USDC |
+| 2 | OX — Claude 스킬            | 10 USDC |
+| 3 | OX — x402 프로토콜          | 10 USDC |
+| 4 | 게임 — 합의를 방해하라      | 10 USDC |
+| 5 | 객관식 — Claude 모델        | 10 USDC |
+`
+
 const frames = [
-  { num: '①', sub: '욕구 발생',  caption: '아 이 책 읽고 싶다',  img: '/1.png', x402: '유료 리소스 접근 필요 인식',              highlight: false },
-  { num: '②', sub: '탐색',      caption: '서점에서 책 찾기',     img: '/2.png', x402: 'llms.txt — endpoint · 가격 파악',         highlight: false },
-  { num: '③', sub: '요청',      caption: '"이 책 주세요"',        img: '/3.png', x402: 'GET /ebook/123 (결제 없이 첫 호출)',       highlight: false },
-  { num: '④', sub: '결제 요구', caption: '"결제해주세요"',        img: '/4.png', x402: 'HTTP 402 + chain / amount / payTo',        highlight: true  },
-  { num: '⑤', sub: '서명',      caption: '카드 꽂기',            img: '/5.png', x402: 'EIP-3009 서명 → X-PAYMENT 헤더',          highlight: false },
-  { num: '⑥', sub: '승인',      caption: '카드사 처리',          img: '/6.png', x402: 'Facilitator: 서명 검증 + 온체인 정산',     highlight: false },
-  { num: '⑦', sub: '수령',      caption: '책 수령!',             img: '/7.png', x402: '200 OK — 전자책 URL 반환',                 highlight: false },
+  { num: '①', sub: '욕구 발생',  caption: '아 이 책 읽고 싶다',  img: '/1.png', x402: '유료 리소스 접근 필요 인식',              highlight: false, hasLlmsPreview: false },
+  { num: '②', sub: '탐색',      caption: '서점에서 책 찾기',     img: '/2.png', x402: 'llms.txt — endpoint · 가격 파악',         highlight: false, hasLlmsPreview: true  },
+  { num: '③', sub: '요청',      caption: '"이 책 주세요"',        img: '/3.png', x402: 'GET /ebook/123 (결제 없이 첫 호출)',       highlight: false, hasLlmsPreview: false },
+  { num: '④', sub: '결제 요구', caption: '"결제해주세요"',        img: '/4.png', x402: 'HTTP 402 + chain / amount / payTo',        highlight: true,  hasLlmsPreview: false },
+  { num: '⑤', sub: '서명',      caption: '카드 꽂기',            img: '/5.png', x402: 'EIP-3009 서명 → X-PAYMENT 헤더',          highlight: false, hasLlmsPreview: false },
+  { num: '⑥', sub: '승인',      caption: '카드사 처리',          img: '/6.png', x402: 'Facilitator: 서명 검증 + 온체인 정산',     highlight: false, hasLlmsPreview: false },
+  { num: '⑦', sub: '수령',      caption: '책 수령!',             img: '/7.png', x402: '200 OK — 전자책 URL 반환',                 highlight: false, hasLlmsPreview: false },
 ]
 
 function StoryFrame({ frame, revealed, onOpen }: { frame: typeof frames[0]; revealed: boolean; onOpen: () => void }) {
@@ -70,6 +100,7 @@ function ImageModal({ frame, onClose, onPrev, onNext }: {
   onPrev: (() => void) | null
   onNext: (() => void) | null
 }) {
+  const [llmsOpen, setLlmsOpen] = useState(false)
   const idx = frames.indexOf(frame)
   const frameNum = idx + 1
   return (
@@ -129,11 +160,18 @@ function ImageModal({ frame, onClose, onPrev, onNext }: {
           <span style={{ fontSize: '24px', color: 'rgba(255,255,255,0.4)' }}>→</span>
         </div>
 
-        <div style={{
-          flex: 1, padding: '16px 20px', textAlign: 'center',
-          background: 'rgba(122,158,135,0.08)', border: '1px solid rgba(122,158,135,0.25)',
-          borderRadius: '0 12px 12px 0',
-        }}>
+        <div
+          style={{
+            flex: 1, padding: '16px 20px', textAlign: 'center',
+            background: 'rgba(122,158,135,0.08)', border: '1px solid rgba(122,158,135,0.25)',
+            borderRadius: '0 12px 12px 0',
+            cursor: frame.hasLlmsPreview ? 'pointer' : 'default',
+            transition: 'background 0.15s',
+          }}
+          onClick={frame.hasLlmsPreview ? () => setLlmsOpen(true) : undefined}
+          onMouseEnter={e => { if (frame.hasLlmsPreview) (e.currentTarget as HTMLDivElement).style.background = 'rgba(122,158,135,0.18)' }}
+          onMouseLeave={e => { if (frame.hasLlmsPreview) (e.currentTarget as HTMLDivElement).style.background = 'rgba(122,158,135,0.08)' }}
+        >
           <p style={{ fontFamily: 'monospace', fontSize: '10px', color: '#7A9E87', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '8px' }}>
             x402
           </p>
@@ -145,12 +183,55 @@ function ImageModal({ frame, onClose, onPrev, onNext }: {
             <span style={{ color: '#7A9E87', marginRight: '6px' }}>{x402Labels[idx]}.</span>
             {frame.x402}
           </p>
+          {frame.hasLlmsPreview && (
+            <p style={{ fontFamily: 'sans-serif', fontSize: '11px', color: '#7A9E87', marginTop: '8px', opacity: 0.7 }}>
+              파일 보기 →
+            </p>
+          )}
         </div>
       </div>
 
       <p style={{ fontFamily: 'sans-serif', fontSize: '11px', color: 'rgba(255,255,255,0.2)' }}>
         {frameNum} / {frames.length} · 화면 아무 곳이나 클릭하면 닫힙니다
       </p>
+
+      {llmsOpen && createPortal(
+        <div
+          style={{
+            position: 'fixed', inset: 0, zIndex: 10000,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            backgroundColor: 'rgba(0,0,0,0.75)',
+          }}
+          onClick={() => setLlmsOpen(false)}
+        >
+          <div
+            style={{
+              background: '#1e2a1e', borderRadius: '1rem',
+              boxShadow: '0 25px 60px rgba(0,0,0,0.6)', maxWidth: '680px',
+              width: 'calc(100% - 48px)', maxHeight: '78vh', display: 'flex', flexDirection: 'column',
+            }}
+            onClick={e => e.stopPropagation()}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px 24px 12px', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <span style={{ fontFamily: 'monospace', fontSize: '14px', color: '#7A9E87', fontWeight: 600 }}>llms.txt</span>
+                <span style={{ fontFamily: 'sans-serif', fontSize: '11px', color: 'rgba(255,255,255,0.35)', background: 'rgba(255,255,255,0.07)', padding: '2px 8px', borderRadius: '4px' }}>AI 에이전트용 서비스 설명서</span>
+              </div>
+              <button
+                style={{ fontFamily: 'sans-serif', fontSize: '12px', color: 'rgba(255,255,255,0.4)', background: 'none', border: 'none', cursor: 'pointer' }}
+                onClick={() => setLlmsOpen(false)}
+              >닫기 ✕</button>
+            </div>
+            <pre style={{ overflowY: 'auto', padding: '20px 24px', fontFamily: "'JetBrains Mono', 'Fira Code', monospace", fontSize: '13px', lineHeight: 1.7, color: 'rgba(187,247,208,0.8)', whiteSpace: 'pre-wrap', margin: 0 }}>
+              {llmsTxtContent}
+            </pre>
+            <div style={{ padding: '12px 24px', borderTop: '1px solid rgba(255,255,255,0.1)', textAlign: 'center' }}>
+              <span style={{ fontFamily: 'sans-serif', fontSize: '11px', color: 'rgba(255,255,255,0.28)' }}>화면 아무 곳이나 클릭하면 닫힙니다</span>
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
     </div>
   )
 }
