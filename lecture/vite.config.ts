@@ -4,6 +4,7 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   server: { port: 40213, allowedHosts: ['slides.abcfe.net'] },
+  preview: { port: 40213, host: true },
   test: {
     environment: 'jsdom',
     globals: true,
