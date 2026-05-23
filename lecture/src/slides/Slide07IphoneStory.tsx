@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import React, { useState } from 'react'
 import { createPortal } from 'react-dom'
 
 interface Props { animKey: number; step?: number }
@@ -55,7 +55,21 @@ function StoryFrame({ frame, revealed, onOpen }: { frame: typeof frames[0]; reve
 
 const x402Labels = ['A', 'B', 'C', 'D', 'E', 'F', 'G']
 
-function ImageModal({ frame, onClose }: { frame: typeof frames[0]; onClose: () => void }) {
+const navBtn: React.CSSProperties = {
+  flexShrink: 0, width: 48, height: 48,
+  borderRadius: '50%', border: '1px solid rgba(255,255,255,0.2)',
+  background: 'rgba(255,255,255,0.08)', color: '#fff',
+  fontSize: '20px', cursor: 'pointer',
+  display: 'flex', alignItems: 'center', justifyContent: 'center',
+  transition: 'background 0.15s',
+}
+
+function ImageModal({ frame, onClose, onPrev, onNext }: {
+  frame: typeof frames[0]
+  onClose: () => void
+  onPrev: (() => void) | null
+  onNext: (() => void) | null
+}) {
   const idx = frames.indexOf(frame)
   const frameNum = idx + 1
   return (
@@ -65,56 +79,77 @@ function ImageModal({ frame, onClose }: { frame: typeof frames[0]; onClose: () =
         position: 'fixed', inset: 0, zIndex: 9999,
         background: 'rgba(0,0,0,0.88)',
         display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-        cursor: 'zoom-out',
-        gap: '24px',
+        cursor: 'zoom-out', gap: '20px',
       }}
     >
-      <img
-        src={frame.img}
-        alt={frame.caption}
-        style={{ maxWidth: '82vw', maxHeight: '58vh', objectFit: 'contain', borderRadius: '8px', boxShadow: '0 8px 48px rgba(0,0,0,0.5)' }}
-      />
+      {/* 이미지 + 좌우 화살표 */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }} onClick={e => e.stopPropagation()}>
+        <button
+          style={{ ...navBtn, opacity: onPrev ? 1 : 0.2, cursor: onPrev ? 'pointer' : 'default' }}
+          onClick={() => onPrev?.()}
+          disabled={!onPrev}
+        >←</button>
+        <img
+          src={frame.img}
+          alt={frame.caption}
+          style={{ maxWidth: '72vw', maxHeight: '55vh', objectFit: 'contain', borderRadius: '8px', boxShadow: '0 8px 48px rgba(0,0,0,0.5)' }}
+        />
+        <button
+          style={{ ...navBtn, opacity: onNext ? 1 : 0.2, cursor: onNext ? 'pointer' : 'default' }}
+          onClick={() => onNext?.()}
+          disabled={!onNext}
+        >→</button>
+      </div>
+
+      {/* 3분할 비교 박스 */}
       <div
         onClick={e => e.stopPropagation()}
-        style={{
-          display: 'flex', alignItems: 'center', gap: '20px',
-          background: 'rgba(255,255,255,0.06)',
-          border: '1px solid rgba(255,255,255,0.12)',
-          borderRadius: '12px',
-          padding: '20px 32px',
-          maxWidth: '720px',
-          width: 'calc(100% - 48px)',
-        }}
+        style={{ display: 'flex', maxWidth: '740px', width: 'calc(100% - 48px)' }}
       >
-        <div style={{ textAlign: 'center', minWidth: 0 }}>
-          <p style={{ fontFamily: 'monospace', fontSize: '11px', color: '#C4714A', letterSpacing: '0.08em', marginBottom: '6px', textTransform: 'uppercase' }}>
+        <div style={{
+          flex: 1, padding: '16px 20px', textAlign: 'center',
+          background: 'rgba(196,113,74,0.08)', border: '1px solid rgba(196,113,74,0.25)',
+          borderRadius: '12px 0 0 12px',
+        }}>
+          <p style={{ fontFamily: 'monospace', fontSize: '10px', color: '#C4714A', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '8px' }}>
             서점 비유
           </p>
-          <p style={{ fontFamily: 'sans-serif', fontSize: '22px', color: '#fff', lineHeight: 1.3 }}>
-            <span style={{ fontFamily: 'monospace', color: '#C4714A', marginRight: '8px' }}>{frameNum}.</span>
+          <p style={{ fontFamily: 'sans-serif', fontSize: '18px', color: '#fff', lineHeight: 1.3 }}>
+            <span style={{ fontFamily: 'monospace', color: '#C4714A', marginRight: '6px' }}>{frameNum}.</span>
             {frame.caption}
           </p>
         </div>
 
-        <div style={{ fontSize: '28px', color: 'rgba(255,255,255,0.35)', flexShrink: 0 }}>→</div>
+        <div style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          padding: '0 20px', flexShrink: 0,
+          background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)',
+          borderLeft: 'none', borderRight: 'none',
+        }}>
+          <span style={{ fontSize: '24px', color: 'rgba(255,255,255,0.4)' }}>→</span>
+        </div>
 
-        <div style={{ textAlign: 'center', minWidth: 0 }}>
-          <p style={{ fontFamily: 'monospace', fontSize: '11px', color: '#7A9E87', letterSpacing: '0.08em', marginBottom: '6px', textTransform: 'uppercase' }}>
+        <div style={{
+          flex: 1, padding: '16px 20px', textAlign: 'center',
+          background: 'rgba(122,158,135,0.08)', border: '1px solid rgba(122,158,135,0.25)',
+          borderRadius: '0 12px 12px 0',
+        }}>
+          <p style={{ fontFamily: 'monospace', fontSize: '10px', color: '#7A9E87', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '8px' }}>
             x402
           </p>
           <p style={{
-            fontFamily: 'monospace', fontSize: '20px', lineHeight: 1.3,
+            fontFamily: 'monospace', fontSize: '18px', lineHeight: 1.3,
             color: frame.highlight ? '#C4714A' : '#7ECBA1',
             fontWeight: frame.highlight ? 600 : 400,
           }}>
-            <span style={{ color: '#7A9E87', marginRight: '8px' }}>{x402Labels[idx]}.</span>
+            <span style={{ color: '#7A9E87', marginRight: '6px' }}>{x402Labels[idx]}.</span>
             {frame.x402}
           </p>
         </div>
       </div>
 
-      <p style={{ fontFamily: 'sans-serif', fontSize: '12px', color: 'rgba(255,255,255,0.25)' }}>
-        화면 아무 곳이나 클릭하면 닫힙니다
+      <p style={{ fontFamily: 'sans-serif', fontSize: '11px', color: 'rgba(255,255,255,0.2)' }}>
+        {frameNum} / {frames.length} · 화면 아무 곳이나 클릭하면 닫힙니다
       </p>
     </div>
   )
@@ -147,7 +182,18 @@ const Slide07IphoneStory = ({ animKey, step = 0 }: Props) => {
       )}
 
       {modalFrame && createPortal(
-        <ImageModal frame={modalFrame} onClose={() => setModalFrame(null)} />,
+        <ImageModal
+          frame={modalFrame}
+          onClose={() => setModalFrame(null)}
+          onPrev={(() => {
+            const idx = frames.indexOf(modalFrame)
+            return idx > 0 && step > (idx - 1) ? () => setModalFrame(frames[idx - 1]) : null
+          })()}
+          onNext={(() => {
+            const idx = frames.indexOf(modalFrame)
+            return idx < frames.length - 1 && step > (idx + 1) ? () => setModalFrame(frames[idx + 1]) : null
+          })()}
+        />,
         document.body
       )}
     </div>
