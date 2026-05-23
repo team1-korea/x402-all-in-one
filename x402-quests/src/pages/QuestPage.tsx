@@ -63,7 +63,7 @@ export default function QuestPage() {
     );
   }
 
-  if (!marathonStarted) {
+  if (!marathonStarted && !quest.entryPoint) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen text-center px-4 gap-4">
         <div style={{ fontSize: 48 }}>🏁</div>

@@ -30,6 +30,7 @@ router.get("/:uuid", async (req: Request, res: Response) => {
     walletAddress: token.walletAddress,
     name: quest.name,
     description: quest.description,
+    ...(quest.entryPoint && { entryPoint: true }),
     ...(quest.theory && { theory: quest.theory }),
     ...(quest.questions && {
       questions: quest.questions.map((q) => ({

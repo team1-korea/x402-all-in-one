@@ -20,6 +20,7 @@ export interface QuestData {
   walletAddress: string;
   name: string;
   description: string;
+  entryPoint?: boolean;
   // theory quests
   theory?: string;
   questions?: QuestQuestion[];
