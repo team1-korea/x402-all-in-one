@@ -48,31 +48,16 @@ function StoryFrame({ frame, revealed, onOpen }: { frame: typeof frames[0]; reve
         <p style={{ fontFamily: 'sans-serif', fontSize: '12px', color: '#1A1A1A', lineHeight: 1.2 }}>
           {frame.caption}
         </p>
-        <div style={{
-          marginTop: '5px',
-          paddingTop: '5px',
-          borderTop: '1px dashed #e0d8cc',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '4px',
-        }}>
-          <span style={{ fontFamily: 'monospace', fontSize: '9px', color: '#7A9E87', flexShrink: 0 }}>x402</span>
-          <span style={{
-            fontFamily: 'monospace',
-            fontSize: '9px',
-            color: frame.highlight ? '#C4714A' : '#5a7a6a',
-            fontWeight: frame.highlight ? 600 : 400,
-            lineHeight: 1.3,
-          }}>
-            {frame.x402}
-          </span>
-        </div>
       </div>
     </div>
   )
 }
 
+const x402Labels = ['A', 'B', 'C', 'D', 'E', 'F', 'G']
+
 function ImageModal({ frame, onClose }: { frame: typeof frames[0]; onClose: () => void }) {
+  const idx = frames.indexOf(frame)
+  const frameNum = idx + 1
   return (
     <div
       onClick={onClose}
@@ -81,15 +66,55 @@ function ImageModal({ frame, onClose }: { frame: typeof frames[0]; onClose: () =
         background: 'rgba(0,0,0,0.88)',
         display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
         cursor: 'zoom-out',
+        gap: '24px',
       }}
     >
       <img
         src={frame.img}
         alt={frame.caption}
-        style={{ maxWidth: '90vw', maxHeight: '82vh', objectFit: 'contain', borderRadius: '8px', boxShadow: '0 8px 48px rgba(0,0,0,0.5)' }}
+        style={{ maxWidth: '82vw', maxHeight: '58vh', objectFit: 'contain', borderRadius: '8px', boxShadow: '0 8px 48px rgba(0,0,0,0.5)' }}
       />
-      <p style={{ marginTop: '16px', fontFamily: 'sans-serif', fontSize: '18px', color: '#fff', opacity: 0.85 }}>
-        {frame.num} {frame.sub} — {frame.caption}
+      <div
+        onClick={e => e.stopPropagation()}
+        style={{
+          display: 'flex', alignItems: 'center', gap: '20px',
+          background: 'rgba(255,255,255,0.06)',
+          border: '1px solid rgba(255,255,255,0.12)',
+          borderRadius: '12px',
+          padding: '20px 32px',
+          maxWidth: '720px',
+          width: 'calc(100% - 48px)',
+        }}
+      >
+        <div style={{ textAlign: 'center', minWidth: 0 }}>
+          <p style={{ fontFamily: 'monospace', fontSize: '11px', color: '#C4714A', letterSpacing: '0.08em', marginBottom: '6px', textTransform: 'uppercase' }}>
+            아이폰 비유
+          </p>
+          <p style={{ fontFamily: 'sans-serif', fontSize: '22px', color: '#fff', lineHeight: 1.3 }}>
+            <span style={{ fontFamily: 'monospace', color: '#C4714A', marginRight: '8px' }}>{frameNum}.</span>
+            {frame.caption}
+          </p>
+        </div>
+
+        <div style={{ fontSize: '28px', color: 'rgba(255,255,255,0.35)', flexShrink: 0 }}>→</div>
+
+        <div style={{ textAlign: 'center', minWidth: 0 }}>
+          <p style={{ fontFamily: 'monospace', fontSize: '11px', color: '#7A9E87', letterSpacing: '0.08em', marginBottom: '6px', textTransform: 'uppercase' }}>
+            x402
+          </p>
+          <p style={{
+            fontFamily: 'monospace', fontSize: '20px', lineHeight: 1.3,
+            color: frame.highlight ? '#C4714A' : '#7ECBA1',
+            fontWeight: frame.highlight ? 600 : 400,
+          }}>
+            <span style={{ color: '#7A9E87', marginRight: '8px' }}>{x402Labels[idx]}.</span>
+            {frame.x402}
+          </p>
+        </div>
+      </div>
+
+      <p style={{ fontFamily: 'sans-serif', fontSize: '12px', color: 'rgba(255,255,255,0.25)' }}>
+        화면 아무 곳이나 클릭하면 닫힙니다
       </p>
     </div>
   )
