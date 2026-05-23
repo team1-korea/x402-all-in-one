@@ -53,10 +53,10 @@ start_all() {
   done
 
   # 4개 서비스 동시 시작 (터미널 출력 + 파일 저장)
-  (cd "$ROOT/x402-facilitator" && npm run dev 2>&1 | tee "$ROOT/logs/facilitator.log" | stream "facilitator") &
-  (cd "$ROOT/x402-server"      && npm run dev 2>&1 | tee "$ROOT/logs/server.log"      | stream "server     ") &
-  (cd "$ROOT/x402-quests"      && npm run dev 2>&1 | tee "$ROOT/logs/quests.log"      | stream "quests     ") &
-  (cd "$ROOT/lecture"          && npm run dev 2>&1 | tee "$ROOT/logs/lecture.log"     | stream "lecture    ") &
+  (trap - EXIT INT TERM; cd "$ROOT/x402-facilitator" && npm run dev 2>&1 | tee "$ROOT/logs/facilitator.log" | stream "facilitator") &
+  (trap - EXIT INT TERM; cd "$ROOT/x402-server"      && npm run dev 2>&1 | tee "$ROOT/logs/server.log"      | stream "server     ") &
+  (trap - EXIT INT TERM; cd "$ROOT/x402-quests"      && npm run dev 2>&1 | tee "$ROOT/logs/quests.log"      | stream "quests     ") &
+  (trap - EXIT INT TERM; cd "$ROOT/lecture"          && npm run dev 2>&1 | tee "$ROOT/logs/lecture.log"     | stream "lecture    ") &
 
   wait
 }
