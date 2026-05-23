@@ -93,8 +93,10 @@ start_pm2() {
   (cd "$ROOT/x402-quests"      && npm run build) && log "pm2" "✓ x402-quests"
   (cd "$ROOT/lecture"          && npm run build) && log "pm2" "✓ lecture"
 
-  # 기존 pm2 프로세스 정리 후 시작
-  pm2 delete all 2>/dev/null || true
+  # 기존 x402 pm2 프로세스만 정리 후 시작
+  for name in facilitator server quests lecture; do
+    pm2 delete "$name" 2>/dev/null || true
+  done
   pm2 start "$ROOT/ecosystem.config.js"
   pm2 save
 
@@ -108,10 +110,11 @@ start_pm2() {
 }
 
 stop_all() {
-  # pm2로 뜬 서비스가 있으면 pm2로 종료
-  if command -v pm2 &>/dev/null && pm2 list 2>/dev/null | grep -qE "facilitator|server|quests|lecture"; then
-    log "stop" "pm2 서비스 종료 중..."
-    pm2 delete all 2>/dev/null || true
+  # pm2로 뜬 x402 서비스만 종료
+  if command -v pm2 &>/dev/null; then
+    for name in facilitator server quests lecture; do
+      pm2 delete "$name" 2>/dev/null || true
+    done
   fi
 
   # 포트 기반 kill (fallback)
