@@ -581,6 +581,9 @@ export default function BlockBuilderQuest({ quest }: Props) {
                 <span className={styles.highlightChain}>"체인"</span>을 이룹니다.{' '}
                 이것이 <span className={styles.highlightBlockchain}>"블록체인"</span>입니다.
               </p>
+              <p className={styles.successDesc} style={{ marginTop: 16, fontSize: 13, color: '#7A9E87', borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: 12 }}>
+                창을 닫고 Claude에게 다음 퀘스트 구매를 요청하세요! 🚀
+              </p>
               <div className={styles.successButtons}>
                 <button className={`${styles.successBtn} ${styles.outline}`} onClick={initializeGame}>
                   다시 하기

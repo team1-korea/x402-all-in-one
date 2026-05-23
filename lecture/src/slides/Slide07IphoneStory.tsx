@@ -4,13 +4,13 @@ import { createPortal } from 'react-dom'
 interface Props { animKey: number; step?: number }
 
 const frames = [
-  { num: '①', sub: '욕구 발생',  caption: '아 아이폰 사고 싶다',    img: '/story-01-desire.png' },
-  { num: '②', sub: '탐색',      caption: '애플스토어 목록 확인',    img: '/story-02-explore.png' },
-  { num: '③', sub: '요청',      caption: '"아이폰 13 주세요"',      img: '/story-03-request.png' },
-  { num: '④', sub: '결제 요구', caption: '"결제해주세요"',           img: '/story-04-payment.png' },
-  { num: '⑤', sub: '서명',      caption: '카드 꽂기',               img: '/story-05-sign.png' },
-  { num: '⑥', sub: '승인',      caption: '카드사 처리',             img: '/story-06-approve.png' },
-  { num: '⑦', sub: '수령',      caption: '아이폰 수령!',            img: '/story-07-receive.png' },
+  { num: '①', sub: '욕구 발생',  caption: '아 아이폰 사고 싶다',    img: '/story-01-desire.png',   x402: '구매 필요 확인',                    highlight: false },
+  { num: '②', sub: '탐색',      caption: '애플스토어 목록 확인',    img: '/story-02-explore.png',  x402: 'llms.txt 확인',                     highlight: false },
+  { num: '③', sub: '요청',      caption: '"아이폰 13 주세요"',      img: '/story-03-request.png',  x402: 'GET /v1/quest/{id}/{step}',         highlight: false },
+  { num: '④', sub: '결제 요구', caption: '"결제해주세요"',           img: '/story-04-payment.png',  x402: 'HTTP 402 + accepts[0]',             highlight: true  },
+  { num: '⑤', sub: '서명',      caption: '카드 꽂기',               img: '/story-05-sign.png',     x402: 'EIP-3009 서명 → X-PAYMENT 헤더',   highlight: false },
+  { num: '⑥', sub: '승인',      caption: '카드사 처리',             img: '/story-06-approve.png',  x402: 'facilitator: 검증 + 온체인 정산',   highlight: false },
+  { num: '⑦', sub: '수령',      caption: '아이폰 수령!',            img: '/story-07-receive.png',  x402: '퀘스트 문제 응답',                  highlight: false },
 ]
 
 function StoryFrame({ frame, revealed, onOpen }: { frame: typeof frames[0]; revealed: boolean; onOpen: () => void }) {
@@ -48,6 +48,25 @@ function StoryFrame({ frame, revealed, onOpen }: { frame: typeof frames[0]; reve
         <p style={{ fontFamily: 'sans-serif', fontSize: '12px', color: '#1A1A1A', lineHeight: 1.2 }}>
           {frame.caption}
         </p>
+        <div style={{
+          marginTop: '5px',
+          paddingTop: '5px',
+          borderTop: '1px dashed #e0d8cc',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '4px',
+        }}>
+          <span style={{ fontFamily: 'monospace', fontSize: '9px', color: '#7A9E87', flexShrink: 0 }}>x402</span>
+          <span style={{
+            fontFamily: 'monospace',
+            fontSize: '9px',
+            color: frame.highlight ? '#C4714A' : '#5a7a6a',
+            fontWeight: frame.highlight ? 600 : 400,
+            lineHeight: 1.3,
+          }}>
+            {frame.x402}
+          </span>
+        </div>
       </div>
     </div>
   )
