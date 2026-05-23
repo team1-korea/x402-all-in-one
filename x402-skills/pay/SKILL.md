@@ -34,6 +34,8 @@ TODO가 모두 채워진 경우에만 아래 흐름을 진행합니다.
 | RPC URL | https://subnets.avax.network/apix/testnet/rpc |
 | Facilitator | [TODO: 누가 결제를 검증해?] |
 
+> Facilitator URL이 `http`로 시작하지 않으면 `https://`를 앞에 붙여서 사용합니다.
+
 지갑 정보는 `.x402-wallet.json`에서 읽습니다 (`privateKey`, `walletAddress`).
 
 ---

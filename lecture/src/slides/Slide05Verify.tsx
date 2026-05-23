@@ -2,7 +2,7 @@ interface Props { animKey: number }
 
 const troubleItems = [
   { q: '목록에 없다', a: 'Claude Code 재시작 → / 다시 입력' },
-  { q: '명령어 오류', a: 'URL에 https:// 포함됐는지 확인' },
+  { q: '명령어 오류', a: '서버 URL이 올바른지 확인' },
   { q: '그래도 안 됨', a: '손 들기 🙋 스태프가 도와드립니다' },
 ]
 

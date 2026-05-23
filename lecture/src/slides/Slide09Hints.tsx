@@ -40,7 +40,7 @@ const hints: Hint[] = [
     iphone: '카드사',
     hole: '누가 결제를 검증해?',
     hint: '서버 대신 결제를 검증·정산해주는 외부 서버',
-    answer: 'https://pay.abcfe.net',
+    answer: 'pay.abcfe.net',
   },
   {
     num: '②',
