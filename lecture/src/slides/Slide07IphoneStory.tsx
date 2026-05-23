@@ -4,13 +4,13 @@ import { createPortal } from 'react-dom'
 interface Props { animKey: number; step?: number }
 
 const frames = [
-  { num: '①', sub: '욕구 발생',  caption: '아 이 책 읽고 싶다',  img: '/1.png', x402: '구매 필요 확인',        highlight: false },
-  { num: '②', sub: '탐색',      caption: '서점에서 책 찾기',     img: '/2.png', x402: 'llms.txt 확인',         highlight: false },
-  { num: '③', sub: '요청',      caption: '"이 책 주세요"',        img: '/3.png', x402: '전자책 다운로드 요청',  highlight: false },
-  { num: '④', sub: '결제 요구', caption: '"결제해주세요"',        img: '/4.png', x402: '402 — 결제 필요',       highlight: true  },
-  { num: '⑤', sub: '서명',      caption: '카드 꽂기',            img: '/5.png', x402: '결제 서명 & 재요청',    highlight: false },
-  { num: '⑥', sub: '승인',      caption: '카드사 처리',          img: '/6.png', x402: '결제 검증 & 승인',      highlight: false },
-  { num: '⑦', sub: '수령',      caption: '책 수령!',             img: '/7.png', x402: '전자책 PDF 링크 수신',  highlight: false },
+  { num: '①', sub: '욕구 발생',  caption: '아 이 책 읽고 싶다',  img: '/1.png', x402: '유료 리소스 접근 필요 인식',              highlight: false },
+  { num: '②', sub: '탐색',      caption: '서점에서 책 찾기',     img: '/2.png', x402: 'llms.txt — endpoint · 가격 파악',         highlight: false },
+  { num: '③', sub: '요청',      caption: '"이 책 주세요"',        img: '/3.png', x402: 'GET /ebook/123 (결제 없이 첫 호출)',       highlight: false },
+  { num: '④', sub: '결제 요구', caption: '"결제해주세요"',        img: '/4.png', x402: 'HTTP 402 + chain / amount / payTo',        highlight: true  },
+  { num: '⑤', sub: '서명',      caption: '카드 꽂기',            img: '/5.png', x402: 'EIP-3009 서명 → X-PAYMENT 헤더',          highlight: false },
+  { num: '⑥', sub: '승인',      caption: '카드사 처리',          img: '/6.png', x402: 'Facilitator: 서명 검증 + 온체인 정산',     highlight: false },
+  { num: '⑦', sub: '수령',      caption: '책 수령!',             img: '/7.png', x402: '200 OK — 전자책 URL 반환',                 highlight: false },
 ]
 
 function StoryFrame({ frame, revealed, onOpen }: { frame: typeof frames[0]; revealed: boolean; onOpen: () => void }) {

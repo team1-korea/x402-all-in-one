@@ -47,12 +47,12 @@ TONE Token  : 0x6ac929821e85970910f5dbafaee81823d71b17f3
 `
 
 const x402Rows: RowDef[] = [
-  { left: '"이 책 주세요"', right: '전자책 다운로드 요청', highlight: false },
-  { left: '"결제해주세요"', right: 'HTTP 402 + accepts[0]', highlight: true },
-  { left: '가격 + 결제 수단', right: '체인 / 금액 / 수신 지갑', highlight: false },
-  { left: '카드 꽂기', right: 'EIP-3009 서명 → X-PAYMENT 헤더', highlight: false },
-  { left: '카드사 처리', right: 'Facilitator 검증 & 온체인 정산', highlight: false },
-  { left: '책 수령!', right: '전자책 PDF 링크 수신', highlight: false },
+  { left: '"이 책 주세요"', right: 'GET /ebook/123 (결제 없이 첫 호출)', highlight: false },
+  { left: '"결제해주세요"', right: 'HTTP 402 + chain / amount / payTo', highlight: true },
+  { left: '가격 + 결제 수단', right: 'EIP-3009 서명 → X-PAYMENT 헤더', highlight: false },
+  { left: '카드 꽂기', right: 'X-PAYMENT 헤더 담아 재요청', highlight: false },
+  { left: '카드사 처리', right: 'Facilitator: 서명 검증 + 온체인 정산', highlight: false },
+  { left: '책 수령!', right: '200 OK — 전자책 URL 반환', highlight: false },
 ]
 
 const allRows = [...preRows, ...x402Rows]
