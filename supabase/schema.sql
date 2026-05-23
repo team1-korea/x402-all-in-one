@@ -8,9 +8,10 @@ CREATE TABLE IF NOT EXISTS users (
   initial_airdrop_tx TEXT,
   nickname        TEXT,
   current_product_id TEXT,
-  current_step    INTEGER NOT NULL DEFAULT 0,
   is_completed    BOOLEAN NOT NULL DEFAULT FALSE,
-  purchased_steps INTEGER[] NOT NULL DEFAULT '{}'
+  completed_at    TIMESTAMPTZ,
+  purchased_steps INTEGER[] NOT NULL DEFAULT '{}',
+  completed_steps INTEGER[] NOT NULL DEFAULT '{}'
 );
 
 CREATE TABLE IF NOT EXISTS quest_tokens (

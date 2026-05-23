@@ -1,15 +1,19 @@
 import { Router } from 'express';
 
 const router = Router();
-export const marathonState = { started: false };
+export const marathonState: { started: boolean; startedAt: string | null } = {
+  started: false,
+  startedAt: null,
+};
 
 router.get('/status', (_req, res) => {
-  res.json({ started: marathonState.started });
+  res.json({ started: marathonState.started, startedAt: marathonState.startedAt });
 });
 
 router.post('/start', (_req, res) => {
   marathonState.started = true;
-  res.json({ started: marathonState.started });
+  if (!marathonState.startedAt) marathonState.startedAt = new Date().toISOString();
+  res.json({ started: marathonState.started, startedAt: marathonState.startedAt });
 });
 
 export default router;

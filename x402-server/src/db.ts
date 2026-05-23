@@ -7,9 +7,10 @@ export interface UserRecord {
   initialAirdropTx?: string;
   nickname?: string;
   currentProductId?: string;
-  currentStep?: number;
   isCompleted?: boolean;
+  completedAt?: string;
   purchasedSteps?: number[];
+  completedSteps?: number[];
 }
 
 export interface QuestToken {
@@ -30,9 +31,10 @@ function toRecord(row: Record<string, unknown>): UserRecord {
     initialAirdropTx: row.initial_airdrop_tx as string | undefined,
     nickname: row.nickname as string | undefined,
     currentProductId: row.current_product_id as string | undefined,
-    currentStep: row.current_step as number | undefined,
     isCompleted: row.is_completed as boolean | undefined,
+    completedAt: row.completed_at as string | undefined,
     purchasedSteps: row.purchased_steps as number[] | undefined,
+    completedSteps: row.completed_steps as number[] | undefined,
   };
 }
 
@@ -66,10 +68,15 @@ export async function updateQuestStatus(
   step: number,
   isCompleted: boolean,
 ): Promise<void> {
+  const user = await getUser(walletAddress);
+  if (!user) return;
+  const steps = user.completedSteps ?? [];
+  const updated = steps.includes(step) ? steps : [...steps, step];
   await supabase.from("users").update({
     current_product_id: productId,
-    current_step: step,
     is_completed: isCompleted,
+    completed_steps: updated,
+    ...(isCompleted && !user.completedAt ? { completed_at: new Date().toISOString() } : {}),
   }).eq("wallet_address", walletAddress.toLowerCase());
 }
 

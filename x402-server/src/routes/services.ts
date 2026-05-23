@@ -9,12 +9,11 @@ type QuestStatus = "cleared" | "purchased" | "available" | "locked";
 
 function getQuestStatus(stepNum: number, user?: UserRecord): QuestStatus {
   if (!user) return stepNum === 1 ? "available" : "locked";
-  const currentStep = user.currentStep ?? 0;
+  const completedSteps = user.completedSteps ?? [];
   const purchasedSteps = user.purchasedSteps ?? [];
-  if (stepNum <= currentStep) return "cleared";
+  if (completedSteps.includes(stepNum)) return "cleared";
   if (purchasedSteps.includes(stepNum)) return "purchased";
-  if (stepNum === currentStep + 1) return "available";
-  return "locked";
+  return "available";
 }
 
 // GET /v1/services?productId=product-a&wallet=0x...

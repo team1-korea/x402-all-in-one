@@ -7,7 +7,9 @@ interface DashboardUser {
   nickname: string
   walletAddress: string
   purchasedSteps: number[]
+  completedSteps: number[]
   isCompleted: boolean
+  completedAt: string | null
   registeredAt: string
 }
 
@@ -15,6 +17,7 @@ interface DashboardStats {
   totalUsers: number
   completedUsers: number
   totalQuestAccesses: number
+  marathonStartedAt: string | null
   users: DashboardUser[]
 }
 
@@ -26,9 +29,6 @@ function isNew(registeredAt: string): boolean {
   return Date.now() - new Date(registeredAt).getTime() < NEW_USER_MS
 }
 
-function getMaxStep(steps: number[]): number {
-  return steps.length > 0 ? Math.max(...steps) : 0
-}
 
 export default function Slide13Leaderboard({ animKey: _ }: Props) {
   const [stats, setStats] = useState<DashboardStats | null>(null)
@@ -70,6 +70,11 @@ export default function Slide13Leaderboard({ animKey: _ }: Props) {
           <StatBox num={stats.completedUsers} label="완료" />
           <StatBox num={stats.totalQuestAccesses} label="퀘스트 접근" />
         </div>
+        {stats.marathonStartedAt && (
+          <div className="font-mono text-xs text-sage/60 mt-1 text-right">
+            마라톤 시작: {new Date(stats.marathonStartedAt).toLocaleTimeString('ko-KR')}
+          </div>
+        )}
       </div>
 
       {/* Matrix */}
@@ -83,9 +88,9 @@ export default function Slide13Leaderboard({ animKey: _ }: Props) {
             <thead>
               <tr>
                 <th style={{ width: '2rem' }} />
-                {stats.users.map((u) => (
+                {stats.users.map((u, i) => (
                   <th key={u.walletAddress} style={{ padding: '0 2px 4px', verticalAlign: 'bottom' }}>
-                    <UserHeader user={u} />
+                    <UserHeader user={u} rank={u.isCompleted ? i + 1 : undefined} marathonStartedAt={stats.marathonStartedAt} />
                   </th>
                 ))}
               </tr>
@@ -123,11 +128,23 @@ function StatBox({ num, label }: { num: number; label: string }) {
   )
 }
 
-function UserHeader({ user }: { user: DashboardUser }) {
+function formatElapsed(completedAt: string, startedAt: string): string {
+  const ms = new Date(completedAt).getTime() - new Date(startedAt).getTime()
+  if (ms < 0) return '-'
+  const totalSec = Math.floor(ms / 1000)
+  const m = Math.floor(totalSec / 60)
+  const s = totalSec % 60
+  return `+${m}분 ${s}초`
+}
+
+function UserHeader({ user, rank, marathonStartedAt }: { user: DashboardUser; rank?: number; marathonStartedAt: string | null }) {
   const isCompleted = user.isCompleted
   const newUser = isNew(user.registeredAt)
   const borderColor = isCompleted ? '#3D6B4F' : newUser ? '#C4714A' : '#d4cfc5'
   const nameColor = isCompleted ? '#3D6B4F' : newUser ? '#C4714A' : '#1A1A1A'
+  const elapsed = isCompleted && user.completedAt && marathonStartedAt
+    ? formatElapsed(user.completedAt, marathonStartedAt)
+    : null
 
   return (
     <div
@@ -141,18 +158,23 @@ function UserHeader({ user }: { user: DashboardUser }) {
         marginBottom: 2,
       }}
     >
+      {rank !== undefined && (
+        <div style={{ fontSize: 9, color: '#C4714A', fontWeight: 700 }}>{rank}위</div>
+      )}
       <div style={{ fontSize: 11, fontWeight: 600, color: nameColor, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
         {user.nickname}
       </div>
-      <div style={{ fontSize: 9, color: '#7A9E87' }}>{user.purchasedSteps.length}/10</div>
+      <div style={{ fontSize: 9, color: '#7A9E87' }}>{user.completedSteps.length}/10</div>
+      {elapsed && (
+        <div style={{ fontSize: 8, color: '#3D6B4F', marginTop: 1 }}>{elapsed}</div>
+      )}
     </div>
   )
 }
 
 function QuestCell({ step, user }: { step: number; user: DashboardUser }) {
-  const done = user.purchasedSteps.includes(step)
-  const maxStep = getMaxStep(user.purchasedSteps)
-  const isCurrent = done && step === maxStep && !user.isCompleted
+  const completed = user.completedSteps.includes(step)
+  const purchased = user.purchasedSteps.includes(step)
 
   const base: React.CSSProperties = {
     width: '100%',
@@ -167,11 +189,11 @@ function QuestCell({ step, user }: { step: number; user: DashboardUser }) {
     fontFamily: 'monospace',
   }
 
-  if (isCurrent) {
-    return <div style={{ ...base, background: '#C4714A', color: '#FFFDF9', animation: 'pulse 1s step-end infinite' }}>▶</div>
-  }
-  if (done) {
+  if (completed) {
     return <div style={{ ...base, background: '#3D6B4F', color: '#FFFDF9' }}>✓</div>
+  }
+  if (purchased) {
+    return <div style={{ ...base, background: '#C4714A', color: '#FFFDF9', animation: 'pulse 1s step-end infinite' }}>▶</div>
   }
   return <div style={{ ...base, background: '#F5F0E8', border: '1px solid #d4cfc5' }} />
 }
