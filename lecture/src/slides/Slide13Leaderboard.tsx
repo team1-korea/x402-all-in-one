@@ -18,7 +18,7 @@ interface DashboardStats {
   users: DashboardUser[]
 }
 
-const SERVER_URL = import.meta.env.VITE_SERVER_URL ?? 'http://localhost:40210'
+const SERVER_URL = import.meta.env.VITE_SERVER_URL ?? 'https://x402.abcfe.net'
 const QUEST_COUNT = 10
 const NEW_USER_MS = 5 * 60 * 1000
 
