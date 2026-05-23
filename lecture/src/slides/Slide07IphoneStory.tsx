@@ -77,7 +77,7 @@ function ImageModal({ frame, onClose, onPrev, onNext }: {
       onClick={onClose}
       style={{
         position: 'fixed', inset: 0, zIndex: 9999,
-        background: 'rgba(0,0,0,0.88)',
+        background: 'rgba(0,0,0,0.97)',
         display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
         cursor: 'zoom-out', gap: '20px',
       }}
@@ -187,11 +187,11 @@ const Slide07IphoneStory = ({ animKey, step = 0 }: Props) => {
           onClose={() => setModalFrame(null)}
           onPrev={(() => {
             const idx = frames.indexOf(modalFrame)
-            return idx > 0 && step > (idx - 1) ? () => setModalFrame(frames[idx - 1]) : null
+            return idx > 0 ? () => setModalFrame(frames[idx - 1]) : null
           })()}
           onNext={(() => {
             const idx = frames.indexOf(modalFrame)
-            return idx < frames.length - 1 && step > (idx + 1) ? () => setModalFrame(frames[idx + 1]) : null
+            return idx < frames.length - 1 ? () => setModalFrame(frames[idx + 1]) : null
           })()}
         />,
         document.body
