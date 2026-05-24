@@ -636,7 +636,7 @@ function GameScreen({
           <div className="absolute inset-0 flex items-center justify-center bg-gray-900/80 rounded-xl">
             <div className="text-center">
               <p className="text-xl font-bold text-teal-400">Block {round} 확정</p>
-              <p className="text-slate-300 mt-1">합의가 이겼습니다</p>
+              <p className="text-slate-300 mt-1">올바른 검증자들이 이겼습니다</p>
               <p className="text-slate-500 text-sm mt-2">최고 방해: {peakRed} / {totalNodes}</p>
             </div>
           </div>

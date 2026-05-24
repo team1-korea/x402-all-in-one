@@ -7,7 +7,7 @@ const Slide10Test = ({ animKey }: Props) => (
       <p className="fade-in-stagger font-mono text-sm tracking-widest uppercase text-sage mb-5" style={{ animationDelay: '0s' }}>07 · Lab — 테스트</p>
       <h2 className="fade-in-stagger font-serif text-6xl text-dark mb-10" style={{ animationDelay: '0.2s' }}>클로드, 첫 결제 시켜보기</h2>
       <pre className="fade-in-stagger w-full bg-[#1e2d24] rounded-xl px-7 py-6 font-mono text-2xl text-[#d4ede0] text-center mb-8" style={{ animationDelay: '0.5s' }}>
-        /x402-pay
+        /x402-quest
       </pre>
       <div className="fade-in-stagger w-full bg-cream/70 border border-forest/20 rounded-xl px-7 py-6 font-sans text-xl text-dark/80 text-center" style={{ animationDelay: '0.9s' }}>
         Claude가 실제로 서버에 요청하고<br />

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 
 interface Props { animKey: number; step?: number }
@@ -105,6 +105,17 @@ function ImageModal({ frame, onClose, onPrev, onNext }: {
   onNext: (() => void) | null
 }) {
   const [llmsOpen, setLlmsOpen] = useState(false)
+
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (llmsOpen) return
+      if (e.key === 'ArrowLeft') onPrev?.()
+      else if (e.key === 'ArrowRight') onNext?.()
+      else if (e.key === 'Escape') onClose()
+    }
+    window.addEventListener('keydown', handler)
+    return () => window.removeEventListener('keydown', handler)
+  }, [llmsOpen, onPrev, onNext, onClose])
   const idx = frames.indexOf(frame)
   const frameNum = idx + 1
   return (
