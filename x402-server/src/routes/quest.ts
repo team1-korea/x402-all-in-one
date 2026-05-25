@@ -211,7 +211,7 @@ router.post("/:productId/:step/answer", async (req: Request, res: Response) => {
     walletAddress?: string;
     secretCode?: string;
     feedback?: { good: string; bad: string; next: string };
-    interests?: string[];
+    interests?: { nickname: string; interest: string }[];
   };
 
   if (!walletAddress) {
@@ -313,11 +313,12 @@ router.post("/:productId/:step/answer", async (req: Request, res: Response) => {
   }
 
   if (quest.questType === "interests") {
-    if (!interests || interests.length < 3) {
-      res.status(400).json({ error: "참가자 3명의 관심사를 입력해주세요" });
+    const filled = interests?.filter(e => e.nickname && e.interest.trim()) ?? [];
+    if (filled.length < 3) {
+      res.status(400).json({ error: "3명 이상의 관심사를 입력해주세요" });
       return;
     }
-    await recordInterests(walletAddress, interests);
+    await recordInterests(walletAddress, filled);
     await updateQuestStatus(walletAddress, productId, currentStepNum, isLastStep);
     res.json({ correct: true, message: "관심사 수집 완료! 🎉" });
     return;

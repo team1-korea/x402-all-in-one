@@ -187,10 +187,10 @@ export async function recordFeedback(
 
 export async function recordInterests(
   walletAddress: string,
-  tags: string[],
+  entries: { nickname: string; interest: string }[],
 ): Promise<void> {
   await supabase.from("interests").insert({
     wallet_address: walletAddress.toLowerCase(),
-    tags,
+    tags: entries,
   });
 }

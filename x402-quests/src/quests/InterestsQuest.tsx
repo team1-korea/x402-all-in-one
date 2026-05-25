@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import type { QuestData, AnswerResult } from '../types';
 import { submitAnswer } from '../api';
 import ResultDisplay from '../components/ResultDisplay';
@@ -14,41 +14,50 @@ interface DashboardUser {
 
 export default function InterestsQuest({ quest }: Props) {
   const [participants, setParticipants] = useState<DashboardUser[]>([]);
-  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [interestMap, setInterestMap] = useState<Record<string, string>>({});
   const [result, setResult] = useState<AnswerResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [fetchError, setFetchError] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [confirmEnabled, setConfirmEnabled] = useState(false);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     fetch(`${API_BASE}/v1/dashboard/stats`)
       .then(r => r.json())
       .then((data: { users: DashboardUser[] }) => {
-        const others = data.users.filter(
-          u => u.walletAddress !== quest.walletAddress
-        );
+        const others = data.users.filter(u => u.walletAddress !== quest.walletAddress);
         setParticipants(others);
       })
       .catch(() => setFetchError(true));
   }, [quest.walletAddress]);
 
-  const toggle = (nickname: string) => {
-    if (result?.correct) return;
-    setSelected(prev => {
-      const next = new Set(prev);
-      if (next.has(nickname)) next.delete(nickname);
-      else next.add(nickname);
-      return next;
-    });
+  const filledCount = Object.values(interestMap).filter(v => v.trim().length > 0).length;
+  const canSubmit = filledCount >= 3 && !loading && !result?.correct;
+
+  const handleSubmitClick = () => {
+    if (!canSubmit) return;
+    setShowConfirm(true);
+    setConfirmEnabled(false);
+    timerRef.current = setTimeout(() => setConfirmEnabled(true), 3000);
   };
 
-  const handleSubmit = async () => {
-    if (selected.size < 3 || loading || result?.correct) return;
+  const handleConfirm = async () => {
+    if (!confirmEnabled || loading) return;
+    setShowConfirm(false);
     setLoading(true);
-    const res = await submitAnswer(quest.productId, quest.step, quest.walletAddress, {
-      interests: Array.from(selected),
-    });
+    const interests = Object.entries(interestMap)
+      .filter(([, v]) => v.trim())
+      .map(([nickname, interest]) => ({ nickname, interest: interest.trim() }));
+    const res = await submitAnswer(quest.productId, quest.step, quest.walletAddress, { interests });
     setResult(res);
     setLoading(false);
+  };
+
+  const handleCancel = () => {
+    if (timerRef.current) clearTimeout(timerRef.current);
+    setShowConfirm(false);
+    setConfirmEnabled(false);
   };
 
   return (
@@ -57,7 +66,7 @@ export default function InterestsQuest({ quest }: Props) {
         <span className="text-xs text-yellow-400 uppercase tracking-widest">Quest {quest.step} · 네트워킹</span>
         <h1 className="text-xl font-bold mt-2 mb-1">{quest.name}</h1>
         <p className="text-slate-400 text-sm mb-6">
-          아래 참가자들과 직접 대화를 나누고, 대화한 사람을 3명 이상 선택하세요.
+          참가자와 직접 대화를 나누고, 3명 이상의 관심사를 입력하세요.
         </p>
 
         {fetchError && (
@@ -68,43 +77,67 @@ export default function InterestsQuest({ quest }: Props) {
           <p className="text-slate-500 text-sm animate-pulse mb-4">참가자 목록 로딩 중...</p>
         )}
 
-        <div className="flex flex-wrap gap-2 mb-5">
-          {participants.map(u => {
-            const isSelected = selected.has(u.nickname);
-            return (
-              <button
-                key={u.walletAddress}
-                onClick={() => toggle(u.nickname)}
-                disabled={result?.correct}
-                className={[
-                  'px-4 py-2 rounded-full text-sm font-medium border transition-colors',
-                  isSelected
-                    ? 'bg-yellow-600 border-yellow-500 text-white'
-                    : 'bg-gray-800 border-gray-700 text-slate-300 hover:border-yellow-600',
-                ].join(' ')}
-              >
-                {u.nickname}
-              </button>
-            );
-          })}
+        <div className="space-y-3 mb-5">
+          {participants.map(u => (
+            <div key={u.walletAddress} className="flex items-center gap-3">
+              <span className="text-sm font-medium text-slate-300 w-20 shrink-0 truncate">{u.nickname}</span>
+              <input
+                type="text"
+                placeholder="관심사를 입력하세요"
+                disabled={!!result?.correct}
+                value={interestMap[u.nickname] || ''}
+                onChange={e => setInterestMap(prev => ({ ...prev, [u.nickname]: e.target.value }))}
+                className="flex-1 bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-yellow-500 disabled:opacity-50"
+              />
+            </div>
+          ))}
         </div>
 
         <p className="text-xs text-slate-500 mb-4">
-          {selected.size}/3 명 이상 선택 · {selected.size < 3 ? `${3 - selected.size}명 더 필요합니다` : '제출 가능!'}
+          {filledCount}/3명 이상 입력
+          {filledCount < 3 ? ` · ${3 - filledCount}명 더 필요합니다` : ' · 제출 가능!'}
         </p>
 
         {!result && (
           <button
-            onClick={handleSubmit}
-            disabled={selected.size < 3 || loading}
+            onClick={handleSubmitClick}
+            disabled={!canSubmit}
             className="w-full py-3 bg-yellow-600 hover:bg-yellow-500 disabled:bg-gray-700 disabled:cursor-not-allowed rounded-lg font-medium transition-colors"
           >
-            {loading ? '제출 중...' : `${selected.size}명 선택 완료 — 제출`}
+            {loading ? '제출 중...' : `${filledCount}명 입력 완료 — 제출`}
           </button>
         )}
 
         {result && <ResultDisplay correct={result.correct} message={result.message} />}
       </div>
+
+      {showConfirm && (
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 px-4">
+          <div className="bg-gray-900 border border-yellow-600 rounded-xl p-6 max-w-sm w-full shadow-xl">
+            <h2 className="text-lg font-bold text-yellow-400 mb-3">잠깐!</h2>
+            <p className="text-slate-300 text-sm leading-relaxed mb-6">
+              정말로 대화를 하고 오신건가요?<br />
+              이후 사실확인이 안될 경우{' '}
+              <span className="text-yellow-400 font-medium">상위 상품은 취소</span>될 수 있습니다.
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={handleCancel}
+                className="flex-1 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg text-sm font-medium transition-colors"
+              >
+                취소
+              </button>
+              <button
+                onClick={handleConfirm}
+                disabled={!confirmEnabled}
+                className="flex-1 py-2 bg-yellow-600 hover:bg-yellow-500 disabled:bg-gray-700 disabled:cursor-not-allowed rounded-lg text-sm font-medium transition-colors"
+              >
+                {confirmEnabled ? '네, 제출합니다' : '잠시만요...'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
