@@ -10,8 +10,7 @@ const Slide04Install = ({ animKey }: Props) => (
       <div className="fade-in-stagger flex flex-col gap-5 w-full mb-8" style={{ animationDelay: '0.5s' }}>
         <div className="bg-forest/10 border border-forest/20 rounded-xl px-3 py-5">
           <pre className="bg-[#1e2d24] rounded-lg px-4 py-10 font-mono text-2xl text-[#d4ede0] whitespace-pre-wrap text-center">
-            {'npx team1-x402 --url='}
-            <span style={{ color: '#fbbf24' }}>x402.abcfe.net</span>
+            {'npx team1-x402'}
           </pre>
         </div>
       </div>
