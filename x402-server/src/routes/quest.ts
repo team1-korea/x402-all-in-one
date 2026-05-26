@@ -8,6 +8,7 @@ import {
   updateQuestStatus,
   addPurchasedStep,
   storeQuestToken,
+  getQuestTokenByStep,
   recordAnswer,
   recordFeedback,
   recordInterests,
@@ -130,9 +131,11 @@ router.get("/:productId/:step", async (req: Request, res: Response) => {
   }
 
   const payer = verifyResult.payer;
+  const currentStepNum = parseInt(step, 10);
+  const QUEST_BASE = process.env.QUEST_BASE_URL || "http://localhost:3000";
+
   if (payer) {
     const user = await getUser(payer);
-    const currentStepNum = parseInt(step, 10);
 
     if (!user) {
       res.status(403).json({
@@ -141,6 +144,25 @@ router.get("/:productId/:step", async (req: Request, res: Response) => {
       return;
     }
 
+    const alreadyPurchased =
+      user.purchasedSteps?.includes(currentStepNum) ||
+      user.completedSteps?.includes(currentStepNum);
+
+    if (alreadyPurchased) {
+      const existing = await getQuestTokenByStep(payer, productId, currentStepNum);
+      if (existing) {
+        res.json({
+          id: quest.id,
+          name: quest.name,
+          questType: quest.questType,
+          difficulty: quest.difficulty,
+          questUrl: `${QUEST_BASE}/quest/${existing.uuid}`,
+          hint: "이미 구매한 퀘스트입니다. 브라우저에서 계속 진행하세요!",
+          alreadyPurchased: true,
+        });
+        return;
+      }
+    }
   }
 
   let settleResult;
@@ -160,16 +182,12 @@ router.get("/:productId/:step", async (req: Request, res: Response) => {
     return;
   }
 
-  const currentStepNum = parseInt(step, 10);
-
   if (payer) {
     await addPurchasedStep(payer, productId, currentStepNum);
   }
 
   res.setHeader("X-PAYMENT-RESPONSE", settleResult.transaction);
 
-  // All paid quests: issue UUID and return questUrl
-  const QUEST_BASE = process.env.QUEST_BASE_URL || "http://localhost:3000";
   const uuid = randomUUID();
   await storeQuestToken({
     uuid,

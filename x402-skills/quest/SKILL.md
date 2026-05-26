@@ -73,11 +73,17 @@ curl -X POST http://localhost:4010/v1/register \
 
 ## Step 1 — 퀘스트 목록 조회
 
+`.x402-wallet.json`에서 `walletAddress`를 읽어 서비스 목록을 조회합니다:
+
 ```bash
-curl http://localhost:4010/v1/quest/product-a
+curl "http://localhost:4010/v1/services?productId=product-a&wallet=<walletAddress>"
 ```
 
-응답에 각 퀘스트의 `difficulty`, `questType`, `price`가 포함됩니다.
+응답의 각 항목에 `status` 필드가 포함됩니다:
+- `cleared` — 완료. 건너뜁니다.
+- `purchased` — 이미 구매함. 재구매하지 말고 응답의 `questUrl`로 바로 이동합니다.
+- `available` — 진행 가능.
+
 `entryPoint: true`인 퀘스트(Q1)는 발표자와 함께 먼저 진행합니다.
 
 ## Step 2 — 퀘스트 구매 (x402 결제)

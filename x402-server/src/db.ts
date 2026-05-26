@@ -135,9 +135,10 @@ export async function getQuestTokenByStep(
     .eq("wallet_address", walletAddress.toLowerCase())
     .eq("product_id", productId)
     .eq("step", step)
-    .single();
-  if (!data) return undefined;
-  const row = data as Record<string, unknown>;
+    .order("created_at", { ascending: false })
+    .limit(1);
+  if (!data || data.length === 0) return undefined;
+  const row = data[0] as Record<string, unknown>;
   return {
     uuid: row.uuid as string,
     productId: row.product_id as string,
