@@ -26,7 +26,9 @@ export default function InterestsQuest({ quest }: Props) {
     fetch(`${API_BASE}/v1/dashboard/stats`)
       .then(r => r.json())
       .then((data: { users: DashboardUser[] }) => {
-        const others = data.users.filter(u => u.walletAddress !== quest.walletAddress);
+        const myAddr = quest.walletAddress;
+        const myTruncated = `${myAddr.slice(0, 6)}…${myAddr.slice(-4)}`;
+        const others = data.users.filter(u => u.walletAddress !== myTruncated);
         setParticipants(others);
       })
       .catch(() => setFetchError(true));
@@ -46,12 +48,15 @@ export default function InterestsQuest({ quest }: Props) {
     if (!confirmEnabled || loading) return;
     setShowConfirm(false);
     setLoading(true);
-    const interests = Object.entries(interestMap)
-      .filter(([, v]) => v.trim())
-      .map(([nickname, interest]) => ({ nickname, interest: interest.trim() }));
-    const res = await submitAnswer(quest.productId, quest.step, quest.walletAddress, { interests });
-    setResult(res);
-    setLoading(false);
+    try {
+      const interests = Object.entries(interestMap)
+        .filter(([, v]) => v.trim())
+        .map(([nickname, interest]) => ({ nickname, interest: interest.trim() }));
+      const res = await submitAnswer(quest.productId, quest.step, quest.walletAddress, { interests });
+      setResult(res);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleCancel = () => {

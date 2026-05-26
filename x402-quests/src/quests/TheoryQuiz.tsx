@@ -51,11 +51,14 @@ export default function TheoryQuiz({ quest }: Props) {
   const handleSubmit = async () => {
     if (!allPicked || loading || result?.correct) return;
     setLoading(true);
-    const res = await submitAnswer(quest.productId, quest.step, quest.walletAddress, {
-      answers: selected as number[],
-    });
-    setResult(res);
-    setLoading(false);
+    try {
+      const res = await submitAnswer(quest.productId, quest.step, quest.walletAddress, {
+        answers: selected as number[],
+      });
+      setResult(res);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

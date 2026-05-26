@@ -20,7 +20,7 @@ export async function submitAnswer(
     order?: number[];
     secretCode?: string;
     feedback?: { good: string; bad: string; next: string };
-    interests?: string[];
+    interests?: { nickname: string; interest: string }[];
     participation?: boolean;
   },
 ): Promise<AnswerResult> {

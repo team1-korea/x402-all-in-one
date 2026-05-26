@@ -69,6 +69,7 @@ export default function BlockBuilderQuest({ quest }: Props) {
   const [trainOffset, setTrainOffset] = useState(0);
   const [blurAmount, setBlurAmount] = useState(0);
   const [showExitButton, setShowExitButton] = useState(false);
+  const [submitError, setSubmitError] = useState(false);
   const [latestBlockHeight, setLatestBlockHeight] = useState<number | null>(null);
   const [hoveredBlock, setHoveredBlock] = useState<number | null>(null);
   const [showTooltip, setShowTooltip] = useState(false);
@@ -125,6 +126,7 @@ export default function BlockBuilderQuest({ quest }: Props) {
     setTrainPhase('idle');
     setTrainOffset(0);
     setShowExitButton(false);
+    setSubmitError(false);
     submittedRef.current = false;
     setLatestBlockHeight(null);
     initializeMockBlocks();
@@ -290,9 +292,12 @@ export default function BlockBuilderQuest({ quest }: Props) {
           if (!submittedRef.current) {
             submittedRef.current = true;
             submitAnswer(quest.productId, quest.step, quest.walletAddress, { participation: true })
-              .catch(console.error);
+              .then(() => setTimeout(() => setShowExitButton(true), 500))
+              .catch(() => {
+                submittedRef.current = false;
+                setSubmitError(true);
+              });
           }
-          setTimeout(() => setShowExitButton(true), 500);
         }
       };
 
@@ -568,6 +573,22 @@ export default function BlockBuilderQuest({ quest }: Props) {
             </div>
           );
         })()}
+
+        {/* Submit error overlay */}
+        {submitError && (
+          <div className={styles.successOverlay}>
+            <div className={styles.successCard}>
+              <div className={styles.successIcon} style={{ color: '#ef4444' }}>✗</div>
+              <h2 className={styles.successTitle}>제출 실패</h2>
+              <p className={styles.successDesc}>서버에 완료 기록이 저장되지 않았습니다.</p>
+              <div className={styles.successButtons}>
+                <button className={`${styles.successBtn} ${styles.outline}`} onClick={() => { setSubmitError(false); initializeGame(); }}>
+                  다시 시도
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Success overlay */}
         {showExitButton && (
