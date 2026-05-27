@@ -54,7 +54,7 @@ const hints: Hint[] = [
     num: '③',
     iphone: '입금 계좌번호',
     hole: '받는 지갑 주소(to)는 어디서 가져와?',
-    hint: '402 응답 어딘가에 있어 — 예시 눌러봐',
+    hint: '402 응답 어딘가에 있어',
     answer: 'accepts[0].payTo',
     hasPreview: true,
   },
@@ -87,7 +87,7 @@ const Slide09Hints = ({ animKey, step = 0 }: Props) => {
               <div
                 key={num}
                 className={`w-full bg-cream/60 rounded-xl border px-6 py-4 transition-all duration-200 ${
-                  hasPreview && answerRevealed
+                  hasPreview && questionRevealed
                     ? 'border-terracotta/30 cursor-pointer hover:bg-terracotta/5 hover:border-terracotta/50'
                     : 'border-sage/15'
                 }`}
@@ -96,7 +96,7 @@ const Slide09Hints = ({ animKey, step = 0 }: Props) => {
                   filter: questionRevealed ? 'none' : 'blur(3px)',
                   transition: 'opacity 0.5s ease, filter 0.5s ease',
                 }}
-                onClick={hasPreview && answerRevealed ? () => setPreviewOpen(true) : undefined}
+                onClick={hasPreview && questionRevealed ? () => setPreviewOpen(true) : undefined}
               >
                 <div className="flex items-center gap-5">
                   <div className="flex flex-col items-center gap-1 shrink-0 pt-0.5">
@@ -106,7 +106,7 @@ const Slide09Hints = ({ animKey, step = 0 }: Props) => {
                   <div className="flex-1 min-w-0">
                     <p className="font-sans text-base text-dark font-medium mb-0.5">{hole}</p>
                     <p className="font-sans text-sm text-dark/55">{hint}</p>
-                    {hasPreview && answerRevealed && (
+                    {hasPreview && questionRevealed && (
                       <span className="font-sans text-xs text-terracotta/50">예시 보기 →</span>
                     )}
                   </div>
