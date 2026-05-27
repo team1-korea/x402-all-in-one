@@ -81,37 +81,46 @@ const Slide09Hints = ({ animKey, step = 0 }: Props) => {
         </p>
         <div className="flex flex-col gap-3 w-full">
           {hints.map(({ num, iphone, hole, hint, answer, hasPreview }, i) => {
-            const revealed = step > i
+            const questionRevealed = step >= i * 2 + 1
+            const answerRevealed = step >= i * 2 + 2
             return (
               <div
                 key={num}
                 className={`w-full bg-cream/60 rounded-xl border px-6 py-4 transition-all duration-200 ${
-                  hasPreview && revealed
+                  hasPreview && answerRevealed
                     ? 'border-terracotta/30 cursor-pointer hover:bg-terracotta/5 hover:border-terracotta/50'
                     : 'border-sage/15'
                 }`}
                 style={{
-                  opacity: revealed ? 1 : 0.35,
-                  filter: revealed ? 'none' : 'blur(3px)',
+                  opacity: questionRevealed ? 1 : 0.35,
+                  filter: questionRevealed ? 'none' : 'blur(3px)',
                   transition: 'opacity 0.5s ease, filter 0.5s ease',
                 }}
-                onClick={hasPreview && revealed ? () => setPreviewOpen(true) : undefined}
+                onClick={hasPreview && answerRevealed ? () => setPreviewOpen(true) : undefined}
               >
-                <div className="flex items-start gap-5">
+                <div className="flex items-center gap-5">
                   <div className="flex flex-col items-center gap-1 shrink-0 pt-0.5">
                     <span className="font-mono text-terracotta text-sm font-semibold">{num}</span>
                     <span className="font-mono text-xs text-sage bg-sage/10 px-2 py-0.5 rounded whitespace-nowrap">{iphone}</span>
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="font-sans text-base text-dark font-medium mb-0.5">{hole}</p>
-                    <p className="font-sans text-sm text-dark/55 mb-2">{hint}</p>
-                    <code className="font-mono text-sm text-terracotta bg-terracotta/8 border border-terracotta/20 px-3 py-1 rounded">
-                      {answer}
-                    </code>
+                    <p className="font-sans text-sm text-dark/55">{hint}</p>
+                    {hasPreview && answerRevealed && (
+                      <span className="font-sans text-xs text-terracotta/50">예시 보기 →</span>
+                    )}
                   </div>
-                  {hasPreview && revealed && (
-                    <span className="font-sans text-xs text-terracotta/50 shrink-0 pt-1">예시 보기 →</span>
-                  )}
+                  <div
+                    className="shrink-0 text-right"
+                    style={{
+                      minWidth: '160px',
+                      opacity: answerRevealed ? 1 : 0,
+                      transform: answerRevealed ? 'translateX(0)' : 'translateX(16px)',
+                      transition: 'opacity 0.4s ease, transform 0.4s ease',
+                    }}
+                  >
+                    <code className="font-mono text-3xl font-bold text-terracotta">{answer}</code>
+                  </div>
                 </div>
               </div>
             )
