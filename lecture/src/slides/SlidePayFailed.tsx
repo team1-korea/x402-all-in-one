@@ -23,7 +23,7 @@ const SlidePayFailed = ({ animKey }: Props) => (
       <div className="fade-in-stagger w-full flex flex-col gap-3" style={{ animationDelay: '0.9s' }}>
         <div className="bg-cream/70 border border-sage/15 rounded-xl px-7 py-5">
           <p className="font-sans text-base text-dark/70 leading-relaxed">
-            x402-pay 스킬은 실행 시 <code className="font-mono text-sm bg-terracotta/10 text-terracotta px-2 py-0.5 rounded">[TODO</code> 문자열을 먼저 검사합니다.
+            x402-pay 스킬은 실행 시 <code className="font-mono text-sm bg-terracotta/10 text-terracotta px-2 py-0.5 rounded">[TODO]</code> 문자열을 먼저 검사합니다.
             <br />
             하나라도 남아있으면 <strong className="text-dark font-medium">결제를 거부</strong>하고 위 메시지를 돌려줍니다.
           </p>

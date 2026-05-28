@@ -48,9 +48,9 @@ code ~/.claude/skills/x402-pay/SKILL.md
 예시:
 ```
 Facilitator | https://unloc.kr/facilitator
-[TODO ②]    | 402
-[TODO ③]    | BigInt(Math.floor(Date.now()/1000)) + BigInt(maxTimeoutSeconds)
-[TODO ④]    | base64
+[TODO] ②    | 402
+[TODO] ③    | BigInt(Math.floor(Date.now()/1000)) + BigInt(maxTimeoutSeconds)
+[TODO] ④    | base64
 ```
 
 채운 뒤 Claude Code에서 `/x402-pay` 를 실행해 결제가 동작하는지 확인합니다.

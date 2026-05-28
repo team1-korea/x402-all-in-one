@@ -25,8 +25,8 @@ const steps = [
           {' '}→ 검색어 입력
         </p>
         <code className="font-mono text-sm text-terracotta bg-terracotta/8 border border-terracotta/20 px-4 py-2.5 rounded-lg">
-          [TODO
-        </code>
+          [TODO]
+</code>
         <p className="font-sans text-sm text-sage mt-2.5">채워야 할 구멍 4개가 있습니다</p>
       </div>
     ),

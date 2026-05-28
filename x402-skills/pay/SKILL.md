@@ -12,13 +12,13 @@ USDC(EIP-3009)를 사용해 유료 퀘스트 API를 호출합니다.
 
 ## ⛔ TODO 검사 — 반드시 먼저 확인
 
-이 스킬을 실행하기 전에 **이 파일에 `[TODO` 문자열이 남아있는지** 확인합니다.
+이 스킬을 실행하기 전에 **이 파일에 `[TODO]` 문자열이 남아있는지** 확인합니다.
 
 ```bash
-grep -n "\[TODO" ~/.claude/skills/x402-pay/SKILL.md
+grep -n "\[TODO\]" ~/.claude/skills/x402-pay/SKILL.md
 ```
 
-`[TODO`가 1개라도 남아있으면 **즉시 중단**하고 사용자에게 알립니다:
+`[TODO]`가 1개라도 남아있으면 **즉시 중단**하고 사용자에게 알립니다:
 
 > "x402-pay 스킬에 채워지지 않은 TODO가 있습니다. 결제를 진행하기 전에 아래 항목을 직접 채워주세요."
 > - 남아있는 TODO 목록을 줄 번호와 함께 보여줍니다.
@@ -32,7 +32,7 @@ TODO가 모두 채워진 경우에만 아래 흐름을 진행합니다.
 |------|----|
 | Chain ID | 402 |
 | RPC URL | https://subnets.avax.network/apix/testnet/rpc |
-| Facilitator | [TODO: 누가 결제를 검증해?] |
+| Facilitator | [TODO] 누가 결제를 검증해? |
 
 > Facilitator URL이 `http`로 시작하지 않으면 `https://`를 앞에 붙여서 사용합니다.
 
@@ -45,7 +45,7 @@ TODO가 모두 채워진 경우에만 아래 흐름을 진행합니다.
 유료 엔드포인트를 결제 없이 호출하면 서버가 반환하는 것:
 
 ```
-[TODO: 서버가 몇 번 응답을 돌려줘?]
+[TODO] 서버가 몇 번 응답을 돌려줘?
 ```
 
 응답 구조:
@@ -79,7 +79,7 @@ viem으로 EIP-712 서명을 만듭니다.
 ```ts
 const authorization = {
   from: walletAddress,
-  to: [TODO: 받는 지갑 주소는 어디서 가져와?],
+  to: [TODO] 받는 지갑 주소는 어디서 가져와?,
   value: BigInt(amount),        // accepts[0].amount
   validAfter: 0n,
   validBefore: BigInt(Math.floor(Date.now() / 1000)) + BigInt(maxTimeoutSeconds),
@@ -144,7 +144,7 @@ JSON.stringify 후 base64(btoa)로 변환해 헤더에 담습니다.
 같은 URL에 결제 서명을 실은 헤더를 붙여 재요청합니다:
 
 ```
-[TODO: 재요청할 때 추가하는 헤더 이름은?]: <base64 인코딩된 페이로드>
+[TODO] 재요청할 때 추가하는 헤더 이름은?: <base64 인코딩된 페이로드>
 ```
 
 성공 시 서버 응답:
