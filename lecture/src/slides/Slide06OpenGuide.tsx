@@ -5,38 +5,18 @@ const PATH = '~/.claude/skills/x402-pay/SKILL.md'
 const steps = [
   {
     num: '01',
-    title: 'VSCode 열기',
-    content: null,
-  },
-  {
-    num: '02',
     title: '파일 열기',
     content: (
       <div className="flex flex-col gap-3 mt-3">
-        <div className="flex items-start gap-3">
-          <span className="font-mono text-xs bg-sage/15 text-sage px-2 py-0.5 rounded shrink-0 mt-0.5">Mac</span>
-          <p className="font-mono text-sm text-dark/70">
-            <span className="text-terracotta font-semibold">Cmd+O</span>
-            {' '}→ 파일 다이얼로그에서{' '}
-            <span className="text-terracotta font-semibold">Cmd+Shift+G</span>
-            {' '}→ 경로 붙여넣기
-          </p>
-        </div>
-        <div className="flex items-start gap-3">
-          <span className="font-mono text-xs bg-sage/15 text-sage px-2 py-0.5 rounded shrink-0 mt-0.5">Win</span>
-          <p className="font-mono text-sm text-dark/70">
-            <span className="text-terracotta font-semibold">Ctrl+O</span>
-            {' '}→ 경로 붙여넣기
-          </p>
-        </div>
-        <code className="font-mono text-sm text-forest bg-forest/8 border border-forest/20 px-4 py-2.5 rounded-lg mt-1">
-          {PATH}
+        <p className="font-sans text-sm text-dark/70">Claude에게 이렇게 말하세요</p>
+        <code className="font-mono text-sm text-forest bg-forest/8 border border-forest/20 px-4 py-2.5 rounded-lg">
+          vscode로 해당 skill.md 파일을 열어줘
         </code>
       </div>
     ),
   },
   {
-    num: '03',
+    num: '02',
     title: 'TODO 찾기',
     content: (
       <div className="mt-3">
@@ -59,7 +39,7 @@ const Slide06OpenGuide = ({ animKey }: Props) => (
     <div key={animKey} className="flex flex-col items-center w-full max-w-3xl content-z-index">
       <p className="fade-in-stagger font-mono text-sm tracking-widest uppercase text-sage mb-5" style={{ animationDelay: '0s' }}>05 · Explore</p>
       <h2 className="fade-in-stagger font-serif text-6xl text-dark mb-3" style={{ animationDelay: '0.2s' }}>SKILL.md 열기</h2>
-      <p className="fade-in-stagger font-sans font-light text-base text-sage mb-10" style={{ animationDelay: '0.4s' }}>VSCode에서 직접 수정합니다</p>
+      <div className="mb-10" />
 
       <div className="fade-in-stagger flex flex-col gap-4 w-full" style={{ animationDelay: '0.6s' }}>
         {steps.map(({ num, title, content }) => (
