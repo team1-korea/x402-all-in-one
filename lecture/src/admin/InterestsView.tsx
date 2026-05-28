@@ -31,7 +31,9 @@ export default function InterestsView({ password, onBack, serverUrl }: Props) {
       .finally(() => setLoading(false))
   }, [password, serverUrl])
 
-  const allTags = entries.flatMap((e) => e.tags)
+  const allTags = entries.flatMap((e) =>
+    e.tags.map((tag) => (typeof tag === 'string' ? JSON.parse(tag) : tag))
+  )
 
   const grouped = allTags.reduce<Record<string, string[]>>((acc, { nickname, interest }) => {
     if (!acc[nickname]) acc[nickname] = []

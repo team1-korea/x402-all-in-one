@@ -24,7 +24,7 @@ export interface Quest {
   questType: QuestType;
   difficulty: Difficulty;
   entryPoint?: boolean;
-  // theory quests: OX has 2 questions, MC has 1
+  // theory quests
   theory?: string;
   questions?: QuestQuestion[];
   // staff-code quest
