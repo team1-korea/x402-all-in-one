@@ -58,7 +58,7 @@ export async function getUser(walletAddress: string): Promise<UserRecord | undef
 }
 
 export async function listUsers(): Promise<UserRecord[]> {
-  const { data } = await supabase.from("users").select("*");
+  const { data } = await supabase.from("users").select("*").order("registered_at", { ascending: true }).order("wallet_address", { ascending: true });
   return (data ?? []).map((r) => toRecord(r as Record<string, unknown>));
 }
 

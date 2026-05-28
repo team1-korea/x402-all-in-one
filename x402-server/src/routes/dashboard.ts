@@ -13,27 +13,28 @@ router.get("/stats", async (_req: Request, res: Response) => {
   try {
     const users = await listUsers();
 
-    // 완료자: completedAt 오름차순, 미완료자: registeredAt 오름차순
-    const sorted = [...users].sort((a, b) => {
-      if (a.isCompleted && b.isCompleted) {
-        return new Date(a.completedAt!).getTime() - new Date(b.completedAt!).getTime();
-      }
-      if (a.isCompleted) return -1;
-      if (b.isCompleted) return 1;
-      return new Date(a.registeredAt).getTime() - new Date(b.registeredAt).getTime();
-    });
+    // 등수: 완료자만 completedAt 오름차순으로 별도 계산
+    const rankMap = new Map<string, number>();
+    [...users]
+      .filter((u) => u.isCompleted && u.completedAt)
+      .sort((a, b) => {
+        const diff = new Date(a.completedAt!).getTime() - new Date(b.completedAt!).getTime();
+        return diff !== 0 ? diff : a.walletAddress.localeCompare(b.walletAddress);
+      })
+      .forEach((u, i) => rankMap.set(u.walletAddress, i + 1));
 
-    const totalQuestAccesses = sorted.reduce(
+    // 화면 순서: 항상 registeredAt 오름차순 고정
+    const totalQuestAccesses = users.reduce(
       (sum, u) => sum + (u.purchasedSteps?.length ?? 0),
       0
     );
 
     res.json({
-      totalUsers: sorted.length,
-      completedUsers: sorted.filter((u) => u.isCompleted).length,
+      totalUsers: users.length,
+      completedUsers: users.filter((u) => u.isCompleted).length,
       totalQuestAccesses,
       marathonStartedAt: marathonState.startedAt,
-      users: sorted.map((u) => ({
+      users: users.map((u) => ({
         nickname: u.nickname ?? truncateWallet(u.walletAddress),
         walletAddress: truncateWallet(u.walletAddress),
         purchasedSteps: u.purchasedSteps ?? [],
@@ -41,6 +42,7 @@ router.get("/stats", async (_req: Request, res: Response) => {
         isCompleted: u.isCompleted ?? false,
         completedAt: u.completedAt ?? null,
         registeredAt: u.registeredAt,
+        rank: rankMap.get(u.walletAddress) ?? null,
       })),
     });
   } catch (e) {

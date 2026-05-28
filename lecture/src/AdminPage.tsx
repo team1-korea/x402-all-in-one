@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import ForceCompleteView from './admin/ForceCompleteView'
 import AirdropView from './admin/AirdropView'
+import InterestsView from './admin/InterestsView'
 
-type View = 'login' | 'home' | 'force-complete' | 'airdrop'
+type View = 'login' | 'home' | 'force-complete' | 'airdrop' | 'interests'
 
 const SERVER_URL = import.meta.env.VITE_SERVER_URL ?? 'https://x402.abcfe.net'
 
@@ -13,6 +14,16 @@ export default function AdminPage() {
   const [loginError, setLoginError] = useState('')
   const [resetConfirm, setResetConfirm] = useState<0 | 1 | 2>(0)
   const [resetStatus, setResetStatus] = useState<'idle' | 'loading' | 'done' | 'error'>('idle')
+  const [marathonStarted, setMarathonStarted] = useState<boolean | null>(null)
+  const [marathonLoading, setMarathonLoading] = useState(false)
+
+  useEffect(() => {
+    if (view !== 'home') return
+    fetch(`${SERVER_URL}/v1/marathon/status`)
+      .then((r) => r.json())
+      .then((d: { started: boolean }) => setMarathonStarted(d.started))
+      .catch(() => {})
+  }, [view])
 
   const handleLogin = async () => {
     setLoginError('')
@@ -32,6 +43,16 @@ export default function AdminPage() {
     } catch {
       setLoginError('서버에 연결할 수 없습니다')
     }
+  }
+
+  const handleMarathon = async (action: 'start' | 'stop') => {
+    setMarathonLoading(true)
+    try {
+      const res = await fetch(`${SERVER_URL}/v1/marathon/${action}`, { method: 'POST' })
+      const data = await res.json() as { started: boolean }
+      setMarathonStarted(data.started)
+    } catch {}
+    setMarathonLoading(false)
   }
 
   const handleReset = async () => {
@@ -56,6 +77,10 @@ export default function AdminPage() {
 
   if (view === 'airdrop') {
     return <AirdropView password={password} onBack={() => setView('home')} serverUrl={SERVER_URL} />
+  }
+
+  if (view === 'interests') {
+    return <InterestsView password={password} onBack={() => setView('home')} serverUrl={SERVER_URL} />
   }
 
   if (view === 'login') {
@@ -87,7 +112,7 @@ export default function AdminPage() {
   return (
     <div className="w-screen h-screen bg-beige flex flex-col items-center justify-center gap-8" style={{ cursor: 'default' }}>
       <h1 className="font-mono font-bold text-2xl text-forest">Admin Dashboard</h1>
-      <div style={{ display: 'flex', gap: '1.5rem' }}>
+      <div style={{ display: 'flex', gap: '1.5rem', flexWrap: 'wrap', justifyContent: 'center' }}>
         <NavCard
           title="퀘스트 강제 클리어"
           description="특정 유저의 퀘스트를 강제 완료 처리"
@@ -98,6 +123,37 @@ export default function AdminPage() {
           description="유저에게 20 USDC 전송"
           onClick={() => setView('airdrop')}
         />
+        <NavCard
+          title="관심사 조회"
+          description="퀘스트에서 수집된 관심사 목록"
+          onClick={() => setView('interests')}
+        />
+        <div style={{ background: '#FFFDF9', border: '1px solid rgba(122,158,135,0.3)', borderRadius: 16, padding: '1.5rem', width: 200, display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+          <h2 className="font-mono font-bold text-base text-forest">마라톤</h2>
+          <p className="font-mono text-xs text-sage">
+            {marathonStarted === null ? '상태 확인 중...' : marathonStarted ? '진행 중' : '대기 중'}
+          </p>
+          {marathonStarted
+            ? (
+              <button
+                onClick={() => handleMarathon('stop')}
+                disabled={marathonLoading}
+                style={{ fontFamily: 'monospace', fontSize: 12, background: '#C4714A', color: '#FFFDF9', borderRadius: 8, padding: '0.5rem 0.75rem', border: 'none', cursor: 'pointer', opacity: marathonLoading ? 0.6 : 1 }}
+              >
+                {marathonLoading ? '처리 중...' : '중지'}
+              </button>
+            )
+            : (
+              <button
+                onClick={() => handleMarathon('start')}
+                disabled={marathonLoading}
+                style={{ fontFamily: 'monospace', fontSize: 12, background: '#3D6B4F', color: '#FFFDF9', borderRadius: 8, padding: '0.5rem 0.75rem', border: 'none', cursor: 'pointer', opacity: marathonLoading ? 0.6 : 1 }}
+              >
+                {marathonLoading ? '처리 중...' : '시작'}
+              </button>
+            )
+          }
+        </div>
         <div style={{ background: '#FFFDF9', border: '1px solid rgba(196,113,74,0.3)', borderRadius: 16, padding: '1.5rem', width: 200, display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
           <h2 className="font-mono font-bold text-base text-terracotta">DB 초기화</h2>
           <p className="font-mono text-xs text-sage">모든 데이터를 삭제합니다</p>

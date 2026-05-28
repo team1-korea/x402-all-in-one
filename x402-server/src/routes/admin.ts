@@ -26,6 +26,14 @@ router.post('/users', async (req: Request, res: Response) => {
   if (!checkPassword(req, res)) return;
   try {
     const users = await listUsers();
+    const rankMap = new Map<string, number>();
+    [...users]
+      .filter((u) => u.isCompleted && u.completedAt)
+      .sort((a, b) => {
+        const diff = new Date(a.completedAt!).getTime() - new Date(b.completedAt!).getTime();
+        return diff !== 0 ? diff : a.walletAddress.localeCompare(b.walletAddress);
+      })
+      .forEach((u, i) => rankMap.set(u.walletAddress, i + 1));
     res.json({
       ok: true,
       marathonStartedAt: marathonState.startedAt,
@@ -37,6 +45,7 @@ router.post('/users', async (req: Request, res: Response) => {
         isCompleted: u.isCompleted ?? false,
         completedAt: u.completedAt ?? null,
         registeredAt: u.registeredAt,
+        rank: rankMap.get(u.walletAddress) ?? null,
       })),
     });
   } catch (e) {
@@ -76,6 +85,17 @@ router.post('/airdrop', async (req: Request, res: Response) => {
   } catch (e) {
     res.status(500).json({ ok: false, error: e instanceof Error ? e.message : String(e) });
   }
+});
+
+// POST /v1/admin/interests
+router.post('/interests', async (req: Request, res: Response) => {
+  if (!checkPassword(req, res)) return;
+  const { data, error } = await supabase.from('interests').select('wallet_address, tags');
+  if (error) {
+    res.status(500).json({ ok: false, error: error.message });
+    return;
+  }
+  res.json({ ok: true, entries: data ?? [] });
 });
 
 // POST /v1/admin/reset (기존 — 비밀번호 검증 추가)

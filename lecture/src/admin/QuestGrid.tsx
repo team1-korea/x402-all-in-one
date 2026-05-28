@@ -8,6 +8,7 @@ export interface QuestGridUser {
   isCompleted: boolean
   completedAt: string | null
   registeredAt: string
+  rank: number | null
 }
 
 interface Props {
@@ -47,9 +48,9 @@ export default function QuestGrid({ users, marathonStartedAt, onCellClick }: Pro
         <thead>
           <tr>
             <th style={{ width: '2rem' }} />
-            {users.map((u, i) => (
+            {users.map((u) => (
               <th key={u.walletAddress} style={{ padding: '0 2px 4px', verticalAlign: 'bottom' }}>
-                <UserHeader user={u} rank={u.isCompleted ? i + 1 : undefined} marathonStartedAt={marathonStartedAt} />
+                <UserHeader user={u} marathonStartedAt={marathonStartedAt} />
               </th>
             ))}
           </tr>
@@ -82,14 +83,14 @@ export default function QuestGrid({ users, marathonStartedAt, onCellClick }: Pro
   )
 }
 
-function UserHeader({ user, rank, marathonStartedAt }: {
+function UserHeader({ user, marathonStartedAt }: {
   user: QuestGridUser
-  rank?: number
   marathonStartedAt: string | null
 }) {
   const newUser = isNew(user.registeredAt)
   const borderColor = user.isCompleted ? '#3D6B4F' : newUser ? '#C4714A' : '#d4cfc5'
   const nameColor = user.isCompleted ? '#3D6B4F' : newUser ? '#C4714A' : '#1A1A1A'
+  const bg = user.isCompleted ? '#EAF2EC' : '#FFFDF9'
   const elapsed = user.isCompleted && user.completedAt && marathonStartedAt
     ? formatElapsed(user.completedAt, marathonStartedAt)
     : null
@@ -97,9 +98,9 @@ function UserHeader({ user, rank, marathonStartedAt }: {
   return (
     <div
       className="font-mono"
-      style={{ background: '#FFFDF9', border: `1.5px solid ${borderColor}`, borderRadius: 8, padding: '5px 4px', textAlign: 'center', marginBottom: 2 }}
+      style={{ background: bg, border: `1.5px solid ${borderColor}`, borderRadius: 8, padding: '5px 4px', textAlign: 'center', marginBottom: 2 }}
     >
-      {rank !== undefined && <div style={{ fontSize: 9, color: '#C4714A', fontWeight: 700 }}>{rank}위</div>}
+      {user.rank !== null && <div style={{ fontSize: 9, color: '#C4714A', fontWeight: 700 }}>{user.rank}위</div>}
       <div style={{ fontSize: 11, fontWeight: 600, color: nameColor, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
         {user.nickname}
       </div>

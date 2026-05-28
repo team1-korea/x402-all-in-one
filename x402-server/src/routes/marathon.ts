@@ -16,4 +16,9 @@ router.post('/start', (_req, res) => {
   res.json({ started: marathonState.started, startedAt: marathonState.startedAt });
 });
 
+router.post('/stop', (_req, res) => {
+  marathonState.started = false;
+  res.json({ started: marathonState.started, startedAt: marathonState.startedAt });
+});
+
 export default router;
