@@ -17,6 +17,10 @@ router.post("/", async (req: Request, res: Response) => {
     res.status(400).json({ error: "닉네임은 필수입니다" });
     return;
   }
+  if (!/^[a-zA-Z]+$/.test(nickname)) {
+    res.status(400).json({ error: "닉네임은 영문만 사용 가능합니다" });
+    return;
+  }
 
   const privateKey = generatePrivateKey();
   const account = privateKeyToAccount(privateKey);

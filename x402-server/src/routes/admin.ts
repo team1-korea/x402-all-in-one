@@ -57,10 +57,7 @@ router.post('/force-complete', async (req: Request, res: Response) => {
     res.status(404).json({ ok: false, error: '유저를 찾을 수 없습니다' });
     return;
   }
-  const existing = user.completedSteps ?? [];
-  const next = existing.includes(step) ? existing : [...existing, step];
-  const isAllDone = next.length >= 10;
-  await updateQuestStatus(walletAddress, user.currentProductId ?? 'basic', step, isAllDone);
+  await updateQuestStatus(walletAddress, user.currentProductId ?? 'basic', step);
   res.json({ ok: true });
 });
 

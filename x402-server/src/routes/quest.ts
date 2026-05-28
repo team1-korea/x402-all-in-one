@@ -238,7 +238,6 @@ router.post("/:productId/:step/answer", async (req: Request, res: Response) => {
   }
 
   const currentStepNum = parseInt(step, 10);
-  const isLastStep = currentStepNum === 10;
 
   if (quest.questType === "theory-ox" || quest.questType === "theory-mc") {
     if (!answers || !quest.questions || answers.length !== quest.questions.length) {
@@ -256,7 +255,7 @@ router.post("/:productId/:step/answer", async (req: Request, res: Response) => {
       return;
     }
 
-    await updateQuestStatus(walletAddress, productId, currentStepNum, isLastStep);
+    await updateQuestStatus(walletAddress, productId, currentStepNum);
     res.json({ correct: true, message: "정답입니다! 🎉" });
     return;
   }
@@ -272,7 +271,7 @@ router.post("/:productId/:step/answer", async (req: Request, res: Response) => {
       res.json({ correct: false, message: "코드가 틀렸습니다. 스태프에게 다시 확인하세요!" });
       return;
     }
-    await updateQuestStatus(walletAddress, productId, currentStepNum, isLastStep);
+    await updateQuestStatus(walletAddress, productId, currentStepNum);
     res.json({ correct: true, message: "스태프 인증 완료! 🎉" });
     return;
   }
@@ -290,7 +289,7 @@ router.post("/:productId/:step/answer", async (req: Request, res: Response) => {
       res.json({ correct: false, message: "순서가 맞지 않습니다. 다시 시도해보세요!" });
       return;
     }
-    await updateQuestStatus(walletAddress, productId, currentStepNum, isLastStep);
+    await updateQuestStatus(walletAddress, productId, currentStepNum);
     res.json({ correct: true, message: "완벽합니다! x402 흐름을 이해했습니다 🎉" });
     return;
   }
@@ -302,7 +301,7 @@ router.post("/:productId/:step/answer", async (req: Request, res: Response) => {
       return;
     }
     await recordAnswer(walletAddress, productId, currentStepNum, quest.questType, { participation }, true);
-    await updateQuestStatus(walletAddress, productId, currentStepNum, isLastStep);
+    await updateQuestStatus(walletAddress, productId, currentStepNum);
     res.json({ correct: true, message: "블록 연결 완료! x402 흐름을 파악했습니다 🧱" });
     return;
   }
@@ -314,7 +313,7 @@ router.post("/:productId/:step/answer", async (req: Request, res: Response) => {
       return;
     }
     await recordAnswer(walletAddress, productId, currentStepNum, quest.questType, { participation }, true);
-    await updateQuestStatus(walletAddress, productId, currentStepNum, isLastStep);
+    await updateQuestStatus(walletAddress, productId, currentStepNum);
     res.json({ correct: true, message: "3라운드 완료! 합의는 항상 이깁니다 ❄️" });
     return;
   }
@@ -325,7 +324,7 @@ router.post("/:productId/:step/answer", async (req: Request, res: Response) => {
       return;
     }
     await recordFeedback(walletAddress, feedback.good, feedback.bad, feedback.next);
-    await updateQuestStatus(walletAddress, productId, currentStepNum, isLastStep);
+    await updateQuestStatus(walletAddress, productId, currentStepNum);
     res.json({ correct: true, message: "피드백 감사합니다! 🎉" });
     return;
   }
@@ -337,7 +336,7 @@ router.post("/:productId/:step/answer", async (req: Request, res: Response) => {
       return;
     }
     await recordInterests(walletAddress, filled);
-    await updateQuestStatus(walletAddress, productId, currentStepNum, isLastStep);
+    await updateQuestStatus(walletAddress, productId, currentStepNum);
     res.json({ correct: true, message: "관심사 수집 완료! 🎉" });
     return;
   }

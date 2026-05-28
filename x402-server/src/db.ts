@@ -66,12 +66,12 @@ export async function updateQuestStatus(
   walletAddress: string,
   productId: string,
   step: number,
-  isCompleted: boolean,
 ): Promise<void> {
   const user = await getUser(walletAddress);
   if (!user) return;
   const steps = user.completedSteps ?? [];
   const updated = steps.includes(step) ? steps : [...steps, step];
+  const isCompleted = updated.length >= 10;
   await supabase.from("users").update({
     current_product_id: productId,
     is_completed: isCompleted,
