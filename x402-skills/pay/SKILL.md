@@ -1,182 +1,175 @@
 ---
 name: x402-pay
-description: x402 엔드포인트의 결제 요건을 확인하고 TONE 토큰(EIP-3009)으로 결제하여 유료 API를 호출합니다.
+description: x402 결제 흐름을 직접 구현합니다. EIP-3009 서명을 생성하고 X-PAYMENT 헤더로 유료 API를 호출합니다.
 user-invocable: true
 disable-model-invocation: false
 ---
 
-# x402 결제 및 호출
+# x402 결제 흐름
 
-## 네트워크 정보
+USDC(EIP-3009)를 사용해 유료 퀘스트 API를 호출합니다.
+아래 흐름에서 `[TODO]` 부분은 **여러분이 직접 채운 내용**을 그대로 따릅니다.
 
-| 항목            | 값                                                         |
-|-----------------|-------------------------------------------------------------|
-| Chain ID        | 402                                                         |
-| RPC URL         | https://subnets.avax.network/apix/testnet/rpc               |
-| Facilitator     | https://unloc.kr/facilitator                                |
-| TONE 토큰       | 0x6ac929821e85970910f5dbafaee81823d71b17f3                  |
-| EIP-712 name    | TONE                                                        |
-| EIP-712 version | 1                                                           |
+## ⛔ TODO 검사 — 반드시 먼저 확인
 
-## 1단계: 결제 요건 확인
-
-결제 없이 유료 엔드포인트를 호출하면 402 응답으로 결제 요건이 반환됩니다:
+이 스킬을 실행하기 전에 **이 파일에 `[TODO]` 문자열이 남아있는지** 확인합니다.
 
 ```bash
-curl -i http://localhost:4010/v1/quest/quest-2
+grep -n "\[TODO\]" ~/.claude/skills/x402-pay/SKILL.md
 ```
 
-응답 (HTTP 402):
+`[TODO]`가 1개라도 남아있으면 **즉시 중단**하고 사용자에게 알립니다:
+
+> "x402-pay 스킬에 채워지지 않은 TODO가 있습니다. 결제를 진행하기 전에 아래 항목을 직접 채워주세요."
+> - 남아있는 TODO 목록을 줄 번호와 함께 보여줍니다.
+> - 파일 경로: `~/.claude/skills/x402-pay/SKILL.md`
+
+TODO가 모두 채워진 경우에만 아래 흐름을 진행합니다.
+
+## 네트워크 / 지갑 정보
+
+| 항목 | 값 |
+|------|----|
+| Chain ID | 402 |
+| RPC URL | https://subnets.avax.network/apix/testnet/rpc |
+| Facilitator | [TODO] 누가 결제를 검증해? |
+
+> Facilitator URL이 `http`로 시작하지 않으면 `https://`를 앞에 붙여서 사용합니다.
+
+지갑 정보는 `.x402-wallet.json`에서 읽습니다 (`privateKey`, `walletAddress`).
+
+---
+
+## 1단계: 결제 요건 확인 (402 수신)
+
+유료 엔드포인트를 결제 없이 호출하면 서버가 반환하는 것:
+
+```
+[TODO] 서버가 몇 번 응답을 돌려줘?
+```
+
+응답 구조:
 
 ```json
 {
-  "x402Version": 1,
+  "x402Version": 2,
   "accepts": [{
     "scheme": "exact",
     "network": "eip155:402",
-    "asset": "0x6ac929821e85970910f5dbafaee81823d71b17f3",
-    "amount": "10000000000000000",
+    "asset": "0x65e1ec07cdc00f18e11dd0370c6158029f61721e",
+    "amount": "10000000",
     "payTo": "0x7486fE46d82541ac4ae3b09b9a7061b8123A61Ba",
     "maxTimeoutSeconds": 60,
-    "extra": { "assetTransferMethod": "eip3009", "name": "TONE", "version": "1" }
+    "resource": "<요청한 URL>",
+    "extra": { "assetTransferMethod": "eip3009", "name": "USD Coin", "version": "2" }
   }],
-  "error": "결제가 필요합니다"
+  "error": "결제가 필요합니다",
+  "difficulty": "easy"
 }
 ```
 
-## 2단계: EIP-3009 서명 + X-PAYMENT 헤더 생성
+`accepts[0]`의 값을 그대로 2단계에서 사용합니다.
 
-`accepts[0]` 정보를 기반으로 `TransferWithAuthorization` 서명을 생성합니다.
+---
 
-```js
-import { privateKeyToAccount } from 'viem/accounts';
-import { randomBytes } from 'crypto';
+## 2단계: EIP-3009 서명 생성
 
-const privateKey = '<등록 시 받은 privateKey>';
-const account = privateKeyToAccount(privateKey);
+viem으로 EIP-712 서명을 만듭니다.
 
-const TOKEN   = '0x6ac929821e85970910f5dbafaee81823d71b17f3';
-const PAY_TO  = '0x7486fE46d82541ac4ae3b09b9a7061b8123A61Ba';
-const AMOUNT  = '10000000000000000'; // 0.01 TONE (wei)
-const QUEST   = 'quest-2';           // 호출할 퀘스트 ID
-
-const now   = Math.floor(Date.now() / 1000);
-const nonce = '0x' + randomBytes(32).toString('hex');
-
-// EIP-712 도메인 (TONE 컨트랙트 고정값)
-const domain = { name: 'TONE', version: '1', chainId: 402, verifyingContract: TOKEN };
-
-const types = {
-  TransferWithAuthorization: [
-    { name: 'from',        type: 'address' },
-    { name: 'to',          type: 'address' },
-    { name: 'value',       type: 'uint256' },
-    { name: 'validAfter',  type: 'uint256' },
-    { name: 'validBefore', type: 'uint256' },
-    { name: 'nonce',       type: 'bytes32' },
-  ],
+```ts
+const authorization = {
+  from: walletAddress,
+  to: [TODO] 받는 지갑 주소는 어디서 가져와?,
+  value: BigInt(amount),        // accepts[0].amount
+  validAfter: 0n,
+  validBefore: BigInt(Math.floor(Date.now() / 1000)) + BigInt(maxTimeoutSeconds),
+  nonce: crypto.getRandomValues(new Uint8Array(32)),
 };
+```
 
-const message = {
-  from:        account.address,
-  to:          PAY_TO,
-  value:       BigInt(AMOUNT),
-  validAfter:  0n,
-  validBefore: BigInt(now + 60),
-  nonce,
+EIP-712 도메인 (`extra.name`, `extra.version` 사용):
+
+```ts
+const domain = {
+  name: "USD Coin",    // extra.name
+  version: "2",        // extra.version
+  chainId: 402,
+  verifyingContract: asset,   // accepts[0].asset
 };
+```
 
-const signature = await account.signTypedData({
-  domain, types, primaryType: 'TransferWithAuthorization', message,
+서명:
+
+```ts
+const signature = await walletClient.signTypedData({
+  domain,
+  types: {
+    TransferWithAuthorization: [
+      { name: "from", type: "address" },
+      { name: "to", type: "address" },
+      { name: "value", type: "uint256" },
+      { name: "validAfter", type: "uint256" },
+      { name: "validBefore", type: "uint256" },
+      { name: "nonce", type: "bytes32" },
+    ],
+  },
+  primaryType: "TransferWithAuthorization",
+  message: authorization,
 });
+```
 
-// paymentPayload 조립
-const paymentPayload = {
+---
+
+## 3단계: X-PAYMENT 헤더 생성
+
+페이로드를 조립하고:
+
+```ts
+const payload = {
   x402Version: 2,
-  resource: {
-    url: `http://localhost:4010/v1/quest/${QUEST}`,
-    description: `Quest ${QUEST} access payment`,
-    mimeType: 'application/json',
-  },
-  accepted: {
-    scheme: 'exact', network: 'eip155:402', asset: TOKEN,
-    amount: AMOUNT, payTo: PAY_TO, maxTimeoutSeconds: 60,
-    extra: { assetTransferMethod: 'eip3009', name: 'TONE', version: '1' },
-  },
+  accepted: accepts[0],
   payload: {
     signature,
-    authorization: {
-      from: account.address, to: PAY_TO, value: AMOUNT,
-      validAfter: '0', validBefore: String(now + 60), nonce,
-    },
+    authorization,
   },
 };
-
-const xPayment = Buffer.from(JSON.stringify(paymentPayload)).toString('base64');
 ```
 
-## 3단계: 결제 헤더 포함 재요청
+JSON.stringify 후 base64(btoa)로 변환해 헤더에 담습니다.
 
-```bash
-curl http://localhost:4010/v1/quest/quest-2 \
-  -H "X-PAYMENT: <위에서 생성한 base64 문자열>"
+---
+
+## 4단계: 결제 헤더 포함 재요청
+
+같은 URL에 결제 서명을 실은 헤더를 붙여 재요청합니다:
+
+```
+[TODO] 재요청할 때 추가하는 헤더 이름은?: <base64 인코딩된 페이로드>
 ```
 
-또는 Node.js에서:
-
-```js
-const res = await fetch(`http://localhost:4010/v1/quest/${QUEST}`, {
-  headers: { 'X-PAYMENT': xPayment },
-});
-const data = await res.json();
-// data.question, data.choices, data.settleTx
-```
-
-성공 응답:
+성공 시 서버 응답:
 
 ```json
 {
   "id": "quest-2",
-  "name": "퀘스트 2 — Avalanche L1",
-  "question": "...",
-  "choices": ["43114", "43113", "402", "1"],
-  "reward": "0.015 TONE",
+  "name": "퀘스트 2 — Claude 스킬",
+  "questType": "theory-ox",
+  "difficulty": "easy",
+  "questUrl": "http://<quest-ui>/quest/<uuid>",
+  "hint": "브라우저를 열어 이 URL을 방문하고 퀘스트를 완료하세요!",
   "settleTx": "0x..."
 }
 ```
 
-## 4단계: 정답 제출
+`questUrl`을 브라우저에서 열어 퀘스트를 완료합니다.
 
-```bash
-curl -X POST http://localhost:4010/v1/quest/quest-2/answer \
-  -H "Content-Type: application/json" \
-  -d '{"answerIndex": <선택 index>, "walletAddress": "<내 지갑 주소>"}'
-```
-
-정답 응답:
-
-```json
-{
-  "correct": true,
-  "message": "정답입니다! 0.015 TONE를 에어드랍했습니다.",
-  "airdropTx": "0x...",
-  "nextQuestHint": "다음: /v1/quest/quest-3"
-}
-```
+---
 
 ## 에러 처리
 
-| 상태 | 원인 | 해결 |
+| 코드 | 원인 | 조치 |
 |------|------|------|
-| `402` | 결제 헤더 없음 또는 서명 검증 실패 | 1단계부터 재시작 |
-| `400` | payload 파싱 오류 | base64 인코딩 확인 |
-| `502` | facilitator 연결 실패 | https://unloc.kr/facilitator/health 확인 |
-
-## TONE 단위 (wei)
-
-| wei                  | TONE     |
-|----------------------|----------|
-| 10000000000000000    | 0.01 TONE |
-| 15000000000000000    | 0.015 TONE |
-| 20000000000000000    | 0.02 TONE |
-| 30000000000000000    | 0.03 TONE |
+| `402` | 결제 헤더 없음 또는 서명 검증 실패 | 서명 파라미터 확인 |
+| `400` | X-PAYMENT 파싱 오류 | 인코딩 방식 확인 |
+| `403` | 미등록 사용자 | `/x402-quest` 로 Step 0부터 시작 |
+| `502` | facilitator 연결 실패 | facilitator `/health` 확인 |

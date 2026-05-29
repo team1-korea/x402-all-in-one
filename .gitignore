@@ -1,4 +1,16 @@
 .env
+.env.local
 node_modules/
 dist/
 .next/
+
+# Claude Code
+.claude/settings.local.json
+
+# Dev tools
+.playwright-mcp/
+.superpowers/
+
+# Build cache
+lecture/tsconfig.app.tsbuildinfo
+logs/

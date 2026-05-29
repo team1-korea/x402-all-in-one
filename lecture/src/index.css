@@ -1,0 +1,111 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-beige: #F5F0E8;
+  --color-terracotta: #C4714A;
+  --color-forest: #3D6B4F;
+  --color-sage: #7A9E87;
+  --color-cream: #FFFDF9;
+  --color-dark: #1A1A1A;
+  --font-serif: 'Playfair Display', 'Noto Serif KR', serif;
+  --font-sans: 'Outfit', 'Noto Sans KR', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-sans);
+  background-color: var(--color-beige);
+  color: var(--color-dark);
+  overflow: hidden;
+  cursor: none;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Slide layout */
+.slides-container {
+  display: flex;
+  height: 100vh;
+  transition: transform 0.4s cubic-bezier(0.2, 0, 0, 1);
+  will-change: transform;
+}
+
+.slide {
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  flex-shrink: 0;
+  padding: 5vh 8vw;
+}
+
+.content-z-index {
+  position: relative;
+  z-index: 10;
+}
+
+/* Custom cursor */
+.custom-cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9999;
+  background: radial-gradient(circle, rgba(196, 113, 74, 0.4) 0%, rgba(196, 113, 74, 0) 70%);
+  transition: width 0.3s ease, height 0.3s ease, background 0.3s ease;
+  mix-blend-mode: multiply;
+  will-change: transform;
+}
+
+.custom-cursor.active {
+  width: 48px;
+  height: 48px;
+  background: radial-gradient(circle, rgba(122, 158, 135, 0.5) 0%, rgba(122, 158, 135, 0) 70%);
+}
+
+/* Animations */
+.fade-in-stagger {
+  opacity: 0;
+  transform: translateY(10px);
+  animation: gentleFadeUp 1.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes gentleFadeUp {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.bloom-effect {
+  opacity: 0;
+  transform: scale(0.95);
+  animation: bloomPulse 2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes bloomPulse {
+  50% { opacity: 1; transform: scale(1.02); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+.ambient-shape {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  z-index: 0;
+  pointer-events: none;
+  animation: breatheShape 12s ease-in-out infinite alternate;
+  will-change: transform, opacity;
+}
+
+@keyframes breatheShape {
+  0% { transform: scale(1) translate(0, 0); opacity: 0.3; }
+  100% { transform: scale(1.2) translate(5%, -5%); opacity: 0.5; }
+}

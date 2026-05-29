@@ -25,8 +25,8 @@ Avalanche L1(Chain ID 402) 위의 x402 퀘스트를 완주합니다.
 | Chain ID    | 402                                           |
 | 네트워크     | Avalanche APIX L1 Testnet                     |
 | RPC URL     | https://subnets.avax.network/apix/testnet/rpc |
-| Facilitator | https://unloc.kr/facilitator                  |
-| API         | http://localhost:4010                         |
+| Facilitator | https://pay.abcfe.net                  |
+| API         | https://x402.abcfe.net                         |
 
 ## 퀘스트 목록 및 정답
 
@@ -56,7 +56,7 @@ Avalanche L1(Chain ID 402) 위의 x402 퀘스트를 완주합니다.
 ## 정답 제출 형식
 
 ```bash
-curl -X POST http://localhost:4010/v1/quest/{id}/answer \
+curl -X POST https://x402.abcfe.net/v1/quest/{id}/answer \
   -H "Content-Type: application/json" \
   -d '{"answerIndex": <번호>, "walletAddress": "0x<내_지갑_주소>"}'
 ```

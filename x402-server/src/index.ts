@@ -6,13 +6,16 @@ import { fileURLToPath } from "url";
 import servicesRouter from "./routes/services.js";
 import questRouter from "./routes/quest.js";
 import usersRouter from "./routes/users.js";
+import questApiRouter from "./routes/quest-api.js";
+import dashboardRouter from "./routes/dashboard.js";
+import marathonRouter from "./routes/marathon.js";
+import adminRouter from "./routes/admin.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const app = express();
 app.use(express.json());
 
-// CORS (밋업 환경에서 다양한 클라이언트 허용)
 app.use((_req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, X-PAYMENT");
@@ -30,7 +33,7 @@ app.get("/health", (_req, res) => {
 });
 
 app.get("/llms.txt", (_req, res) => {
-  const base = process.env.API_BASE_URL || "http://localhost:4010";
+  const base = process.env.API_BASE_URL || "http://localhost:40210";
   const template = readFileSync(join(__dirname, "..", "llms.txt"), "utf8");
   const content = template.replaceAll("{{BASE_URL}}", base);
   res.setHeader("Content-Type", "text/plain; charset=utf-8");
@@ -40,8 +43,12 @@ app.get("/llms.txt", (_req, res) => {
 app.use("/v1/register", usersRouter);
 app.use("/v1/services", servicesRouter);
 app.use("/v1/quest", questRouter);
+app.use("/quest-api", questApiRouter);
+app.use("/v1/dashboard", dashboardRouter);
+app.use("/v1/marathon", marathonRouter);
+app.use("/v1/admin", adminRouter);
 
-const port = Number(process.env.PORT || 4010);
+const port = Number(process.env.PORT || 40210);
 app.listen(port, () => {
   console.log(`x402-server listening on http://localhost:${port}`);
   console.log(`facilitator: ${process.env.FACILITATOR_URL}`);

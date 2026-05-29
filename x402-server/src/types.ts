@@ -1,19 +1,43 @@
+export type QuestType =
+  | 'drag-drop'
+  | 'theory-ox'
+  | 'theory-mc'
+  | 'snowman-sabotage'
+  | 'staff-code'
+  | 'feedback'
+  | 'threejs'
+  | 'interests';
+
+export interface QuestQuestion {
+  question: string;
+  choices: string[];
+  answerIndex: number;
+}
+
+export type Difficulty = 'very-easy' | 'easy' | 'medium' | 'hard';
+
 export interface Quest {
   id: string;
   name: string;
   description: string;
-  price: bigint; // wei (0 = 무료)
-  question: string;
-  choices: string[];
-  answerIndex: number; // 0-based
-  reward: bigint; // 정답 시 에어드랍 금액 (wei)
+  price: bigint;
+  questType: QuestType;
+  difficulty: Difficulty;
+  entryPoint?: boolean;
+  // theory quests
+  theory?: string;
+  questions?: QuestQuestion[];
+  // staff-code quest
+  staffCode?: string;
+  // threejs quest
+  webCode?: string;
 }
 
 export interface PaymentRequirements {
   scheme: "exact";
   network: string;
-  asset: string; // ERC-20 token contract address
-  amount: string; // wei string
+  asset: string;
+  amount: string;
   payTo: string;
   maxTimeoutSeconds: number;
   resource: string;

@@ -1,12 +1,22 @@
+import { randomUUID } from "node:crypto";
 import { Router, type Request, type Response } from "express";
-import { getQuest } from "../quests.js";
+import { getQuest, getAllQuests } from "../quests.js";
 import { verifyPayment, settlePayment } from "../facilitator.js";
-import { airdrop } from "../airdrop.js";
+import { marathonState } from "./marathon.js";
+import {
+  getUser,
+  updateQuestStatus,
+  addPurchasedStep,
+  storeQuestToken,
+  getQuestTokenByStep,
+  recordAnswer,
+  recordFeedback,
+  recordInterests,
+} from "../db.js";
 import type { PaymentRequirements, X402Response } from "../types.js";
 
 const router = Router();
 
-// X-PAYMENT 헤더 파싱 (base64 JSON)
 function parsePaymentHeader(header: string): unknown {
   try {
     return JSON.parse(Buffer.from(header, "base64").toString("utf8"));
@@ -15,70 +25,94 @@ function parsePaymentHeader(header: string): unknown {
   }
 }
 
-function buildPaymentRequirements(questId: string, price: bigint): PaymentRequirements {
-  const API_BASE = process.env.API_BASE_URL || "http://localhost:4010";
+function buildPaymentRequirements(
+  productId: string,
+  step: string,
+  price: bigint,
+): PaymentRequirements {
+  const API_BASE = process.env.API_BASE_URL || "http://localhost:40210";
   return {
     scheme: "exact",
     network: `eip155:${process.env.CHAIN_ID || "402"}`,
-    asset: process.env.TONE_TOKEN!,
+    asset: process.env.PAYMENT_TOKEN!,
     amount: price.toString(),
     payTo: process.env.PAY_TO!,
     maxTimeoutSeconds: 60,
-    resource: `${API_BASE}/v1/quest/${questId}`,
-    description: `Quest ${questId} access payment`,
+    resource: `${API_BASE}/v1/quest/${productId}/${step}`,
+    description: `Quest ${productId}/${step} access payment`,
     mimeType: "application/json",
     extra: {
       assetTransferMethod: "eip3009",
-      name: "TONE",
-      version: "1",
+      name: process.env.TOKEN_NAME || "USDC",
+      version: process.env.TOKEN_VERSION || "2",
     },
   };
 }
 
-// GET /v1/quest/:id — 퀘스트 조회 (x402 게이팅)
-router.get("/:id", async (req: Request, res: Response) => {
-  const quest = getQuest(req.params.id);
+// GET /v1/quest/:productId — 퀘스트 목록 + 난이도
+router.get("/:productId", (req: Request, res: Response) => {
+  const { productId } = req.params;
+  const quests = getAllQuests(productId);
+  if (!quests) {
+    res.status(404).json({ error: "Product not found" });
+    return;
+  }
+  res.json(
+    quests.map((q) => ({
+      id: q.id,
+      name: q.name,
+      description: q.description,
+      price: q.price.toString(),
+      questType: q.questType,
+      difficulty: q.difficulty,
+      ...(q.entryPoint && { entryPoint: true }),
+    }))
+  );
+});
+
+// GET /v1/quest/:productId/:step
+router.get("/:productId/:step", async (req: Request, res: Response) => {
+  const { productId, step } = req.params;
+  const quest = getQuest(productId, step);
+
   if (!quest) {
     res.status(404).json({ error: "Quest not found" });
     return;
   }
 
-  // 무료 퀘스트는 바로 반환
+  if (!quest.entryPoint && !marathonState.started) {
+    res.status(403).json({ error: "마라톤이 아직 시작되지 않았습니다" });
+    return;
+  }
+
+  // 무료 퀘스트
   if (quest.price === 0n) {
-    res.json({
-      id: quest.id,
-      name: quest.name,
-      question: quest.question,
-      choices: quest.choices,
-      reward: `${Number(quest.reward) / 1e18} TONE`,
-    });
+    res.json({ id: quest.id, name: quest.name, questType: quest.questType });
     return;
   }
 
   const paymentHeader = req.headers["x-payment"] as string | undefined;
 
-  // 결제 헤더 없음 → 표준 402 응답
   if (!paymentHeader) {
-    const requirements = buildPaymentRequirements(quest.id, quest.price);
-    const body: X402Response = {
-      x402Version: 1,
+    const requirements = buildPaymentRequirements(productId, step, quest.price);
+    const body: X402Response & { difficulty: string } = {
+      x402Version: 2,
       accepts: [requirements],
       error: "결제가 필요합니다",
+      difficulty: quest.difficulty,
     };
     res.status(402).json(body);
     return;
   }
 
-  // 결제 헤더 파싱
   const paymentPayload = parsePaymentHeader(paymentHeader);
   if (!paymentPayload) {
     res.status(400).json({ error: "X-PAYMENT 헤더 파싱 실패" });
     return;
   }
 
-  const requirements = buildPaymentRequirements(quest.id, quest.price);
+  const requirements = buildPaymentRequirements(productId, step, quest.price);
 
-  // facilitator verify
   let verifyResult;
   try {
     verifyResult = await verifyPayment(paymentPayload, requirements);
@@ -96,76 +130,218 @@ router.get("/:id", async (req: Request, res: Response) => {
     return;
   }
 
-  // facilitator settle (비동기 — 응답은 먼저 보내도 되지만 여기선 대기)
-  try {
-    const settleResult = await settlePayment(paymentPayload, requirements);
-    if (!settleResult.success) {
-      res.status(402).json({
-        error: "결제 정산 실패",
-        reason: settleResult.errorReason,
-        message: settleResult.errorMessage,
+  const payer = verifyResult.payer;
+  const currentStepNum = parseInt(step, 10);
+  const QUEST_BASE = process.env.QUEST_BASE_URL || "http://localhost:3000";
+
+  if (payer) {
+    const user = await getUser(payer);
+
+    if (!user) {
+      res.status(403).json({
+        error: "등록되지 않은 사용자입니다. POST /v1/register 로 먼저 등록하세요.",
       });
       return;
     }
 
-    // 정산 성공 → 퀘스트 내용 반환
-    res.setHeader("X-PAYMENT-RESPONSE", settleResult.transaction);
-    res.json({
-      id: quest.id,
-      name: quest.name,
-      question: quest.question,
-      choices: quest.choices,
-      reward: `${Number(quest.reward) / 1e18} TONE`,
-      settleTx: settleResult.transaction,
-    });
+    const alreadyPurchased =
+      user.purchasedSteps?.includes(currentStepNum) ||
+      user.completedSteps?.includes(currentStepNum);
+
+    if (alreadyPurchased) {
+      const existing = await getQuestTokenByStep(payer, productId, currentStepNum);
+      if (existing) {
+        res.json({
+          id: quest.id,
+          name: quest.name,
+          questType: quest.questType,
+          difficulty: quest.difficulty,
+          questUrl: `${QUEST_BASE}/quest/${existing.uuid}`,
+          hint: "이미 구매한 퀘스트입니다. 브라우저에서 계속 진행하세요!",
+          alreadyPurchased: true,
+        });
+        return;
+      }
+    }
+  }
+
+  let settleResult;
+  try {
+    settleResult = await settlePayment(paymentPayload, requirements);
   } catch (e) {
     res.status(502).json({ error: "facilitator settle 실패", detail: String(e) });
+    return;
   }
+
+  if (!settleResult.success) {
+    res.status(402).json({
+      error: "결제 정산 실패",
+      reason: settleResult.errorReason,
+      message: settleResult.errorMessage,
+    });
+    return;
+  }
+
+  if (payer) {
+    await addPurchasedStep(payer, productId, currentStepNum);
+  }
+
+  res.setHeader("X-PAYMENT-RESPONSE", settleResult.transaction);
+
+  const uuid = randomUUID();
+  await storeQuestToken({
+    uuid,
+    productId,
+    step: currentStepNum,
+    walletAddress: payer ?? "",
+    createdAt: new Date().toISOString(),
+  });
+
+  res.json({
+    id: quest.id,
+    name: quest.name,
+    questType: quest.questType,
+    difficulty: quest.difficulty,
+    questUrl: `${QUEST_BASE}/quest/${uuid}`,
+    hint: "브라우저를 열어 이 URL을 방문하고 퀘스트를 완료하세요!",
+    settleTx: settleResult.transaction,
+  });
 });
 
-// POST /v1/quest/:id/answer — 정답 제출
-router.post("/:id/answer", async (req: Request, res: Response) => {
-  const quest = getQuest(req.params.id);
+// POST /v1/quest/:productId/:step/answer
+router.post("/:productId/:step/answer", async (req: Request, res: Response) => {
+  const { productId, step } = req.params;
+  const quest = getQuest(productId, step);
+
   if (!quest) {
     res.status(404).json({ error: "Quest not found" });
     return;
   }
 
-  const { answerIndex, walletAddress } = req.body as {
-    answerIndex?: number;
+  const {
+    answers,
+    walletAddress,
+    secretCode,
+    feedback,
+    interests,
+  } = req.body as {
+    answers?: number[];
     walletAddress?: string;
+    secretCode?: string;
+    feedback?: { good: string; bad: string; next: string };
+    interests?: { nickname: string; interest: string }[];
   };
 
-  if (answerIndex === undefined || !walletAddress) {
-    res.status(400).json({ error: "answerIndex와 walletAddress가 필요합니다" });
+  if (!walletAddress) {
+    res.status(400).json({ error: "walletAddress가 필요합니다" });
     return;
   }
 
-  if (answerIndex !== quest.answerIndex) {
-    res.json({ correct: false, message: "틀렸습니다. 다시 시도해보세요!" });
+  const currentStepNum = parseInt(step, 10);
+
+  if (quest.questType === "theory-ox" || quest.questType === "theory-mc") {
+    if (!answers || !quest.questions || answers.length !== quest.questions.length) {
+      res.status(400).json({
+        error: `answers 배열이 필요합니다 (${quest.questions?.length ?? 1}개 항목)`,
+      });
+      return;
+    }
+
+    const allCorrect = quest.questions.every((q, i) => answers[i] === q.answerIndex);
+    await recordAnswer(walletAddress, productId, currentStepNum, quest.questType, answers, allCorrect);
+
+    if (!allCorrect) {
+      res.json({ correct: false, message: "틀렸습니다. 다시 시도해보세요!" });
+      return;
+    }
+
+    await updateQuestStatus(walletAddress, productId, currentStepNum);
+    res.json({ correct: true, message: "정답입니다! 🎉" });
     return;
   }
 
-  // 정답 — 에어드랍
-  try {
-    const txHash = await airdrop(walletAddress, quest.reward);
-    res.json({
-      correct: true,
-      message: `정답입니다! ${Number(quest.reward) / 1e18} TONE를 에어드랍했습니다.`,
-      airdropTx: txHash,
-      nextQuestHint:
-        quest.id === "quest-3"
-          ? "모든 퀘스트를 완료했습니다! 🎉"
-          : `다음: /v1/quest/${nextQuestId(quest.id)}`,
-    });
-  } catch (e) {
-    res.status(500).json({ error: "에어드랍 실패", detail: String(e) });
+  if (quest.questType === "staff-code") {
+    if (!secretCode) {
+      res.status(400).json({ error: "secretCode가 필요합니다" });
+      return;
+    }
+    const correct = secretCode === quest.staffCode;
+    await recordAnswer(walletAddress, productId, currentStepNum, quest.questType, { secretCode }, correct);
+    if (!correct) {
+      res.json({ correct: false, message: "코드가 틀렸습니다. 스태프에게 다시 확인하세요!" });
+      return;
+    }
+    await updateQuestStatus(walletAddress, productId, currentStepNum);
+    res.json({ correct: true, message: "스태프 인증 완료! 🎉" });
+    return;
   }
+
+  if (quest.questType === "threejs") {
+    const { order } = req.body as { order?: number[] };
+    if (!Array.isArray(order) || order.length !== 6) {
+      res.status(400).json({ error: "order 배열(6개)이 필요합니다" });
+      return;
+    }
+    const CORRECT = [0, 1, 2, 3, 4, 5];
+    const correct = CORRECT.every((v, i) => order[i] === v);
+    await recordAnswer(walletAddress, productId, currentStepNum, quest.questType, { order }, correct);
+    if (!correct) {
+      res.json({ correct: false, message: "순서가 맞지 않습니다. 다시 시도해보세요!" });
+      return;
+    }
+    await updateQuestStatus(walletAddress, productId, currentStepNum);
+    res.json({ correct: true, message: "완벽합니다! x402 흐름을 이해했습니다 🎉" });
+    return;
+  }
+
+  if (quest.questType === "drag-drop") {
+    const { participation } = req.body as { participation?: boolean };
+    if (participation !== true) {
+      res.status(400).json({ error: "participation 필드가 필요합니다" });
+      return;
+    }
+    await recordAnswer(walletAddress, productId, currentStepNum, quest.questType, { participation }, true);
+    await updateQuestStatus(walletAddress, productId, currentStepNum);
+    res.json({ correct: true, message: "블록 연결 완료! x402 흐름을 파악했습니다 🧱" });
+    return;
+  }
+
+  if (quest.questType === "snowman-sabotage") {
+    const { participation } = req.body as { participation?: boolean };
+    if (participation !== true) {
+      res.status(400).json({ error: "participation 필드가 필요합니다" });
+      return;
+    }
+    await recordAnswer(walletAddress, productId, currentStepNum, quest.questType, { participation }, true);
+    await updateQuestStatus(walletAddress, productId, currentStepNum);
+    res.json({ correct: true, message: "3라운드 완료! 합의는 항상 이깁니다 ❄️" });
+    return;
+  }
+
+  if (quest.questType === "feedback") {
+    if (!feedback?.good || !feedback?.bad || !feedback?.next) {
+      res.status(400).json({ error: "모든 피드백 항목을 입력해주세요" });
+      return;
+    }
+    await recordFeedback(walletAddress, feedback.good, feedback.bad, feedback.next);
+    await updateQuestStatus(walletAddress, productId, currentStepNum);
+    res.json({ correct: true, message: "피드백 감사합니다! 🎉" });
+    return;
+  }
+
+  if (quest.questType === "interests") {
+    const filled = interests?.filter(e => e.nickname && e.interest.trim()) ?? [];
+    if (filled.length < 3) {
+      res.status(400).json({ error: "3명 이상의 관심사를 입력해주세요" });
+      return;
+    }
+    await recordInterests(walletAddress, filled);
+    await updateQuestStatus(walletAddress, productId, currentStepNum);
+    res.json({ correct: true, message: "관심사 수집 완료! 🎉" });
+    return;
+  }
+
+  res.status(400).json({ error: "지원하지 않는 퀘스트 타입입니다" });
 });
-
-function nextQuestId(currentId: string): string {
-  const num = parseInt(currentId.replace("quest-", ""), 10);
-  return `quest-${num + 1}`;
-}
 
 export default router;
