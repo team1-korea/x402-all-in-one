@@ -14,8 +14,11 @@ Avalanche L1 위에서 동작하는 x402 결제 프로토콜과 Claude Code Skil
 
 ---
 
-[# 주요 내용은 QUICKSTART.md 를 확인하시는게 좋습니다
-](https://github.com/team1-korea/x402-all-in-one/blob/main/QUICKSTART.md)
+## 확인 필요
+주요 내용은 [QUICKSTART.md](https://github.com/team1-korea/x402-all-in-one/blob/main/QUICKSTART.md) 를 확인하시는게 좋습니다
+
+---
+
 ## 구조
 
 ```
