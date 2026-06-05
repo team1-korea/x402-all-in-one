@@ -7,10 +7,10 @@ Avalanche L1 위에서 동작하는 x402 결제 프로토콜과 Claude Code Skil
 ---
 
 ## 배포된 서비스
-1. x402 skill : https://www.npmjs.com/package/team1-x402
+1. x402 skill - NPM 배포됨 : [npmjs.com/package/team1-x402](https://www.npmjs.com/package/team1-x402)
 2. 발표자료 : [slides.abcfe.net](https://slides.abcfe.net/)
-3. faciliator 서버 : pay.abcfe.net
-4. quest 서버 : quest.abcfe.net
+3. faciliator 서버 : [pay.abcfe.net](https://pay.abcfe.net/)
+4. quest 서버 : [quest.abcfe.net](https://quest.abcfe.net/)
 
 ---
 
